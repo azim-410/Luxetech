@@ -11,7 +11,27 @@
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
-</head>
+      <style>
+        .field-error {
+            color: #ff5555;
+            font-size: 0.78rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .field-error::before { content: '⚠ '; }
+        .general-error {
+            background: rgba(255,85,85,0.1);
+            border: 1px solid #ff5555;
+            color: #ff5555;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+      </style>
+    </head>
 
 <body>
 
@@ -28,10 +48,17 @@
         <p>Enter your credentials to access your account</p>
       </header>
 
-      <form class="login-form">
+      <form class="login-form" action="/login" method="POST">
+        <% if (locals.errorField === 'global' || locals.errorField === 'general') { %>
+            <div class="general-error">⚠ <%= locals.errorMessage %></div>
+        <% } %>
+
         <div class="input-stack">
           <label>Email Address</label>
-          <input type="email" placeholder="name@company.com" required>
+          <input type="email" name="email" placeholder="name@company.com" value="<%= locals.formData?.email || '' %>">
+          <% if (locals.errorField === 'email') { %>
+              <p class="field-error"><%= locals.errorMessage %></p>
+          <% } %>
         </div>
         
         <div class="input-stack">
@@ -40,11 +67,14 @@
             <a href="forget-password" class="text-link small">Forgot Password?</a>
           </div>
           <div class="password-wrapper">
-            <input type="password" id="password" placeholder="••••••••" required>
+            <input type="password" name="password" id="password" placeholder="••••••••" value="<%= locals.formData?.password || '' %>">
             <button type="button" id="togglePassword" class="eye-btn">
               <span class="material-symbols-outlined" id="eyeIcon">visibility</span>
             </button>
           </div>
+          <% if (locals.errorField === 'password') { %>
+              <p class="field-error"><%= locals.errorMessage %></p>
+          <% } %>
         </div>
         <button type="submit" class="btn-main">Sign In</button>
       </form>

@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Account | Luxe Tech Precision</title>
     <link rel="stylesheet" href="/User/css/register.css" />
+    <style>
+        .field-error {
+            color: #ff5555;
+            font-size: 0.78rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .field-error::before { content: '⚠ '; }
+        .general-error {
+            background: rgba(255,85,85,0.1);
+            border: 1px solid #ff5555;
+            color: #ff5555;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
 
 <body>
@@ -19,7 +39,7 @@
 
     
         <main class="main-content">
-            <div class="signup-card">
+            <div class="signup-card animate-in">
                 <section class="hero-column"
                     style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCon0eNmaajDcVddUCqiLNe33O-STtlr9UQcqc-7jXckH92QsKxj001M_D9Siu4C1BpRnd30FolVwdqxkkUkjg-CDC-hIocYQyXwlp_Ojfb7uuvStpiohAyQ1e4OMWby6lq-zKlkFTTxyupWzB8ARcVVyr5wWbhpkWe-5FlcLEfp6DhRTpd7WfAOYFmvcNDTc512gVeeTFAFoUExi3AdNn_KCNQjBkMy6cL2Pq5WFyZTsMOb0MMLvhnEmR-srwAnFm71yCMpajuNfI');">
                     <div class="hero-overlay"></div>
@@ -38,25 +58,37 @@
                             <p>Start your journey into precision technology today.</p>
                         </header>
 
-                        <form action="#" method="POST" class="registration-form">
+                        <form action="/register" method="POST" class="registration-form">
+
+                            <% if (locals.errorField === 'general') { %>
+                                <div class="general-error">⚠ <%= locals.errorMessage %></div>
+                            <% } %>
+
                             <div class="input-group">
                                 <label for="full-name">Full Name</label>
-                                <input id="full-name" name="full-name" placeholder="Nikola Tesla" type="text"
-                                    required />
+                                <input id="full-name" name="name" placeholder="Nikola Tesla" type="text"
+                                    value="<%= locals.formData?.name || '' %>"
+                                     />
+                                <% if (locals.errorField === 'name') { %>
+                                    <p class="field-error"><%= locals.errorMessage %></p>
+                                <% } %>
                             </div>
 
                             <div class="input-group">
                                 <label for="email">Email Address</label>
                                 <input id="email" name="email" placeholder="precision@luxetech.com" type="email"
-                                    required />
+                                    value="<%= locals.formData?.email || '' %>"
+                                     />
+                                <% if (locals.errorField === 'email') { %>
+                                    <p class="field-error"><%= locals.errorMessage %></p>
+                                <% } %>
                             </div>
 
                             <div class="grid-row">
                                 <div class="input-group">
                                     <label for="password">Password</label>
                                     <div class="password-wrapper">
-                                        <input id="password" name="password" placeholder="••••••••" type="password"
-                                            required />
+                                        <input id="password" name="password" placeholder="••••••••" type="password" value="<%= locals.formData?.password||''%>"/>
                                         <button type="button" class="toggle-password"
                                             onclick="toggleVisibility('password', this)"
                                             aria-label="Toggle password visibility">
@@ -70,12 +102,15 @@
                                             </svg>
                                         </button>
                                     </div>
+                                    <% if (locals.errorField === 'password') { %>
+                                        <p class="field-error"><%= locals.errorMessage %></p>
+                                    <% } %>
                                 </div>
                                 <div class="input-group">
                                     <label for="confirm-password">Confirm Password</label>
                                     <div class="password-wrapper">
-                                        <input id="confirm-password" name="confirm-password" placeholder="••••••••"
-                                            type="password" required />
+                                        <input id="confirm-password" name="confirmPassword" placeholder="••••••••"
+                                            type="password"  value="<%= locals.formData?.confirmPassword || '' %>"/>
                                         <button type="button" class="toggle-password"
                                             onclick="toggleVisibility('confirm-password', this)"
                                             aria-label="Toggle password visibility">
@@ -89,6 +124,9 @@
                                             </svg>
                                         </button>
                                     </div>
+                                    <% if (locals.errorField === 'confirmPassword') { %>
+                                        <p class="field-error"><%= locals.errorMessage %></p>
+                                    <% } %>
                                 </div>
                             </div>
 
@@ -98,12 +136,15 @@
                             </div>
 
                             <div class="checkbox-group">
-                                <input id="terms" name="terms" type="checkbox" required />
+                                <input id="terms" name="terms" type="checkbox"  />
                                 <label for="terms">
                                     I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy
                                         Policy</a>.
                                 </label>
                             </div>
+                            <% if (locals.errorField === 'terms') { %>
+                                <p class="field-error" style="margin-top: 0; margin-bottom: 15px;"><%= locals.errorMessage %></p>
+                            <% } %>
                        
                             <div class="form-actions">
                                 <button type="submit" class="btn-primary">

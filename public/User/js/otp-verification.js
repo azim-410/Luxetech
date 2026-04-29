@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const otpInputs = document.querySelectorAll('.otp-inputs input');
 
         // --- Configuration ---
-        const COOLDOWN_SECONDS = 2;
-        const COOLDOWN_EXPIERS = 6;
+        const COOLDOWN_SECONDS = 60;
+        const COOLDOWN_EXPIERS = 540;
 
         // let resendTimer = null;
         let resendexpire = null;

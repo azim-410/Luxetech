@@ -1,5 +1,6 @@
 import express from 'express';
 const router = express.Router();
+import { register } from '../controller/user/authController.js';
 
 
 router.get('/', (req, res) => {
@@ -29,5 +30,7 @@ router.get('/reset',(req,res)=>{
 router.get('/admin/login',(req,res)=>{
     res.render('Admin/auth/login');
 })
+
+router.post('/register',register);
 
 export default router

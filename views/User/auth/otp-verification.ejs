@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Your Identity | TechLens</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="/User/css/otp-verification.css" />
+</head>
+
+<body>
+    <!-- <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">TechLens</div>
+            <button class="help-btn" aria-label="Help">
+                <span class="material-symbols-outlined">help_outline</span>
+            </button>
+        </div>
+    </header> -->
+    <%- include("../../partials/user/auth-header.ejs") %>
+    <main class="content-area">
+        <div class="card-wrapper">
+            <div class="decor-circle decor-top-left"></div>
+            <div class="decor-circle decor-bottom-right"></div>
+
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="icon-container">
+                        <span class="material-symbols-outlined icon-vibration">vibration</span>
+                    </div>
+                    <h1>Two-Step Verification</h1>
+                    <p>Enter the 6-digit code sent to your email</p>
+                </div>
+
+                <form class="verification-form">
+                    <div class="otp-inputs">
+                        <input type="text" maxlength="1" aria-label="Digit 1" autofocus />
+                        <input type="text" maxlength="1" aria-label="Digit 2" />
+                        <input type="text" maxlength="1" aria-label="Digit 3" />
+                        <input type="text" maxlength="1" aria-label="Digit 4" />
+                        <input type="text" maxlength="1" aria-label="Digit 5" />
+                        <input type="text" maxlength="1" aria-label="Digit 6" />
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Verify Identity
+                            <span class="material-symbols-outlined btn-icon">arrow_forward</span>
+                        </button>
+
+                        <div class="resend-section">
+                            <div class="resend-text">
+                                <span>Didn't receive the code?</span>
+                                <button type="button" class="btn-resend">Resend Code</button>
+                            </div>
+
+                            <div class="timer-badge">
+                                <span class="material-symbols-outlined timer-icon">timer</span>
+                                <span class="timer-display">Expires in</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <span class="material-symbols-outlined">verified_user</span>
+                        <span>Secure Cloud</span>
+                    </div>
+                    <div class="trust-dot"></div>
+                    <div class="trust-item">
+                        <span class="material-symbols-outlined">encrypted</span>
+                        <span>AES-256</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- <footer class="bottom-footer">
+        <div class="footer-container">
+            <div class="footer-brand">TechLens</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Support</a>
+            </div>
+            <p class="footer-copyright">© 2026 TechLens Precision. All rights reserved.</p>
+        </div>
+    </footer> -->
+     <%- include("../../partials/user/auth-footer.ejs") %>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle OTP auto-advance, backspace, and pasting
+            const inputs = document.querySelectorAll('.otp-inputs input');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    if (e.target.value !== '' && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, inputs.length);
+                    pastedData.split('').forEach((char, i) => {
+                        inputs[i].value = char;
+                        if (i < inputs.length - 1) {
+                            inputs[i + 1].focus();
+                        } else {
+                            inputs[i].focus();  
+                        }
+                    });
+                });
+            });
+        });
+
+        // --- DOM Elements ---
+        const resendBtn = document.querySelector('.btn-resend');
+        const timerDisplay = document.querySelector('.timer-display');
+        const submitBtn = document.querySelector('.btn-primary');
+        const otpInputs = document.querySelectorAll('.otp-inputs input');
+
+        // --- Configuration ---
+        const COOLDOWN_SECONDS = 2;
+        const COOLDOWN_EXPIERS = 6;
+
+        // let resendTimer = null;
+        let resendexpire = null;
+        function all() {
+
+            
+            timeexpire = COOLDOWN_EXPIERS;
+            timerDisplay.textContent = `Expire in ${timeexpire}`;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.disabled = false
+
+            otpInputs.forEach(input => {
+                input.value = '';
+                input.style.opacity = '1';
+                input.style.cursor = 'text';
+                input.disabled = false
+            });
+
+            resendexpire = setInterval(() => {
+                timeexpire--
+                timerDisplay.textContent = `Expire in ${timeexpire}`;
+                if (timeexpire < 0) {
+                    clearInterval(resendexpire)
+                    timerDisplay.textContent = `Time Expired`;
+
+                    submitBtn.style.opacity = '0.5';
+                    submitBtn.style.cursor = 'not-allowed';
+                    submitBtn.disabled = true
+
+                    otpInputs.forEach(input => {
+                        input.style.opacity = '0.5';
+                        input.style.cursor = 'not-allowed';
+                        input.disabled = true
+                    });
+                }
+            }, 1000)
+
+            resendBtn.addEventListener('click', () => {
+                
+                all()
+
+                let timeleft = COOLDOWN_SECONDS;
+                resendBtn.textContent = `Resend Code ${timeleft}`;
+                resendBtn.disabled = true;
+                resendBtn.style.cursor = 'not-allowed';
+                resendBtn.style.opacity = '0.5';
+                resendBtn.style.textDecoration = 'none'
+
+                const interval = setInterval(() => {
+                    timeleft--;
+                    resendBtn.textContent = `Resend Code ${timeleft}`;
+                    if (timeleft < 0) {
+                        clearInterval(interval);
+                        resendBtn.textContent = "Resend Code";
+                        resendBtn.disabled = false;
+                        resendBtn.style.cursor = 'pointer';
+                        resendBtn.style.opacity = '1';
+                    }
+                }, 1000);
+
+            })
+        } all()
+
+
+
+
+    </script>
+</body>
+
+</html>

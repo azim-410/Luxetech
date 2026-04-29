@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Luxe Tech | Secure Login</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <link rel="stylesheet" href="/admin/css/login.css">
+</head>
+<body>
+
+    <div class="bg-decor-right">
+        <div class="line-vert"></div>
+        <div class="line-horiz-1"></div>
+        <div class="line-horiz-2"></div>
+    </div>
+    <div class="bg-decor-left">
+        <div class="line-vert"></div>
+        <div class="line-horiz-1"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">Luxe Tech</div>
+        <div class="nav-actions">
+            <span class="material-symbols-outlined nav-icon" data-icon="help_outline">help_outline</span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="card-tray">
+            <div class="login-card">
+                
+                <header class="card-header">
+                    <div class="icon-wrapper">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+                    </div>
+                    <h1>Luxe Tech</h1>
+                    <p>Administrative Portal</p>
+                </header>
+
+                <form id="loginForm" class="login-form">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input id="email" name="email" type="email" placeholder="admin@luxetech.com" required/>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="password-header">
+                            <label for="password">Password</label>
+                           
+                        </div>
+                        <div class="input-wrapper">
+                            <input id="password" name="password" type="password" placeholder="••••••••" required/>
+                            <button type="button" class="toggle-btn" id="togglePassword">
+                                <span class="material-symbols-outlined" id="toggleIcon">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    
+                    <button type="submit" class="submit-btn">Sign In</button>
+                </form>
+
+                <div class="security-badge-wrapper">
+                    <div class="security-badge">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                        <span>256-bit encrypted session</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Security Architecture</a>
+        <span class="dot-separator">•</span>
+        <span class="copyright">© 2026 Luxe Tech Architectural Systems</span>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleButton = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            toggleButton.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.textContent = 'visibility_off';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.textContent = 'visibility';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+/* --- Core Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+:root {
+    --primary-dark: #001945;
+    --accent: #2b5bb5;
+    --bg: #f7f9fc;
+    --surface: #ffffff;
+    --text: #191c1e;
+    --text-muted: #44474c;
+    --border: #e0e3e6;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Pointer Cursor Targets --- */
+a, button, input, .nav-link, .text-link, svg {
+    cursor: pointer !important;
+}
+
+/* --- Header (Left Aligned Logo) --- */
+/* .header {
+    height: 72px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+}
+
+.header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Logo Left, Link Right */
+    /* align-items: center;
+} */ 
+
+/* .logo {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -1.2px;
+} */
+
+/* --- Main Layout --- */
+.viewport-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: var(--surface);
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.04);
+}
+
+.card-intro {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card-intro h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.input-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* --- FIX: Password Row Layout --- */
+    .split-label {
+        display: flex;
+        width: 100%;
+        justify-content: space-between; /* Force Label Left, Link Right */
+        align-items: flex-end;
+    }
+
+.input-stack label {
+    font-size: 10px;
+    font-weight:800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+input {
+    background: #cdcfd1;
+    border: 2px solid transparent;
+    padding: 12px 16px;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.2s;
+}
+
+input:focus { border-color: var(--primary-dark); }
+
+.btn-main {
+    background: linear-gradient(135deg, #000000 0%, #001945 100%);
+    color: white;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.1s;
+}
+
+.btn-main:active { transform: scale(0.97); }
+
+/* --- Google Button --- */
+.btn-google-dark {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--primary-dark);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-google-dark:hover { opacity: 0.9; }
+.btn-google-dark:active { transform: scale(0.97); }
+
+.white-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+/* --- Decorative --- */
+.divider {
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+}
+
+.divider span {
+    background: var(--surface);
+    padding: 0 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    position: relative;
+}
+
+.signup-prompt {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.text-link { text-decoration: none; color: var(--text); }
+.text-link.bold { font-weight: 700; }
+.text-link.small { 
+    font-size: 11px; 
+    color: var(--accent); 
+    font-weight: 600; 
+}
+
+/* --- Footer --- */
+/* .footer {
+    height: 80px;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+}
+
+.footer-content-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-brand { font-weight: 700; font-size: 1.1rem; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { text-decoration: none; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+.legal { font-size: 10px; color: #94a3b8; }
+*/
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+} 
+
+.animate-in { animation: fadeInUp 0.6s ease-out; }
+
+/* --- Password Toggle Styling --- */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 45px; /* Make room for the eye icon */
+}
+
+.eye-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    cursor: pointer !important; /* Ensure pointer shows on eye */
+}
+
+.eye-btn:hover {
+    color: var(--primary-dark);
+}
+
+.eye-btn span {
+    font-size: 20px;
+    user-select: none;
+}
+
+/* Ensure eye-btn doesn't scale like the main buttons on click if you prefer */
+.eye-btn:active {
+    transform: scale(0.9);
+}

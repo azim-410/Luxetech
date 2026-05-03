@@ -43,7 +43,6 @@ const login = async (req,res)=>{
 
 const logout = (req,res)=>{
     req.session.destroy;
-    console.log(connect.sid);
     res.clearCookie('connect.sid');
     res.redirect('/');
 }

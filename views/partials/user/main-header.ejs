@@ -1,0 +1,29 @@
+<header>
+    <a href="#" class="logo" id="header-logo">LUXE TECH</a>
+    <nav id="main-nav">
+        <ul>
+            <li><a href="#" class="active">HOME</a></li>
+            <li><a href="#">NEW ARRIVALS</a></li>
+            <li><a href="#">SHOP</a></li>
+            <li><a href="#">SUPPORT</a></li>
+        </ul>
+    </nav>
+    <div class="header-actions">
+        <% console.log("user:::",user); %>
+        <% if(!user){ %>
+             <a href="/login"><button class="auth-btn">login</button></a>
+      <%  } %>
+        <div class="search-bar" id="search-bar">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" placeholder="Search">
+        </div>
+        <div class="icons-group">
+            <a href="/favorite"><span class="material-symbols-outlined" id="icon-favorite">favorite</span></a>
+            <a href="/cart"><span class="material-symbols-outlined" id="icon-cart">shopping_cart</span></a>
+            <a href="/profile"><span class="material-symbols-outlined" id="icon-user">person</span></a>  
+        </div>
+    </div>
+    
+</header>
+
+

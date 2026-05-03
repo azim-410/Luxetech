@@ -1,5 +1,6 @@
 import User from '../../model/userModel.js';
 import bcrypt from 'bcrypt';
+import genarateOTP from '../../utils/genarateOTP.js';
 
 const registerUser = async (data) => {
     const { name, email, password, confirmPassword, terms } = data;
@@ -52,15 +53,18 @@ const registerUser = async (data) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    const newUser =await User.create({
         name,
         email,
         password: hashedPassword,
         terms: true,
     });
 
+    // const otp = genarateOTP();
+    // console.log("Generated OTP:", otp);
+
     return {
-        success: true
+        success: true,
     }
 
 }
@@ -70,7 +74,7 @@ const loginUser = async (data) => {
     const { email, password } = data;
 
     if (!email || !password) {
-        const err = new Error("Enter Values To forms");
+        const err = new Error("Enter Values To Forms");
         err.field = 'global'
         throw err;
     }
@@ -93,7 +97,8 @@ const loginUser = async (data) => {
     }
 
     return {
-        success: true
+        success: true,
+        user
     }
 }
 

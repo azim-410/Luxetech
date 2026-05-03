@@ -1,7 +1,16 @@
+/* register.css — Page-specific styles only.
+   Global reset, variables, fonts, header, footer, and animation
+   are in auth-global.css */
+
+/* ============================================================
+   MOVED TO auth-global.css — kept here as reference comments
+   ============================================================
+
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
 
 /* CSS Variables for Luxe Tech Branding */
+/*
 :root {
     --luxe-dark: #00102b;
     --luxe-gray-bg: #f3f4f6;
@@ -12,47 +21,102 @@
     --text-muted: #9ca3af;
     --border-color: #e5e7eb;
 }
+*/
 
 /* Global Reset */
+/*
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+*/
 
+/* Body */
+/*
 body {
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
     background-color: var(--luxe-gray-bg);
     display: flex;
     flex-direction: column;
-    height: 100vh; 
+    height: 100vh;
     overflow-y: auto;
     color: var(--text-primary);
 }
+*/
 
+/* Link reset */
+/*
 a {
     text-decoration: none;
     color: inherit;
 }
+*/
 
-/* Header - Pushed to absolute top left */
-/* .site-header {
+/* Header */
+/*
+.site-header {
     background-color: #ffffff;
     border-bottom: 1px solid var(--border-color);
-    padding: 1rem 2rem; 
+    padding: 1rem 2rem;
 }
-
 .header-container {
-    width: 100%; 
+    width: 100%;
     display: flex;
     align-items: center;
 }
-
 .brand-logo {
     font-size: 1.125rem;
     font-weight: 800;
     letter-spacing: -0.05em;
-} */
+}
+*/
+
+/* Footer */
+/*
+.site-footer {
+    background-color: #ffffff;
+    border-top: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+}
+.footer-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.footer-brand {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    letter-spacing: -0.05em;
+    margin-bottom: 1rem;
+}
+*/
+
+/* Entrance Animation */
+/*
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeInUp 0.6s ease-out; }
+*/
+
+/* ============================================================
+   END OF MOVED STYLES
+   ============================================================ */
+
+/* Keep body scroll for tall register form */
+body {
+    background-color: var(--luxe-gray-bg);
+    overflow-y: auto;
+}
 
 /* Main Content */
 .main-content {
@@ -377,61 +441,17 @@ a {
 
 }
 
-/* Footer */
-/* .site-footer {
-    background-color: #ffffff;
-    border-top: 1px solid var(--border-color);
-    padding: 1.5rem 2rem;
-}
-
-.footer-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.footer-brand {
-    font-size: 0.875rem;
-    color: var(--text-primary);
-    letter-spacing: -0.05em;
-    margin-bottom: 1rem;
-}
-
-/* Media Queries */
+/* --- Media Queries --- */
 @media (min-width: 768px) {
     .signup-card {
         flex-direction: row;
     }
-    
+
     .hero-column {
-        width: 45%; 
+        width: 45%;
     }
-    
+
     .form-section {
-        width: 55%; 
+        width: 55%;
     }
-    
-    /* .footer-container {
-        flex-direction: row;
-    }
-    
-    .footer-brand {
-        margin-bottom: 0;
-        margin-right: 2rem;
-    } */
 }
-
-/* --- Entrance Animation --- */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-in { animation: fadeInUp 0.6s ease-out; }

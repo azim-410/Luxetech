@@ -1,4 +1,13 @@
-/* --- Variables & Setup --- */
+/* otp-verification.css — Page-specific styles only.
+   Global reset, variables, fonts, header, footer, and animation
+   are in auth-global.css */
+
+/* ============================================================
+   MOVED TO auth-global.css — kept here as reference comments
+   ============================================================ */
+
+/* CSS Variables & Setup */
+/*
 :root {
     --surface: #f7f9fc;
     --on-surface: #191c1e;
@@ -11,23 +20,29 @@
     --on-primary-container: #5781de;
     --secondary-container: #cbe7f5;
     --on-secondary-container: #4e6874;
-    
     --font-headline: 'Manrope', sans-serif;
     --font-body: 'Inter', sans-serif;
 }
+*/
 
+/* Core Reset */
+/*
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+*/
 
 /* Material Icons configuration */
+/*
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+*/
 
-/* --- Layout Structure (Strict 100vh) --- */
+/* Body — Layout Structure (Strict 100vh) */
+/*
 body {
     font-family: var(--font-body);
     background-color: var(--surface);
@@ -36,8 +51,23 @@ body {
     width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevents all scrolling */
+    overflow: hidden;
 }
+*/
+
+/* Entrance Animation */
+/*
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeInUp 0.6s ease-out; }
+*/
+
+/* ============================================================
+   END OF MOVED STYLES
+   ============================================================ */
+
 
 /* --- Header ---
 .top-nav {
@@ -325,11 +355,3 @@ body {
         justify-content: space-between;
     }
 } */
-
-/* --- Entrance Animation --- */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-in { animation: fadeInUp 0.6s ease-out; }

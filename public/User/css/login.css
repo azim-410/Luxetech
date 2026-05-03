@@ -1,33 +1,14 @@
-/* --- Core Reset --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    cursor: default;
-}
+/* login.css — Page-specific styles only.
+   Global reset, variables, fonts, header, footer, and animation
+   are in auth-global.css */
 
-:root {
-    --primary-dark: #001945;
-    --accent: #2b5bb5;
-    --bg: #f7f9fc;
-    --surface: #ffffff;
-    --text: #191c1e;
-    --text-muted: #44474c;
-    --border: #e0e3e6;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-}
-
-/* --- Pointer Cursor Targets --- */
-a, button, input, .nav-link, .text-link, svg {
+/* Pointer cursor for login-specific interactive elements */
+a,
+button,
+input,
+.nav-link,
+.text-link,
+svg {
     cursor: pointer !important;
 }
 
@@ -46,8 +27,8 @@ a, button, input, .nav-link, .text-link, svg {
     width: 100%;
     display: flex;
     justify-content: space-between; /* Logo Left, Link Right */
-    /* align-items: center;
-} */ 
+/* align-items: center;
+} */
 
 /* .logo {
     font-family: 'Manrope', sans-serif;
@@ -70,7 +51,7 @@ a, button, input, .nav-link, .text-link, svg {
     max-width: 420px;
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.04);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.04);
 }
 
 .card-intro {
@@ -97,16 +78,17 @@ a, button, input, .nav-link, .text-link, svg {
 }
 
 /* --- FIX: Password Row Layout --- */
-    .split-label {
-        display: flex;
-        width: 100%;
-        justify-content: space-between; /* Force Label Left, Link Right */
-        align-items: flex-end;
-    }
+.split-label {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    /* Force Label Left, Link Right */
+    align-items: flex-end;
+}
 
 .input-stack label {
     font-size: 10px;
-    font-weight:800;
+    font-weight: 800;
     text-transform: uppercase;
     color: var(--text-muted);
 }
@@ -120,7 +102,9 @@ input {
     transition: 0.2s;
 }
 
-input:focus { border-color: var(--primary-dark); }
+input:focus {
+    border-color: var(--primary-dark);
+}
 
 .btn-main {
     background: linear-gradient(135deg, #000000 0%, #001945 100%);
@@ -134,7 +118,9 @@ input:focus { border-color: var(--primary-dark); }
     transition: transform 0.1s;
 }
 
-.btn-main:active { transform: scale(0.97); }
+.btn-main:active {
+    transform: scale(0.97);
+}
 
 /* --- Google Button --- */
 .btn-google-dark {
@@ -152,8 +138,13 @@ input:focus { border-color: var(--primary-dark); }
     transition: opacity 0.2s, transform 0.1s;
 }
 
-.btn-google-dark:hover { opacity: 0.9; }
-.btn-google-dark:active { transform: scale(0.97); }
+.btn-google-dark:hover {
+    opacity: 0.9;
+}
+
+.btn-google-dark:active {
+    transform: scale(0.97);
+}
 
 .white-icon {
     width: 20px;
@@ -192,12 +183,19 @@ input:focus { border-color: var(--primary-dark); }
     font-size: 14px;
 }
 
-.text-link { text-decoration: none; color: var(--text); }
-.text-link.bold { font-weight: 700; }
-.text-link.small { 
-    font-size: 11px; 
-    color: var(--accent); 
-    font-weight: 600; 
+.text-link {
+    text-decoration: none;
+    color: var(--text);
+}
+
+.text-link.bold {
+    font-weight: 700;
+}
+
+.text-link.small {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
 }
 
 /* --- Footer --- */
@@ -222,12 +220,6 @@ input:focus { border-color: var(--primary-dark); }
 .footer-links a { text-decoration: none; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 .legal { font-size: 10px; color: #94a3b8; }
 */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-} 
-
-.animate-in { animation: fadeInUp 0.6s ease-out; }
 
 /* --- Password Toggle Styling --- */
 .password-wrapper {
@@ -238,7 +230,8 @@ input:focus { border-color: var(--primary-dark); }
 
 .password-wrapper input {
     width: 100%;
-    padding-right: 45px; /* Make room for the eye icon */
+    padding-right: 45px;
+    /* Make room for the eye icon */
 }
 
 .eye-btn {
@@ -251,7 +244,8 @@ input:focus { border-color: var(--primary-dark); }
     align-items: center;
     color: var(--text-muted);
     transition: color 0.2s;
-    cursor: pointer !important; /* Ensure pointer shows on eye */
+    cursor: pointer !important;
+    /* Ensure pointer shows on eye */
 }
 
 .eye-btn:hover {

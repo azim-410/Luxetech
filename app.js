@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 connectDB();
 
-app.use(express.json());
+app.use(express.json());   
 app.use(express.urlencoded({ extended: true }));
 
 app.set('views', path.join(__dirname, "views"));
@@ -43,5 +43,7 @@ app.use(nocache());
 app.use('/', authRoutes);
 
 app.listen(process.env.PORT, () => {
-    console.log('\nserver running at port:' + process.env.PORT)
+    console.log('\nserver running at port http://localhost:' + process.env.PORT);
 });
+
+

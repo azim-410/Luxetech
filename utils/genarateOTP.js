@@ -5,4 +5,4 @@ import crypto from "crypto";
   return otp;
 
 };
-export default generateOTP;
+export { generateOTP }

@@ -20,68 +20,79 @@
         </div>
     </header> -->
     <%- include("../../partials/user/auth-header.ejs") %>
-    <main class="content-area">
-        <div class="card-wrapper">
-            <div class="decor-circle decor-top-left"></div>
-            <div class="decor-circle decor-bottom-right"></div>
+        <main class="content-area">
+            <div class="card-wrapper">
+                <div class="decor-circle decor-top-left"></div>
+                <div class="decor-circle decor-bottom-right"></div>
 
-            <div class="card animate-in">
+                <div class="card animate-in">
 
-                <div class="card-header">
-                    <div class="icon-container">
-                        <span class="material-symbols-outlined icon-vibration">vibration</span>
+                    <div class="card-header">
+                        <div class="icon-container">
+                            <span class="material-symbols-outlined icon-vibration">vibration</span>
+                        </div>
+                        <h1>Two-Step Verification</h1>
+                        <p>Enter the 6-digit code sent to your email</p>
+                        <% if (locals.errorMessage) { %>
+                            <p style="color: red; font-size: 0.85rem; margin-top: 10px; text-align: center;">
+                                <%= errorMessage %>
+                            </p>
+                            <% } %>
+                                <% if (locals.successMessage) { %>
+                                    <p
+                                        style="color: #27ae60; font-size: 0.85rem; margin-top: 10px; text-align: center;">
+                                        <%= successMessage %>
+                                    </p>
+                                    <% } %>
                     </div>
-                    <h1>Two-Step Verification</h1>
-                    <p>Enter the 6-digit code sent to your email</p>
-                </div>
 
-                <form class="verification-form">
-                    <div class="otp-inputs">
-                        <input type="text" maxlength="1" aria-label="Digit 1" autofocus />
-                        <input type="text" maxlength="1" aria-label="Digit 2" />
-                        <input type="text" maxlength="1" aria-label="Digit 3" />
-                        <input type="text" maxlength="1" aria-label="Digit 4" />
-                        <input type="text" maxlength="1" aria-label="Digit 5" />
-                        <input type="text" maxlength="1" aria-label="Digit 6" />
-                    </div>
+                    <form class="verification-form" action="<%= actionUrl%>" method="POST">
+                        <div class="otp-inputs">
+                            <input type="text" name="otp1" maxlength="1" aria-label="Digit 1" autofocus />
+                            <input type="text" name="otp2" maxlength="1" aria-label="Digit 2" />
+                            <input type="text" name="otp3" maxlength="1" aria-label="Digit 3" />
+                            <input type="text" name="otp4" maxlength="1" aria-label="Digit 4" />
+                            <input type="text" name="otp5" maxlength="1" aria-label="Digit 5" />
+                            <input type="text" name="otp6" maxlength="1" aria-label="Digit 6" />
+                        </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">
-                            Verify Identity
-                            <span class="material-symbols-outlined btn-icon">arrow_forward</span>
-                        </button>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                Verify Identity
+                                <span class="material-symbols-outlined btn-icon">arrow_forward</span>
+                            </button>
 
-                        <div class="resend-section">
-                            <div class="resend-text">
-                                <span>Didn't receive the code?</span>
-                                <button type="button" class="btn-resend">Resend Code</button>
-                            </div>
+                            <div class="resend-section">
+                                <div class="resend-text">
+                                    <span>Didn't receive the code?</span>
+                                    <button type="button" class="btn-resend">Resend Code</button>
+                                </div>
 
-                            <div class="timer-badge">
-                                <span class="material-symbols-outlined timer-icon">timer</span>
-                                <span class="timer-display">Expires in</span>
+                                <div class="timer-badge">
+                                    <span class="material-symbols-outlined timer-icon">timer</span>
+                                    <span class="timer-display">Expires in</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
-                <div class="trust-indicators">
-                    <div class="trust-item">
-                        <span class="material-symbols-outlined">verified_user</span>
-                        <span>Secure Cloud</span>
+                    <div class="trust-indicators">
+                        <div class="trust-item">
+                            <span class="material-symbols-outlined">verified_user</span>
+                            <span>Secure Cloud</span>
+                        </div>
+                        <div class="trust-dot"></div>
+                        <div class="trust-item">
+                            <span class="material-symbols-outlined">encrypted</span>
+                            <span>AES-256</span>
+                        </div>
                     </div>
-                    <div class="trust-dot"></div>
-                    <div class="trust-item">
-                        <span class="material-symbols-outlined">encrypted</span>
-                        <span>AES-256</span>
-                    </div>
+
                 </div>
-
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- <footer class="bottom-footer">
+        <!-- <footer class="bottom-footer">
         <div class="footer-container">
             <div class="footer-brand">TechLens</div>
             <div class="footer-links">
@@ -92,118 +103,128 @@
             <p class="footer-copyright">© 2026 TechLens Precision. All rights reserved.</p>
         </div>
     </footer> -->
-     <%- include("../../partials/user/auth-footer.ejs") %>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Handle OTP auto-advance, backspace, and pasting
-            const inputs = document.querySelectorAll('.otp-inputs input');
+        <%- include("../../partials/user/auth-footer.ejs") %>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    // ── OTP input: auto-advance, backspace, paste ─────────────────
+                    const inputs = document.querySelectorAll('.otp-inputs input');
 
-            inputs.forEach((input, index) => {
-                input.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    if (e.target.value !== '' && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                    }
-                });
+                    inputs.forEach((input, index) => {
+                        input.addEventListener('input', (e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                            if (e.target.value !== '' && index < inputs.length - 1) {
+                                inputs[index + 1].focus();
+                            }
+                        });
 
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
-                        inputs[index - 1].focus();
-                    }
-                });
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                                inputs[index - 1].focus();
+                            }
+                        });
 
-                input.addEventListener('paste', (e) => {
-                    e.preventDefault();
-                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, inputs.length);
-                    pastedData.split('').forEach((char, i) => {
-                        inputs[i].value = char;
-                        if (i < inputs.length - 1) {
-                            inputs[i + 1].focus();
-                        } else {
-                            inputs[i].focus();  
-                        }
+                        input.addEventListener('paste', (e) => {
+                            e.preventDefault();
+                            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, inputs.length);
+                            pastedData.split('').forEach((char, i) => {
+                                inputs[i].value = char;
+                                if (i < inputs.length - 1) {
+                                    inputs[i + 1].focus();
+                                } else {
+                                    inputs[i].focus();
+                                }
+                            });
+                        });
                     });
-                });
-            });
-        });
 
-        // --- DOM Elements ---
-        const resendBtn = document.querySelector('.btn-resend');
-        const timerDisplay = document.querySelector('.timer-display');
-        const submitBtn = document.querySelector('.btn-primary');
-        const otpInputs = document.querySelectorAll('.otp-inputs input');
+                    // ── DOM refs ──────────────────────────────────────────────────
+                    const resendBtn = document.querySelector('.btn-resend');
+                    const timerDisplay = document.querySelector('.timer-display');
+                    const submitBtn = document.querySelector('.btn-primary');
+                    const otpInputs = document.querySelectorAll('.otp-inputs input');
 
-        // --- Configuration ---
-        const COOLDOWN_SECONDS = 60;
-        const COOLDOWN_EXPIERS = 540;
+                    // ── Config ────────────────────────────────────────────────────
+                    const OTP_TTL_MS = 5 * 60 * 1000; // 5 min in ms
+                    const RESEND_COOLDOWN_SECS = 60;
 
-        // let resendTimer = null;
-        let resendexpire = null;
-        function all() {
+                    let expireInterval = null;
+                    let resendInterval = null;
 
-            
-            timeexpire = COOLDOWN_EXPIERS;
-            timerDisplay.textContent = `Expire in ${timeexpire}`;
-            submitBtn.style.opacity = '1';
-            submitBtn.style.cursor = 'pointer';
-            submitBtn.disabled = false
+                    function fmt(seconds) {
+                        const m = Math.floor(seconds / 60);
+                        const sec = seconds % 60;
+                        return `${m}:${sec.toString().padStart(2, '0')}`;
+                    }
 
-            otpInputs.forEach(input => {
-                input.value = '';
-                input.style.opacity = '1';
-                input.style.cursor = 'text';
-                input.disabled = false
-            });
+                    // ── Helpers ───────────────────────────────────────────────────
+                    function lockForm() {
+                        submitBtn.disabled = true;
+                        submitBtn.style.opacity = '0.5';
+                        submitBtn.style.cursor = 'not-allowed';
+                        otpInputs.forEach(inp => {
+                            inp.disabled = true;
+                            inp.style.opacity = '0.5';
+                            inp.style.cursor = 'not-allowed';
+                        });
+                    }
 
-            resendexpire = setInterval(() => {
-                timeexpire--
-                timerDisplay.textContent = `Expire in ${timeexpire}`;
-                if (timeexpire < 0) {
-                    clearInterval(resendexpire)
-                    timerDisplay.textContent = `Time Expired`;
+                    function unlockForm() {
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.cursor = 'pointer';
+                        otpInputs.forEach(inp => {
+                            inp.disabled = false;
+                            inp.style.opacity = '1';
+                            inp.style.cursor = 'text';
+                            inp.value = '';
+                        });
+                        otpInputs[0].focus();
+                    }
 
-                    submitBtn.style.opacity = '0.5';
-                    submitBtn.style.cursor = 'not-allowed';
-                    submitBtn.disabled = true
+                    function lockResend(secondsLeft) {
+                        resendBtn.disabled = true;
+                        resendBtn.style.opacity = '0.5';
+                        resendBtn.style.cursor = 'not-allowed';
+                        resendBtn.style.textDecoration = 'none';
+                        resendBtn.textContent = `Resend Code (${secondsLeft}s)`;
+                    }
 
-                    otpInputs.forEach(input => {
-                        input.style.opacity = '0.5';
-                        input.style.cursor = 'not-allowed';
-                        input.disabled = true
-                    });
-                }
-            }, 1000)
-
-            resendBtn.addEventListener('click', () => {
-                
-                all()
-
-                let timeleft = COOLDOWN_SECONDS;
-                resendBtn.textContent = `Resend Code ${timeleft}`;
-                resendBtn.disabled = true;
-                resendBtn.style.cursor = 'not-allowed';
-                resendBtn.style.opacity = '0.5';
-                resendBtn.style.textDecoration = 'none'
-
-                const interval = setInterval(() => {
-                    timeleft--;
-                    resendBtn.textContent = `Resend Code ${timeleft}`;
-                    if (timeleft < 0) {
-                        clearInterval(interval);
-                        resendBtn.textContent = "Resend Code";
+                    function unlockResend() {
                         resendBtn.disabled = false;
-                        resendBtn.style.cursor = 'pointer';
                         resendBtn.style.opacity = '1';
+                        resendBtn.style.cursor = 'pointer';
+                        resendBtn.style.textDecoration = '';
+                        resendBtn.textContent = 'Resend Code';
                     }
-                }, 1000);
-
-            })
-        } all()
 
 
+                    // ── Start resend cooldown ─────────────────────────────────────
+                    function startResendCooldown() {
+                        clearInterval(resendInterval);
+                        let cooldown = RESEND_COOLDOWN_SECS;
+                        lockResend(cooldown);
+                        resendBtn.textContent = `Resend Code (${cooldown}s)`;
+                        resendInterval = setInterval(() => {
+                            cooldown--;
+                            if (cooldown <= 0) {
+                                clearInterval(resendInterval);
+                                unlockResend();
+                                return;
+                            }
+                            resendBtn.textContent = `Resend Code (${cooldown}s)`;
+                        }, 1000);
+                    }
 
 
-    </script>
+                    resendBtn.addEventListener("click", (e) => {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '<%= resendUrl %>'; 
+                        document.body.appendChild(form);
+                        form.submit();
+                    });
+                });
+            </script>
 </body>
 
 </html>

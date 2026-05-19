@@ -77,6 +77,7 @@ body {
     flex-direction: column;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 /* --- Cursor Helpers --- */
@@ -210,4 +211,24 @@ a {
 
 .animate-in {
     animation: fadeInUp 0.6s ease-out;
+}
+
+/* --- Auth Global Responsive --- */
+@media (max-width: 768px) {
+    .site-header {
+        padding: 0.875rem 1.25rem;
+    }
+
+    .site-footer {
+        padding: 1rem 1.25rem;
+        min-height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-header { padding: 0.75rem 1rem; }
+    .brand-logo { font-size: 1rem; }
+    .site-footer { padding: 0.875rem 1rem; }
+    .footer-brand { font-size: 1.125rem; }
+    .footer-copyright { font-size: 0.8rem; }
 }

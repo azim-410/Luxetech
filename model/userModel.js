@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { now } from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
@@ -34,11 +34,20 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "user"
         },
-        terms:{
-            type:Boolean,
+        terms: {
+            type: Boolean,
             required: true,
 
-        }
+        },
+        userExpire: {
+            type: Date,
+            default: Date.now(),
+            expires: 720 // time in seconds
+        },
+        isverified: {
+            type: Boolean,
+            default: false
+        },
     },
     {
         timestamps: true

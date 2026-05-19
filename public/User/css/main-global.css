@@ -54,6 +54,8 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .logo {
@@ -119,6 +121,37 @@ nav a:hover {
     cursor: pointer;
 }
 
+/* --- Hamburger Menu Button --- */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    padding: 4px;
+    z-index: 110;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-main);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.hamburger-btn.open span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-btn.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
 .auth-btn {
     background: var(--text-main);
     color: #fff;
@@ -141,6 +174,60 @@ nav a:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* --- Responsive: Tablet (max 1024px) --- */
+@media (max-width: 1024px) {
+    .search-bar input { width: 100px; }
+    header { padding: 1rem 1.5rem; }
+}
+
+/* --- Responsive: Mobile (max 768px) --- */
 @media (max-width: 768px) {
-    header nav { display: none; }
+    header {
+        padding: 1rem 1.25rem;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+
+    .hamburger-btn { display: flex; }
+
+    header nav {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: #fff;
+        z-index: 100;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    header nav.nav-open {
+        display: flex;
+    }
+
+    header nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    header nav a {
+        font-size: 1.25rem;
+    }
+
+    .search-bar { display: none; }
+
+    .header-actions { gap: 0.75rem; }
+}
+
+/* --- Responsive: Small Mobile (max 480px) --- */
+@media (max-width: 480px) {
+    header { padding: 0.875rem 1rem; }
+    .logo { font-size: 1.25rem; }
+    .icons-group { gap: 0.75rem; }
+    .auth-btn { padding: 0.65rem 0.9rem; font-size: 0.7rem; }
 }

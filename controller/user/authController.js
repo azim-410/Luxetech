@@ -9,6 +9,51 @@ import {
     resendResetOtpService
 } from "../../services/user/authService.js";
 
+// ─── PAGE RENDERS ─────────────────────────────────────────
+const registerPage = (req, res) => {
+    const googleError = req.session.googleError || null;
+    req.session.googleError = null;
+    res.render('User/auth/register', { googleError });
+};
+
+const loginPage = (req, res) => {
+    const blocked = req.query.blocked === '1';
+    res.render('User/auth/login', {
+        errorMessage: blocked ? 'Your account has been blocked by the admin. Please contact support.' : null,
+        errorField:   blocked ? 'general' : null,
+        formData: {}
+    });
+};
+
+const otpPage = (req, res) => {
+    res.render('User/auth/otp-verification', {
+        actionUrl:      '/verify-otp',
+        resendUrl:      '/resend-otp',
+        errorMessage:   null,
+        successMessage: null
+    });
+};
+
+const forgotPasswordPage = (req, res) => {
+    res.render('User/auth/forget-password');
+};
+
+const verifyResetOtpPage = (req, res) => {
+    res.render('User/auth/otp-verification', {
+        actionUrl:      '/verify-reset-otp',
+        resendUrl:      '/resend-reset-otp',
+        errorMessage:   null,
+        successMessage: null
+    });
+};
+
+const resetPasswordPage = (req, res) => {
+    if (!req.session.canResetPassword) {
+        return res.redirect('/forget-password');
+    }
+    res.render('User/auth/reset-password', { actionUrl: '/reset-password' });
+};
+
 // ─── REGISTER ───────────────────────────────────────────
 const register = async (req, res) => {
     try {
@@ -67,7 +112,9 @@ const otp = async (req, res) => {
         console.error('OTP Error:', error.message);
         res.status(400).render('User/auth/otp-verification', {
             errorMessage: error.message,
-            actionUrl: '/verify-otp'
+            successMessage: null,
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp'
         });
     }
 };
@@ -77,13 +124,33 @@ const resendOtp = async (req, res) => {
     try {
         const userId = req.session.userId;
         if (!userId) {
-            return res.status(400).json({ success: false, message: 'Session expired. Please register again.' });
+            return res.status(400).render('User/auth/otp-verification', {
+                actionUrl: '/verify-otp',
+                resendUrl: '/resend-otp',
+                errorMessage: 'Session expired. Please register again.',
+                successMessage: null
+            });
         }
         await resendOtpService(userId);
-        return res.status(200).json({ success: true, message: 'OTP resent successfully.' });
+        return res.render('User/auth/otp-verification', {
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp',
+            errorMessage: null,
+            successMessage: 'OTP resent successfully.'
+        });
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
-        return res.status(500).json({ success: false, message: error.message || "Failed to resend OTP." });
+
+        if (error.message.toLowerCase().includes('user not found')) {
+            return res.redirect('/register');
+        }
+
+        return res.status(500).render('User/auth/otp-verification', {
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp',
+            errorMessage: error.message || "Failed to resend OTP.",
+            successMessage: null
+        });
     }
 };
 
@@ -113,8 +180,9 @@ const verifyResetOtpController = async (req, res) => {
         console.error("Verify Reset OTP Error:", error.message);
         res.render('User/auth/otp-verification', {
             errorMessage: error.message,
+            successMessage: null,
             actionUrl: '/verify-reset-otp',
-            resendUrl:'/resend-reset-otp'
+            resendUrl: '/resend-reset-otp'
         });
     }
 };
@@ -127,6 +195,7 @@ const resendResetOtp = async (req, res) => {
         await resendResetOtpService(email);
 
         return res.render('User/auth/otp-verification', {
+            errorMessage: null,
             successMessage: 'OTP resent successfully.',
             actionUrl: '/verify-reset-otp',
             resendUrl: '/resend-reset-otp'
@@ -136,6 +205,7 @@ const resendResetOtp = async (req, res) => {
         console.error("Resend Reset OTP Error:", error.message);
         return res.render('User/auth/otp-verification', {
             errorMessage: error.message,
+            successMessage: null,
             actionUrl: '/verify-reset-otp',
             resendUrl: '/resend-reset-otp'
         });
@@ -150,6 +220,7 @@ const updatePasswordController = async (req, res) => {
 
         if (!email || !req.session.canResetPassword) {
             return res.render('User/auth/reset-password', {
+                actionUrl: '/reset-password',
                 errorMessage: 'Something went wrong. Please restart the process.'
             });
         }
@@ -163,12 +234,40 @@ const updatePasswordController = async (req, res) => {
     } catch (error) {
         console.error("Update Password Error:", error.message);
         res.render('User/auth/reset-password', { 
+            actionUrl: '/reset-password',
             errorMessage: error.message 
         });
     }
 };
 
+// ─── GOOGLE CALLBACK ─────────────────────────────────────────
+const googleCallback = (req, res) => {
+    const source = req.session.authSource || 'login';
+    req.session.authSource = null;
+
+    // Block existing users coming from the register page
+    if (source === 'register' && req.session.googleConflict) {
+        req.session.googleConflict = false;
+        // Log out passport user, then set error and redirect
+        req.logout(() => {
+            req.session.googleError = 'This Google account is already registered. Please login instead.';
+            req.session.save(() => res.redirect('/register'));
+        });
+        return;
+    }
+
+    req.session.user = { id: req.user._id, email: req.user.email };
+    return res.redirect('/');
+};
+
 export { 
+    registerPage,
+    loginPage,
+    otpPage,
+    forgotPasswordPage,
+    verifyResetOtpPage,
+    resetPasswordPage,
+    googleCallback,
     register, 
     login, 
     logout, 

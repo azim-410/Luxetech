@@ -33,7 +33,7 @@ const registerUser = async (data) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        const err = new Error('Email already exists');
+        const err = new Error('This email is already registered. Please login instead.');
         err.field = 'email';
         throw err;
     }
@@ -76,10 +76,22 @@ const loginUser = async (data) => {
         throw err;
     }
 
+    if (!user.password) {
+        const err = new Error("This account uses Google Sign-In. Please login with Google.");
+        err.field = "general";
+        throw err;
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         const err = new Error("Invalid credentials");
         err.field = "password";
+        throw err;
+    }
+
+    if (user.isBlocked) {
+        const err = new Error("Your account has been blocked by the admin. Please contact support.");
+        err.field = "general";
         throw err;
     }
 
@@ -104,6 +116,7 @@ const verifyOtp = async (inputValue, userId) => {
     user.isVerified = true;
     await user.save();
 
+    await OTP.deleteOne({ userId });
     return { success: true, user };
 };
 

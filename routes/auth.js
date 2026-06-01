@@ -1,60 +1,64 @@
 import express from 'express';
-import { 
-    register, 
-    login, 
-    logout, 
-    otp, 
-    resendOtp, 
-    forgotPasswordController, 
-    verifyResetOtpController, 
+import passport from 'passport';
+import {
+    registerPage,
+    loginPage,
+    otpPage,
+    forgotPasswordPage,
+    verifyResetOtpPage,
+    resetPasswordPage,
+    googleCallback,
+    register,
+    login,
+    logout,
+    otp,
+    resendOtp,
+    forgotPasswordController,
+    verifyResetOtpController,
     resendResetOtp,
-    updatePasswordController 
+    updatePasswordController
 } from '../controller/user/authController.js';
-import { isAuthenticated, isLogin } from '../middleware/auth.js';
+import { isAuthenticated, isLogin, checkIfBlocked } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // ─── PAGES ──────────────────────────────────────────────
-router.get('/', (req, res) => res.render('User/landing'));
-router.get('/register', isLogin, (req, res) => res.render('User/auth/register'));
-router.get('/login', isLogin, (req, res) => res.render('User/auth/login'));
+router.get('/',                 (req, res) => res.render('User/landing'));
+router.get('/register',         isLogin, registerPage);
+router.get('/login',            isLogin, loginPage);
 
-router.get('/favorite', isAuthenticated, (req, res) => res.render('User/favorite'));
-router.get('/cart', isAuthenticated, (req, res) => res.render('User/cart'));
-router.get('/profile', isAuthenticated, (req, res) => res.render('User/profile'));
+// ─── GOOGLE AUTH ─────────────────────────────────────────
+router.get('/auth/google', (req, res, next) => {
+    req.session.authSource = req.query.source || 'login';
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
+router.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    googleCallback
+);
 
 // ─── REGISTER & LOGIN ───────────────────────────────────
-router.post('/register', isLogin, register);
-router.post('/login', isLogin, login);
-router.post('/logout', isAuthenticated, logout);
+router.post('/register',isLogin, register);
+router.post('/login', isLogin,login);
+router.post('/logout', isAuthenticated, checkIfBlocked, logout);
 
 // ─── REGISTRATION OTP ───────────────────────────────────
-router.get('/otp', isLogin, (req, res) => res.render('User/auth/otp-verification', { 
-    actionUrl: '/verify-otp', 
-    resendUrl: '/resend-otp' 
-}));
-router.post('/verify-otp', isLogin, otp);
-router.post('/resend-otp', isLogin, resendOtp);
+router.get('/otp',              isLogin, otpPage);
+router.post('/verify-otp',      isLogin, otp);
+router.post('/resend-otp',      isLogin, resendOtp);
 
 // ─── FORGOT PASSWORD ────────────────────────────────────
-router.get('/forget-password', isLogin, (req, res) => res.render('User/auth/forget-password'));
+router.get('/forget-password',  isLogin, forgotPasswordPage);
 router.post('/forget-password', isLogin, forgotPasswordController);
 
 // ─── RESET OTP ──────────────────────────────────────────
-router.get('/verify-reset-otp', isLogin, (req, res) => res.render('User/auth/otp-verification', { 
-    actionUrl: '/verify-reset-otp', 
-    resendUrl: '/resend-reset-otp' 
-}));
+router.get('/verify-reset-otp',  isLogin, verifyResetOtpPage);
 router.post('/verify-reset-otp', isLogin, verifyResetOtpController);
 router.post('/resend-reset-otp', isLogin, resendResetOtp);
 
 // ─── RESET PASSWORD ─────────────────────────────────────
-router.get('/reset-password', isLogin, (req, res) => {
-    if (!req.session.canResetPassword) {
-        return res.redirect('/forget-password');
-    }
-    res.render('User/auth/reset-password');
-});
-router.post('/reset-password', isLogin, updatePasswordController);
+router.get('/reset-password',    isLogin, resetPasswordPage);
+router.post('/reset-password',   isLogin, updatePasswordController);
 
 export default router;

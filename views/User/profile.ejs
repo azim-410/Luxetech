@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en">
 
 <head>
@@ -87,10 +86,13 @@
       background-color: #f7f9fc;
     }
 
-    h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Manrope', sans-serif;
+    }
 
-    /* ── Header: match exact height of home/cart/favorite pages ── */
-    /* Tailwind preflight + forms plugin conflict with main-global.css */
     header {
       display: flex !important;
       align-items: center !important;
@@ -106,19 +108,25 @@
     }
 
     @media (max-width: 1024px) {
-      header { padding: 1rem 1.5rem !important; }
+      header {
+        padding: 1rem 1.5rem !important;
+      }
     }
 
     @media (max-width: 768px) {
-      header { padding: 1rem 1.25rem !important; flex-wrap: nowrap !important; gap: 0 !important; }
+      header {
+        padding: 1rem 1.25rem !important;
+        flex-wrap: nowrap !important;
+        gap: 0 !important;
+      }
     }
 
     @media (max-width: 480px) {
-      header { padding: 0.875rem 1rem !important; }
+      header {
+        padding: 0.875rem 1rem !important;
+      }
     }
 
-    /* Fix: Tailwind forms plugin sets font-size:1rem & padding on [type=text],
-       making the search bar input taller and bloating the header height */
     .search-bar input[type="text"],
     .search-bar input {
       font-size: 0.75rem !important;
@@ -132,440 +140,488 @@
       width: 150px !important;
     }
 
-    /* Fix: logo font size */
-    header .logo, header a.logo {
+    header .logo,
+    header a.logo {
       font-size: 1.5rem !important;
       font-weight: 800 !important;
       letter-spacing: -0.05em !important;
       line-height: 1.2 !important;
     }
 
-    /* Fix: nav link sizes */
     header nav a {
       font-size: 0.75rem !important;
       font-weight: 600 !important;
       line-height: 1.5 !important;
     }
 
-    /* Fix: icon sizes */
     header .icons-group .material-symbols-outlined {
       font-size: 1.25rem !important;
       line-height: 1 !important;
     }
 
-    /* Sidebar positioned below the sticky header */
-    :root { --nav-h: 76px; }
+    :root {
+      --nav-h: 76px;
+    }
 
     aside.profile-sidebar {
       top: var(--nav-h);
       height: calc(100vh - var(--nav-h));
     }
 
-    /* Main content bottom padding on mobile (above bottom nav) */
     @media (max-width: 1023px) {
-      .profile-main { padding-bottom: 5rem !important; }
+      .profile-main {
+        padding-bottom: 5rem !important;
+      }
     }
   </style>
 </head>
 
 <body class="text-on-surface">
-  <%- include('../partials/user/main-header') %>
-    <div class="flex min-h-screen">
-      <!-- Side Navigation Bar -->
-      <aside class="profile-sidebar w-64 hidden lg:flex flex-col border-r border-slate-200/50 bg-slate-50 fixed left-0 z-40 overflow-y-auto">
-        <div class="flex flex-col gap-2 p-4 pt-8">
-          <!-- Profile Header -->
-          <div class="flex items-center gap-3 mb-8 px-2">
-            <div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container border-2 border-primary">
-              <img alt="Alex Rivera" data-alt="Professional user portrait"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0" />
-            </div>
-            <div>
-              <div class="font-manrope text-sm font-bold text-[#0D1B2A]">Alex Rivera</div>
-            </div>
-          </div>
-          <!-- Navigation Tabs -->
-          <nav class="space-y-1">
-            <a class="flex items-center gap-3 px-4 py-3 text-[#0D1B2A] bg-[#0D1B2A]/5 font-bold rounded-lg transition-transform duration-200 hover:translate-x-1 border-l-4 border-[#0D1B2A]"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="person">person</span>
-              <span class="font-manrope text-sm">Personal Info</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm"
-                data-icon="account_balance_wallet">account_balance_wallet</span>
-              <span class="font-manrope text-sm">Wallet &amp; Balance</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="history">history</span>
-              <span class="font-manrope text-sm">Order History</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-              <span class="font-manrope text-sm">Addresses</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span>
-              <span class="font-manrope text-sm">Payments</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
-              <span class="font-manrope text-sm">Security</span>
-            </a>
-          </nav>
-          <!-- Footer Tabs -->
-          <div class="mt-auto pb-4 space-y-1">
-            <div class="h-[1px] bg-slate-200 mb-4"></div>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-              href="#">
-              <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
-              <span class="font-manrope text-sm">Settings</span>
-            </a>
-            <form action="/logout" method="POST" class="w-full">
-              <button type="submit"
-                class="w-full text-left flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg transition-transform duration-200 hover:translate-x-1">
-                <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
-                <span class="font-manrope text-sm">Logout</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      </aside>
-      <!-- Main Content Area -->
-      <main class="profile-main flex-1 lg:ml-64 p-6 md:p-12">
-        <div class="max-w-5xl mx-auto space-y-16">
-          <!-- Section: Personal Information -->
-          <section>
-            <div class="flex items-end justify-between mb-8">
+  <%- include('../partials/user/main-header', { user }) %>
+    <% const
+      dummyImgUrl='https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0'
+      %>
+
+      <div class="flex min-h-screen">
+        <!-- Side Navigation Bar -->
+        <aside
+          class="profile-sidebar w-64 hidden lg:flex flex-col border-r border-slate-200/50 bg-slate-50 fixed left-0 z-40 overflow-y-auto">
+          <div class="flex flex-col gap-2 p-4 pt-8">
+            <div class="flex items-center gap-3 mb-8 px-2">
+              <div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container border-2 border-primary">
+                <img alt="<%= user.name %>" src="<%= user.profileImage || dummyImgUrl%>" />
+              </div>
               <div>
-                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant">Account
-                  Dashboard</span>
-                <h1 class="text-4xl font-extrabold tracking-tight mt-1">Personal Info</h1>
+                <div class="font-manrope text-sm font-bold text-[#0D1B2A]">
+                  <%= user.name %>
+                </div>
               </div>
-              <button
-                class="px-6 py-2 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-primary-container transition-all active:scale-95">
-                Change Info
-              </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-slate-100 md:col-span-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div class="space-y-2">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Full Name
-                    </label>
-                    <input
-                      class="w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm cursor-pointer"
-                      disabled type="text" value="Alex Rivera" />
+            <nav class="space-y-1">
+              <a class="flex items-center gap-3 px-4 py-3 text-[#0D1B2A] bg-[#0D1B2A]/5 font-bold rounded-lg transition-transform duration-200 hover:translate-x-1 border-l-4 border-[#0D1B2A]"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="person">person</span>
+                <span class="font-manrope text-sm">Personal Info</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm"
+                  data-icon="account_balance_wallet">account_balance_wallet</span>
+                <span class="font-manrope text-sm">Wallet &amp; Balance</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+                <span class="font-manrope text-sm">Order History</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                <span class="font-manrope text-sm">Addresses</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span>
+                <span class="font-manrope text-sm">Payments</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
+                <span class="font-manrope text-sm">Security</span>
+              </a>
+            </nav>
+            <div class="mt-auto pb-4 space-y-1">
+              <div class="h-[1px] bg-slate-200 mb-4"></div>
+              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
+                href="#">
+                <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+                <span class="font-manrope text-sm">Settings</span>
+              </a>
+              <form action="/logout" method="POST" class="w-full">
+                <button type="submit"
+                  class="w-full text-left flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg transition-transform duration-200 hover:translate-x-1">
+                  <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                  <span class="font-manrope text-sm">Logout</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="profile-main flex-1 lg:ml-64 p-6 md:p-12">
+          <div class="max-w-5xl mx-auto space-y-16">
+
+            <!-- Section: Personal Information -->
+            <section>
+              <div class="flex items-end justify-between mb-8">
+                <div>
+                  <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant">Account
+                    Dashboard</span>
+                  <h1 class="text-4xl font-extrabold tracking-tight mt-1">Personal Info</h1>
+                </div>
+                <button id="changeInfoBtn" type="button"
+                  class="px-6 py-2 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-primary-container transition-all active:scale-95">
+                  Change Info
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <form id="personalInfoForm"
+                  class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-slate-100 md:col-span-3"
+                  action="/profile/update" method="POST">
+                  <% if (locals.successMessage) { %>
+                    <div class="mb-4 p-3 rounded-md bg-green-50 text-green-800 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-sm">check_circle</span>
+                      <%= locals.successMessage %>
+                    </div>
+                    <% } %>
+                      <% if (locals.errorMessage) { %>
+                        <div class="mb-4 p-3 rounded-md bg-red-50 text-red-800 flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm">error</span>
+                          <%= locals.errorMessage %>
+                        </div>
+                        <% } %>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-2">
+                              <label
+                                class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Full
+                                Name</label>
+                              <input id="inputName"
+                                class="info-input w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                                disabled type="text" name="name"
+                                value="<%= locals.user ? locals.user.name : 'Your name' %>" />
+                            </div>
+                            <div class="space-y-2">
+                              <label
+                                class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Email
+                                Address</label>
+                              <input id="inputEmail"
+                                class="info-input w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                                disabled type="email" name="email"
+                                value="<%= locals.user ? locals.user.email : 'Your Email' %>" />
+                            </div>
+                            <div class="space-y-2">
+                              <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant block">Password</label>
+
+                              <a href="/change-password" class="block w-full">
+                                <button type="button"
+                                  class="w-full py-3 bg-[#1e3a5f] text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-[#162d4a] active:scale-95 transition-all flex items-center justify-center gap-2">
+                                  <span class="material-symbols-outlined text-sm">lock_reset</span>
+                                  Change Password
+                                </button>
+                              </a>
+                              
+                            </div>
+                          </div>
+                          <!-- Action Buttons (Hidden by default) -->
+                          <div id="formActions"
+                            class="hidden flex justify-end gap-3 mt-8 pt-6 border-t border-slate-100">
+                            <button type="button" id="cancelBtn"
+                              class="px-6 py-2 border border-slate-300 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-50 transition-all">
+                              Cancel
+                            </button>
+                            <button type="submit" id="saveBtn"
+                              class="px-6 py-2 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-primary-container transition-all active:scale-95">
+                              Save Changes
+                            </button>
+                          </div>
+                </form>
+
+                <!-- Membership Card -->
+                <div
+                  class="bg-[#0D1B2A] text-white p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group">
+                  <div class="relative z-10">
+                    <h3 class="font-manrope font-bold text-xl mb-1">Luxe Rewards</h3>
+                    <p class="text-xs text-white/60 mb-6">Tier: Platinum Collector</p>
+                    <div class="text-3xl font-black mb-1">12,450</div>
+                    <p class="text-[10px] uppercase tracking-widest opacity-70">Points Available</p>
                   </div>
-                  <div class="space-y-2">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Email Address
-                    </label>
-                    <input
-                      class="w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm cursor-pointer"
-                      disabled type="email" value="alex.rivera@luxe.tech" />
+                  <div class="relative z-10 mt-8">
+                    <button
+                      class="w-full py-3 bg-white text-[#0D1B2A] text-[10px] font-black uppercase tracking-[0.2em] rounded-md hover:bg-slate-100 transition-colors">
+                      Redeem Points
+                    </button>
                   </div>
-                  <div class="space-y-2">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Phone Number
-                    </label>
-                    <input
-                      class="w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm cursor-pointer"
-                      disabled type="tel" value="+1 (555) 0123-4567" />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Date of Birth
-                    </label>
-                    <input
-                      class="w-full bg-surface-container-low border-none rounded-sm px-4 py-3 text-sm cursor-pointer"
-                      disabled type="text" value="May 12, 1990" />
-                  </div>
+                  <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+                  <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl"></div>
                 </div>
               </div>
-              <!-- Membership Card -->
-              <div
-                class="bg-[#0D1B2A] text-white p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group">
-                <div class="relative z-10">
-                  <h3 class="font-manrope font-bold text-xl mb-1">Luxe Rewards</h3>
-                  <p class="text-xs text-white/60 mb-6">Tier: Platinum Collector</p>
-                  <div class="text-3xl font-black mb-1">12,450</div>
-                  <p class="text-[10px] uppercase tracking-widest opacity-70">Points Available</p>
+            </section>
+
+            <!-- Section: Wallet Dashboard -->
+            <section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-slate-100">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-primary-container rounded-lg flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-primary-fixed-variant"
+                      data-icon="account_balance_wallet">account_balance_wallet</span>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold tracking-tight">Wallet Balance</h2>
+                    <div class="text-2xl font-black text-[#0D1B2A]">$1,240.00</div>
+                  </div>
                 </div>
-                <div class="relative z-10 mt-8">
+                <div class="flex gap-3">
                   <button
-                    class="w-full py-3 bg-white text-[#0D1B2A] text-[10px] font-black uppercase tracking-[0.2em] rounded-md hover:bg-slate-100 transition-colors">
-                    Redeem Points
+                    class="px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">add_circle</span> Top Up
+                  </button>
+                  <button
+                    class="px-6 py-2.5 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-50 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">history</span> History
                   </button>
                 </div>
-                <!-- Decorative Circle -->
-                <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
-                <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl"></div>
-              </div>
-            </div>
-          </section>
-          <!-- Section: Wallet Dashboard -->
-          <section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary-container rounded-lg flex items-center justify-center">
-                  <span class="material-symbols-outlined text-on-primary-fixed-variant"
-                    data-icon="account_balance_wallet">account_balance_wallet</span>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold tracking-tight">Wallet Balance</h2>
-                  <div class="text-2xl font-black text-[#0D1B2A]">$1,240.00</div>
-                </div>
-              </div>
-              <div class="flex gap-3">
-                <button
-                  class="px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm">add_circle</span>
-                  Top Up
-                </button>
-                <button
-                  class="px-6 py-2.5 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-50 transition-all flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm">history</span>
-                  History
-                </button>
-              </div>
-            </div>
-          </section>
-          <!-- Section: Recent Activity & Addresses -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <!-- Recent Orders -->
-            <section>
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold tracking-tight">Recent Orders</h2>
-                <a class="text-xs font-bold text-surface-tint hover:underline uppercase tracking-wider" href="#">View
-                  All</a>
-              </div>
-              <div class="space-y-4">
-                <!-- Order 1: Delivered (Needs Return Button) -->
-                <div
-                  class="bg-surface-container-lowest p-5 rounded-lg border border-slate-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                      <div class="w-16 h-16 bg-surface-container-low rounded-md overflow-hidden p-2">
-                        <img alt="Product" class="w-full h-full object-contain"
-                          data-alt="High-end noise cancelling headphones"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ81oHFnF4Ikkq6jNTtHYh2IwP35Fs2Srmnt95MhOecaI0NHOu06nnDAivg9PpbZbTOWRtJyDVkvKs0oLQq1QXEde8GkncWQL33LAPYQaYBETAa5rfoJQVG-traEsBawgd2mlzrHrOQ8qEhAiiJHCVbGLvYUcTr4QCAGCmga7E9YQz7oZ2XwR0BRQs8yHsp2SxrH938H0kg7XCcxSDdyGEpO7xh1duGaIoEpPVcO-KOPrZM09xOcMhXkq-EPSZEnzCD1auyA6yOvs" />
-                      </div>
-                      <div>
-                        <div class="text-sm font-bold text-[#0D1B2A]">Studio Pro Headphones</div>
-                        <div class="text-[10px] text-on-surface-variant">Order #LX-90210 • Delivered Jan 12</div>
-                      </div>
-                    </div>
-                    <div class="text-right">
-                      <div class="text-sm font-bold">$349.00</div>
-                      <span
-                        class="inline-block px-2 py-0.5 bg-green-50 text-[10px] text-green-700 font-bold uppercase rounded-full">Success</span>
-                    </div>
-                  </div>
-                  <div class="flex justify-end pt-2 border-t border-slate-50">
-                    <button
-                      class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-primary uppercase tracking-widest transition-colors">
-                      <span class="material-symbols-outlined text-sm">keyboard_return</span>
-                      Initiate Return
-                    </button>
-                  </div>
-                </div>
-                <!-- Order 2: Recent Shipped (Needs Edit/Delete) -->
-                <div
-                  class="bg-surface-container-lowest p-5 rounded-lg border border-slate-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                      <div class="w-16 h-16 bg-surface-container-low rounded-md overflow-hidden p-2">
-                        <img alt="Product" class="w-full h-full object-contain" data-alt="Minimalist desktop speaker"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3glzcZdjJOtpd89itD3WIhONOD0iOX0rn6Y0L6f9FxwLR7tUsforN3vfXjhwE24WZ3lvbqboU6d4odogSAo1wp_xggHai4hzBpC7xgfkJbEmFvgQNLw40ZsT6Pw0umnli0jf7_JkX392_eivfaEwiEvVfxnMmUEyQJlNHunLjGET8TNutfgtt3mVGWyXWXheGQTVlsGNPVKrjNxKm_hlf4UudMvx-hFhTsKMktf4oM1GhWfFuImLOPgb3SHXC_xD6Ul1bl-qEYbQ" />
-                      </div>
-                      <div>
-                        <div class="text-sm font-bold text-[#0D1B2A]">Omni Desktop Speaker</div>
-                        <div class="text-[10px] text-on-surface-variant">Order #LX-88342 • Shipped Jan 15</div>
-                      </div>
-                    </div>
-                    <div class="text-right">
-                      <div class="text-sm font-bold">$199.00</div>
-                      <span
-                        class="inline-block px-2 py-0.5 bg-blue-50 text-[10px] text-blue-700 font-bold uppercase rounded-full">Transit</span>
-                    </div>
-                  </div>
-                  <div class="flex justify-end items-center gap-4 pt-2 border-t border-slate-50">
-                    <button
-                      class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-primary uppercase tracking-widest transition-colors">
-                      <span class="material-symbols-outlined text-sm">edit</span>
-                      Edit Order
-                    </button>
-                    <button
-                      class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-error uppercase tracking-widest transition-colors">
-                      <span class="material-symbols-outlined text-sm">delete</span>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
               </div>
             </section>
-            <!-- Saved Addresses -->
-            <section>
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold tracking-tight">Saved Addresses</h2>
-                <button
-                  class="flex items-center gap-1 text-xs font-bold text-surface-tint hover:underline uppercase tracking-wider">
-                  <span class="material-symbols-outlined text-xs">add</span> Add New
-                </button>
-              </div>
-              <div class="space-y-4">
-                <!-- Address 1 -->
-                <div class="bg-surface-container-lowest p-6 rounded-lg border-2 border-primary relative">
+
+            <!-- Section: Recent Activity & Addresses -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <!-- Recent Orders -->
+              <section>
+                <div class="flex items-center justify-between mb-6">
+                  <h2 class="text-xl font-bold tracking-tight">Recent Orders</h2>
+                  <a class="text-xs font-bold text-surface-tint hover:underline uppercase tracking-wider" href="#">View
+                    All</a>
+                </div>
+                <div class="space-y-4">
                   <div
-                    class="absolute top-4 right-4 text-[10px] font-black uppercase text-primary-container tracking-tighter flex items-center gap-1">
-                    <span class="material-symbols-outlined text-sm"
-                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                    Default
+                    class="bg-surface-container-lowest p-5 rounded-lg border border-slate-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-surface-container-low rounded-md overflow-hidden p-2">
+                          <img alt="Product" class="w-full h-full object-contain"
+                            data-alt="High-end noise cancelling headphones"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ81oHFnF4Ikkq6jNTtHYh2IwP35Fs2Srmnt95MhOecaI0NHOu06nnDAivg9PpbZbTOWRtJyDVkvKs0oLQq1QXEde8GkncWQL33LAPYQaYBETAa5rfoJQVG-traEsBawgd2mlzrHrOQ8qEhAiiJHCVbGLvYUcTr4QCAGCmga7E9YQz7oZ2XwR0BRQs8yHsp2SxrH938H0kg7XCcxSDdyGEpO7xh1duGaIoEpPVcO-KOPrZM09xOcMhXkq-EPSZEnzCD1auyA6yOvs" />
+                        </div>
+                        <div>
+                          <div class="text-sm font-bold text-[#0D1B2A]">Studio Pro Headphones</div>
+                          <div class="text-[10px] text-on-surface-variant">Order #LX-90210 • Delivered Jan 12</div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-sm font-bold">$349.00</div>
+                        <span
+                          class="inline-block px-2 py-0.5 bg-green-50 text-[10px] text-green-700 font-bold uppercase rounded-full">Success</span>
+                      </div>
+                    </div>
+                    <div class="flex justify-end pt-2 border-t border-slate-50">
+                      <button
+                        class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-primary uppercase tracking-widest transition-colors">
+                        <span class="material-symbols-outlined text-sm">keyboard_return</span> Initiate Return
+                      </button>
+                    </div>
                   </div>
-                  <div class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-on-surface-variant mt-0.5">home</span>
-                    <div>
-                      <div class="text-sm font-bold mb-1">Home (Primary)</div>
-                      <p class="text-xs text-on-surface-variant leading-relaxed">
-                        742 Evergreen Terrace<br />
-                        San Francisco, CA 94105<br />
-                        United States
-                      </p>
+                  <div
+                    class="bg-surface-container-lowest p-5 rounded-lg border border-slate-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-surface-container-low rounded-md overflow-hidden p-2">
+                          <img alt="Product" class="w-full h-full object-contain" data-alt="Minimalist desktop speaker"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3glzcZdjJOtpd89itD3WIhONOD0iOX0rn6Y0L6f9FxwLR7tUsforN3vfXjhwE24WZ3lvbqboU6d4odogSAo1wp_xggHai4hzBpC7xgfkJbEmFvgQNLw40ZsT6Pw0umnli0jf7_JkX392_eivfaEwiEvVfxnMmUEyQJlNHunLjGET8TNutfgtt3mVGWyXWXheGQTVlsGNPVKrjNxKm_hlf4UudMvx-hFhTsKMktf4oM1GhWfFuImLOPgb3SHXC_xD6Ul1bl-qEYbQ" />
+                        </div>
+                        <div>
+                          <div class="text-sm font-bold text-[#0D1B2A]">Omni Desktop Speaker</div>
+                          <div class="text-[10px] text-on-surface-variant">Order #LX-88342 • Shipped Jan 15</div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-sm font-bold">$199.00</div>
+                        <span
+                          class="inline-block px-2 py-0.5 bg-blue-50 text-[10px] text-blue-700 font-bold uppercase rounded-full">Transit</span>
+                      </div>
+                    </div>
+                    <div class="flex justify-end items-center gap-4 pt-2 border-t border-slate-50">
+                      <button
+                        class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-primary uppercase tracking-widest transition-colors">
+                        <span class="material-symbols-outlined text-sm">edit</span> Edit Order
+                      </button>
+                      <button
+                        class="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-error uppercase tracking-widest transition-colors">
+                        <span class="material-symbols-outlined text-sm">delete</span> Cancel
+                      </button>
                     </div>
                   </div>
                 </div>
-                <!-- Address 2 -->
-                <div class="bg-surface-container p-6 rounded-lg border border-transparent">
-                  <div class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-on-surface-variant mt-0.5">business</span>
-                    <div>
-                      <div class="text-sm font-bold mb-1">Corporate HQ</div>
-                      <p class="text-xs text-on-surface-variant leading-relaxed">
-                        1 Infinite Loop, Suite 100<br />
-                        Cupertino, CA 95014
-                      </p>
+              </section>
+
+              <!-- Saved Addresses -->
+              <section>
+                <div class="flex items-center justify-between mb-6">
+                  <h2 class="text-xl font-bold tracking-tight">Saved Addresses</h2>
+                  <button
+                    class="flex items-center gap-1 text-xs font-bold text-surface-tint hover:underline uppercase tracking-wider">
+                    <span class="material-symbols-outlined text-xs">add</span> Add New
+                  </button>
+                </div>
+                <div class="space-y-4">
+                  <div class="bg-surface-container-lowest p-6 rounded-lg border-2 border-primary relative">
+                    <div
+                      class="absolute top-4 right-4 text-[10px] font-black uppercase text-primary-container tracking-tighter flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm"
+                        style="font-variation-settings: 'FILL' 1;">check_circle</span> Default
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-on-surface-variant mt-0.5">home</span>
+                      <div>
+                        <div class="text-sm font-bold mb-1">Home (Primary)</div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">742 Evergreen Terrace<br />San
+                          Francisco, CA 94105<br />United States</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-surface-container p-6 rounded-lg border border-transparent">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-on-surface-variant mt-0.5">business</span>
+                      <div>
+                        <div class="text-sm font-bold mb-1">Corporate HQ</div>
+                        <p class="text-xs text-on-surface-variant leading-relaxed">1 Infinite Loop, Suite
+                          100<br />Cupertino, CA 95014</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </section>
+            </div>
+
+            <!-- Section: Payment Methods -->
+            <section class="pb-24">
+              <div class="flex items-center justify-between mb-8">
+                <div>
+                  <h2 class="text-xl font-bold tracking-tight">Payment Methods</h2>
+                  <p class="text-xs text-on-surface-variant mt-1">Manage your secure transactions</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div
+                  class="aspect-[1.58/1] bg-gradient-to-br from-[#0D1B2A] to-[#1B263B] p-6 rounded-xl text-white shadow-xl relative flex flex-col justify-between overflow-hidden">
+                  <div class="flex justify-between items-start relative z-10">
+                    <div class="text-lg font-bold">Luxe Card</div>
+                    <div class="w-10 h-6 bg-white/20 rounded-sm"></div>
+                  </div>
+                  <div class="relative z-10">
+                    <div class="text-lg tracking-[0.2em] font-mono mb-4">•••• •••• •••• 4242</div>
+                    <div class="flex justify-between items-end">
+                      <div>
+                        <div class="text-[8px] uppercase tracking-widest opacity-50">Card Holder</div>
+                        <div class="text-xs font-bold">ALEX RIVERA</div>
+                      </div>
+                      <div>
+                        <div class="text-[8px] uppercase tracking-widest opacity-50">Expires</div>
+                        <div class="text-xs font-bold">12/26</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="absolute bottom-0 right-0 w-32 h-32 bg-on-primary-container opacity-20 blur-3xl rounded-full">
+                  </div>
+                </div>
+                <div
+                  class="aspect-[1.58/1] bg-surface-container-high p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                  <div class="flex justify-between items-start">
+                    <div class="text-sm font-bold text-[#0D1B2A]">Travel Mastercard</div>
+                    <span class="material-symbols-outlined text-on-surface-variant">contactless</span>
+                  </div>
+                  <div>
+                    <div class="text-lg tracking-[0.2em] font-mono mb-4 text-[#0D1B2A]">•••• •••• •••• 8812</div>
+                    <div class="flex justify-between items-end">
+                      <div>
+                        <div class="text-[8px] uppercase tracking-widest text-on-surface-variant">Card Holder</div>
+                        <div class="text-xs font-bold text-[#0D1B2A]">ALEX RIVERA</div>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-[8px] uppercase tracking-widest text-on-surface-variant">Expires</div>
+                        <div class="text-xs font-bold text-[#0D1B2A]">09/25</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="aspect-[1.58/1] border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-colors group">
+                  <div
+                    class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-on-surface-variant">add</span>
+                  </div>
+                  <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Add New Card</span>
+                </button>
               </div>
             </section>
           </div>
-          <!-- Section: Payment Methods -->
-          <section class="pb-24">
-            <div class="flex items-center justify-between mb-8">
-              <div>
-                <h2 class="text-xl font-bold tracking-tight">Payment Methods</h2>
-                <p class="text-xs text-on-surface-variant mt-1">Manage your secure transactions</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Credit Card 1 -->
-              <div
-                class="aspect-[1.58/1] bg-gradient-to-br from-[#0D1B2A] to-[#1B263B] p-6 rounded-xl text-white shadow-xl relative flex flex-col justify-between overflow-hidden">
-                <div class="flex justify-between items-start relative z-10">
-                  <div class="text-lg font-bold">Luxe Card</div>
-                  <div class="w-10 h-6 bg-white/20 rounded-sm"></div>
-                </div>
-                <div class="relative z-10">
-                  <div class="text-lg tracking-[0.2em] font-mono mb-4">•••• •••• •••• 4242</div>
-                  <div class="flex justify-between items-end">
-                    <div>
-                      <div class="text-[8px] uppercase tracking-widest opacity-50">Card Holder</div>
-                      <div class="text-xs font-bold">ALEX RIVERA</div>
-                    </div>
-                    <div>
-                      <div class="text-[8px] uppercase tracking-widest opacity-50">Expires</div>
-                      <div class="text-xs font-bold">12/26</div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Decorative Mesh -->
-                <div
-                  class="absolute bottom-0 right-0 w-32 h-32 bg-on-primary-container opacity-20 blur-3xl rounded-full">
-                </div>
-              </div>
-              <!-- Credit Card 2 -->
-              <div
-                class="aspect-[1.58/1] bg-surface-container-high p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div class="flex justify-between items-start">
-                  <div class="text-sm font-bold text-[#0D1B2A]">Travel Mastercard</div>
-                  <span class="material-symbols-outlined text-on-surface-variant">contactless</span>
-                </div>
-                <div>
-                  <div class="text-lg tracking-[0.2em] font-mono mb-4 text-[#0D1B2A]">•••• •••• •••• 8812</div>
-                  <div class="flex justify-between items-end">
-                    <div>
-                      <div class="text-[8px] uppercase tracking-widest text-on-surface-variant">Card Holder</div>
-                      <div class="text-xs font-bold text-[#0D1B2A]">ALEX RIVERA</div>
-                    </div>
-                    <div class="text-right">
-                      <div class="text-[8px] uppercase tracking-widest text-on-surface-variant">Expires</div>
-                      <div class="text-xs font-bold text-[#0D1B2A]">09/25</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Add New Card -->
-              <button
-                class="aspect-[1.58/1] border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-colors group">
-                <div
-                  class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <span class="material-symbols-outlined text-on-surface-variant">add</span>
-                </div>
-                <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Add New Card</span>
-              </button>
-            </div>
-          </section>
+        </main>
+      </div>
+
+      <!-- ===== MOBILE BOTTOM NAV ===== -->
+      <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
+        <div class="flex items-center justify-around px-1 py-2">
+          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg bg-[#0D1B2A]/5 text-[#0D1B2A]">
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span>
+            <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+            <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+            <span class="text-[9px] font-bold uppercase tracking-wide">Wallet</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+            <span class="material-symbols-outlined text-xl">history</span>
+            <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+            <span class="material-symbols-outlined text-xl">location_on</span>
+            <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
+          </a>
+          <form action="/logout" method="POST">
+            <button type="submit" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-error">
+              <span class="material-symbols-outlined text-xl">logout</span>
+              <span class="text-[9px] font-bold uppercase tracking-wide">Logout</span>
+            </button>
+          </form>
         </div>
-      </main>
-    </div>
+      </nav>
 
-  <!-- ===== MOBILE BOTTOM NAV (visible only below lg) ===== -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
-    <div class="flex items-center justify-around px-1 py-2">
-      <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg bg-[#0D1B2A]/5 text-[#0D1B2A]">
-        <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-        <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Wallet</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-        <span class="material-symbols-outlined text-xl">history</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-        <span class="material-symbols-outlined text-xl">location_on</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
-      </a>
-      <form action="/logout" method="POST">
-        <button type="submit" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-error">
-          <span class="material-symbols-outlined text-xl">logout</span>
-          <span class="text-[9px] font-bold uppercase tracking-wide">Logout</span>
-        </button>
-      </form>
-    </div>
-  </nav>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const changeInfoBtn = document.getElementById('changeInfoBtn');
+          const cancelBtn = document.getElementById('cancelBtn');
+          const form = document.getElementById('personalInfoForm');
+          const formActions = document.getElementById('formActions');
+          const inputs = form.querySelectorAll('.info-input');
 
-  <script>
-    // Measure the actual rendered header height and apply as CSS variable
-    (function applyNavHeight() {
-      var header = document.querySelector('header');
-      if (!header) return;
-      var h = header.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--nav-h', h + 'px');
-      // Re-measure on resize (e.g. mobile hamburger changes header height)
-      window.addEventListener('resize', function () {
-        var newH = header.getBoundingClientRect().height;
-        document.documentElement.style.setProperty('--nav-h', newH + 'px');
-      });
-    })();
-  </script>
+          // Store initial values for cancel functionality
+          const initialValues = {};
+          inputs.forEach(input => initialValues[input.id] = input.value);
 
+          function toggleEditMode(isEdit) {
+            inputs.forEach(input => {
+              input.disabled = !isEdit;
+              if (isEdit) {
+                input.classList.remove('bg-surface-container-low');
+                input.classList.add('bg-white', 'ring-1', 'ring-slate-300', 'focus:ring-2', 'focus:ring-primary', 'focus:outline-none');
+              } else {
+                input.classList.add('bg-surface-container-low');
+                input.classList.remove('bg-white', 'ring-1', 'ring-slate-300', 'focus:ring-2', 'focus:ring-primary', 'focus:outline-none');
+              }
+            });
+
+            if (isEdit) {
+              changeInfoBtn.classList.add('hidden');
+              formActions.classList.remove('hidden');
+              formActions.classList.add('flex');
+              inputs[0].focus();
+            } else {
+              changeInfoBtn.classList.remove('hidden');
+              formActions.classList.add('hidden');
+              formActions.classList.remove('flex');
+            }
+          }
+
+          changeInfoBtn.addEventListener('click', () => toggleEditMode(true));
+
+          cancelBtn.addEventListener('click', () => {
+            inputs.forEach(input => input.value = initialValues[input.id]);
+            toggleEditMode(false);
+          });
+        });
+      </script>
 </body>
 
 </html>

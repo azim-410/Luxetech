@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luxe Tech | Secure Login</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
     <link rel="stylesheet" href="/admin/css/login.css">
 </head>
+
 <body>
 
     <div class="bg-decor-right">
@@ -33,7 +38,7 @@
     <main class="main-content">
         <div class="card-tray animate-in">
             <div class="login-card">
-                
+
                 <header class="card-header">
                     <div class="icon-wrapper">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
@@ -45,29 +50,30 @@
                 <form id="loginForm" class="login-form" method="POST" action="/admin/login">
                     <div class="input-group">
                         <label for="email">Email Address</label>
-                        <input id="email" name="email" type="email" placeholder="admin@luxetech.com" required/>
+                        <input id="email" name="email" type="email" placeholder="admin@luxetech.com" required />
                     </div>
 
                     <div class="input-group">
                         <div class="password-header">
                             <label for="password">Password</label>
-                           
+
                         </div>
                         <div class="input-wrapper">
-                            <input id="password" name="password" type="password" placeholder="••••••••" required/>
+                            <input id="password" name="password" type="password" placeholder="••••••••" required />
                             <button type="button" class="toggle-btn" id="togglePassword">
                                 <span class="material-symbols-outlined" id="toggleIcon">visibility</span>
                             </button>
                         </div>
                     </div>
 
-                    
+
                     <button type="submit" class="submit-btn">Sign In</button>
                 </form>
 
                 <div class="security-badge-wrapper">
                     <div class="security-badge">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                        <span class="material-symbols-outlined"
+                            style="font-variation-settings: 'FILL' 1;">verified_user</span>
                         <span>256-bit encrypted session</span>
                     </div>
                 </div>
@@ -90,7 +96,7 @@
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('toggleIcon');
 
-            toggleButton.addEventListener('click', function() {
+            toggleButton.addEventListener('click', function () {
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
                     toggleIcon.textContent = 'visibility_off';
@@ -102,4 +108,5 @@
         });
     </script>
 </body>
+
 </html>

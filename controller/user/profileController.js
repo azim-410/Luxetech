@@ -39,8 +39,6 @@ const updateProfile = async (req, res) => {
       user,
       successMessage: result.message
     });
-
-
   } catch (error) {
     console.error('Profile update error:', error.message);
     const userId = req.session.user.id;

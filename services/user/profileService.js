@@ -12,66 +12,60 @@ const getUserById = async (userId) => {
 
 const updateProfileService = async (userId, name, email) => {
 
-    const currentUser = await getUserById(userId);
+  const currentUser = await getUserById(userId);
 
-    if (!name || name.trim() === '') {
-        const error = new Error('Name cannot be empty');
-        throw error;
-    }
-    if (name.trim().length < 3) {
-        const error = new Error('Name must be at least 3 characters');
-        throw error;
-    }
+  const updatedName  = name  ? name.trim()  : currentUser.name;
+  const updatedEmail = email ? email.trim() : currentUser.email;
 
-    if (!email || email.trim() === '') {
-        const error = new Error('Email cannot be empty');
-        throw error;
-    }
+
+  if (name !== undefined && name.trim() === '') {
+    throw new Error('Name cannot be empty');
+  }
+
+  if (name !== undefined && name.trim().length < 3) {
+    throw new Error('Name must be at least 3 characters');
+  }
+
+  if (email !== undefined && email.trim() !== currentUser.email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-        const error = new Error('Invalid email format');
-        throw error;
+      throw new Error('Invalid email format');
     }
+  }
 
-    const namechange = name.trim() !== currentUser.name;
-    const emailchange = email.trim() !== currentUser.email;
+  const nameChanged  = updatedName  !== currentUser.name;
+  const emailChanged = updatedEmail !== currentUser.email;
 
-    if (!namechange && !emailchange) {
-        const error = new Error('No changes detected');
-        throw error;
-    }
+  if (!nameChanged && !emailChanged) {
+    throw new Error('No changes detected');
+  }
 
-    if (namechange && !emailchange) {
-        await userModel.findByIdAndUpdate(userId, { name: name.trim() });
-        return { success: true, requiresOtp: false, message: 'Profile updated successfully' };
-    }
-    const isExistEmail = await userModel.findOne({ email: email.trim() });
-    if (isExistEmail) {
-        const error = new Error('Email already in use');
-        throw error;
-    }
+  
+  if (nameChanged && !emailChanged) {
+    await userModel.findByIdAndUpdate(userId, { name: updatedName });
+    return { success: true, requiresOtp: false, message: 'Profile updated successfully' };
+  }
 
-    const existingTempUser = await tempUserModel.findOne({ userId });
-    if (existingTempUser) {
-        await tempUserModel.deleteMany({userId})
-    }
+  const isExistEmail = await userModel.findOne({ email: updatedEmail });
+  if (isExistEmail) throw new Error('Email already in use');
 
-    const otp = generateOTP();
-    const expireOtp = new Date(Date.now() + 1000 * 60 * 10);
-    console.log(" otp 1:", otp)
-    const tempUser = new tempUserModel({
-        userId,
-        name: name.trim(),
-        tempEmail: email.trim(),
-        tempEmailOtp: otp,
-        emailOtpExpiry: expireOtp
-    });
-    await tempUser.save();
-    console.log(" otp 2:", otp)
-    await sendOTP(email.trim(), otp);
-    console.log(" otp 3:", otp)
-    return { success: true, requiresOtp: true, message: 'OTP sent to new email. Please verify to update profile.' };
-}
+  await tempUserModel.deleteMany({ userId });
+
+  const otp = generateOTP();
+  const expireOtp = new Date(Date.now() + 1000 * 60 * 10);
+
+  const tempUser = new tempUserModel({
+    userId,
+    name: updatedName,
+    tempEmail: updatedEmail,
+    tempEmailOtp: otp,
+    emailOtpExpiry: expireOtp
+  });
+  await tempUser.save();
+  await sendOTP(updatedEmail, otp);
+
+  return { success: true, requiresOtp: true, message: 'OTP sent to new email. Please verify to update profile.' };
+};
 
 const verifyOtpService = async (userId, otp) => {
 
@@ -132,7 +126,7 @@ const verifyOldPasswordService = async (userId, oldPassword) => {
 
     if (!oldPassword) throw new Error('Password is required');
 
-    const user = await userModel.findById(userId); 
+    const user = await userModel.findById(userId);
     if (!user) throw new Error('User not found');
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);

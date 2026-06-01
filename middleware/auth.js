@@ -11,7 +11,7 @@ const isLogin = (req, res, next) => {
     if (req.session.user || req.user) {
         return res.redirect('/');
     }
-    next();
+    return next();
 };
 
 const checkIfBlocked = async (req, res, next) => {
@@ -21,19 +21,29 @@ const checkIfBlocked = async (req, res, next) => {
         const user = await User.findById(req.session.user.id).select('isBlocked').lean();
 
         if (!user || user.isBlocked) {
-            req.session.destroy(() => {
+            return req.session.destroy(() => {
                 res.clearCookie('connect.sid');
-                res.render('User/auth/login.ejs',{errorMessage:'this user bloked by admin',errorField:'general'});
-                
+                return res.render('User/auth/login.ejs',{errorMessage:'this user bloked by admin',errorField:'general'});
             });
-            return;
         }
 
-        next();
+        return next();
     } catch (err) {
         console.error('checkIfBlocked error:', err.message);
-        next();
+        return next();
     }
 };
 
-export { isAuthenticated, isLogin, checkIfBlocked };
+
+const blockIfGoogleUser = (req,res,next)=>{
+    if(!req.session.user){
+        return res.redirect('/login');
+    }
+
+    if(req.session.user.authProvider !== 'local'){
+       return res.redirect('/profile'); 
+    }
+
+    return next();
+}
+export { isAuthenticated, isLogin, checkIfBlocked, blockIfGoogleUser };

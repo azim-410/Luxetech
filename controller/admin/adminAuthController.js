@@ -1,10 +1,11 @@
 import { adminLoginService } from '../../services/admin/adminAuthService.js';
 
 const showLoginPage = (req, res) => {
-    res.render('Admin/auth/login.ejs');
+    return res.render('Admin/auth/login.ejs');
 };
+
 const showDashboard = async (req, res) => {
-    res.render('Admin/dashboard.ejs')
+    return res.render('Admin/dashboard.ejs')
 }
 
 const adminLogin = async (req, res) => {
@@ -25,10 +26,10 @@ const adminLogout = async (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error('Admin logout error:', err)
-            return res.status(500)
+            return res.status(500).send('Server error');
         }
         res.clearCookie('connect.sid');
-        res.redirect('/admin/login');
+        return res.redirect('/admin/login');
     })
 }
 

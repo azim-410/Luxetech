@@ -37,23 +37,26 @@
                             <p style="color: red; font-size: 0.85rem; margin-top: 10px; text-align: center;">
                                 <%= locals.errorMessage %>
                             </p>
-                        <% } %>
-                        <% if (locals.successMessage) { %>
-                            <p style="color: #27ae60; font-size: 0.85rem; margin-top: 10px; text-align: center;">
-                                <%= locals.successMessage %>
-                            </p>
-                        <% } %>
-                        <p id="client-error-message" style="display:none; color: red; font-size: 0.85rem; margin-top: 10px; text-align: center;"></p>
+                            <% } %>
+                                <% if (locals.successMessage) { %>
+                                    <p
+                                        style="color: #27ae60; font-size: 0.85rem; margin-top: 10px; text-align: center;">
+                                        <%= locals.successMessage %>
+                                    </p>
+                                    <% } %>
+                                        <p id="client-error-message"
+                                            style="display:none; color: red; font-size: 0.85rem; margin-top: 10px; text-align: center;">
+                                        </p>
                     </div>
 
                     <form class="verification-form" action="<%= locals.actionUrl || '/verify-otp' %>" method="POST">
                         <div class="otp-inputs">
-                            <input type="text" name="otp1" maxlength="1" aria-label="Digit 1" autofocus />
-                            <input type="text" name="otp2" maxlength="1" aria-label="Digit 2" />
-                            <input type="text" name="otp3" maxlength="1" aria-label="Digit 3" />
-                            <input type="text" name="otp4" maxlength="1" aria-label="Digit 4" />
-                            <input type="text" name="otp5" maxlength="1" aria-label="Digit 5" />
-                            <input type="text" name="otp6" maxlength="1" aria-label="Digit 6" />
+                            <input type="text" name="otp1" maxlength="1" inputmode="numeric" aria-label="Digit 1"autofocus />
+                            <input type="text" name="otp2" maxlength="1" inputmode="numeric" aria-label="Digit 2" />
+                            <input type="text" name="otp3" maxlength="1" inputmode="numeric" aria-label="Digit 3" />
+                            <input type="text" name="otp4" maxlength="1" inputmode="numeric" aria-label="Digit 4" />
+                            <input type="text" name="otp5" maxlength="1" inputmode="numeric" aria-label="Digit 5" />
+                            <input type="text" name="otp6" maxlength="1" inputmode="numeric" aria-label="Digit 6" />
                         </div>
 
                         <div class="form-actions">
@@ -105,160 +108,202 @@
     </footer> -->
         <%- include("../../partials/user/auth-footer.ejs") %>
             <script>
-                    document.addEventListener('DOMContentLoaded', () => {
+                document.addEventListener('DOMContentLoaded', () => {
 
-                        const inputs = document.querySelectorAll('.otp-inputs input');
-                        const resendBtn = document.querySelector('.btn-resend');
-                        const timerDisplay = document.querySelector('.timer-display');
-                        const verifyBtn = document.querySelector('.btn-primary');
-                        const form = document.querySelector('.verification-form');
-                        const clientErrorMessage = document.querySelector('#client-error-message');
+                    const inputs = document.querySelectorAll('.otp-inputs input');
+                    const resendBtn = document.querySelector('.btn-resend');
+                    const timerDisplay = document.querySelector('.timer-display');
+                    const verifyBtn = document.querySelector('.btn-primary');
+                    const form = document.querySelector('.verification-form');
+                    const clientErrorMessage = document.querySelector('#client-error-message');
 
-                        const OTP_DURATION_MS = 4 * 60 * 1000; // 4 minutes
-                        const RESEND_DURATION_MS = 60 * 1000; // 60 seconds
+                    const OTP_DURATION_MS = 4 * 60 * 1000;   // 4 minutes
+                    const RESEND_DURATION_MS = 60 * 1000;     // 60 seconds
 
-                        const STORAGE_KEY_OTP_EXPIRY = 'otpVerificationExpiry';
-                        const STORAGE_KEY_RESEND_AVAILABLE_AT = 'otpVerificationResendAvailableAt';
+                    const STORAGE_KEY_OTP_EXPIRY = 'otpVerificationExpiry';
+                    const STORAGE_KEY_RESEND_AVAILABLE_AT = 'otpVerificationResendAvailableAt';
 
-                        const now = Date.now();
-                        
-                        let otpExpiry = parseInt(localStorage.getItem(STORAGE_KEY_OTP_EXPIRY), 10);
-                        const maxAllowedExpiry = now + 24 * 60 * 60 * 1000;
-                        if (!otpExpiry || otpExpiry <= now || otpExpiry > maxAllowedExpiry) {
-                            otpExpiry = now + OTP_DURATION_MS;
-                            localStorage.setItem(STORAGE_KEY_OTP_EXPIRY, otpExpiry);
+                    const now = Date.now();
+
+                    // ── Detect fresh arrival vs refresh vs error re-render ─────────────────
+                    //
+                    // We combine two signals:
+                    //   1. performance.navigation.type:
+                    //        'navigate' = user arrived fresh (link / redirect) OR form POST response
+                    //        'reload'   = browser F5 / Ctrl-R
+                    //   2. sessionStorage flag 'otpTimerActive':
+                    //        absent  → this is truly the first time we land on this OTP page
+                    //        present → we already started a timer (could be a re-render after wrong OTP)
+                    //
+                    // Rules:
+                    //   • reload                          → keep timers (never reset on refresh)
+                    //   • navigate + flag absent          → reset timers  (fresh arrival)
+                    //   • navigate + flag present         → keep timers   (wrong-OTP re-render)
+                    //   • resend click clears the flag so the subsequent navigate resets timers
+                    //
+                    const navEntry  = performance.getEntriesByType('navigation')[0];
+                    const navType   = navEntry ? navEntry.type : 'navigate';
+                    const timerFlag = sessionStorage.getItem('otpTimerActive');
+
+                    const isFreshLoad = (navType === 'navigate' && !timerFlag);
+
+                    if (isFreshLoad) {
+                        // Genuine new OTP session → restart timers from scratch
+                        localStorage.setItem(STORAGE_KEY_OTP_EXPIRY, now + OTP_DURATION_MS);
+                        localStorage.setItem(STORAGE_KEY_RESEND_AVAILABLE_AT, now + RESEND_DURATION_MS);
+                    }
+
+                    // Mark the timer as active for this tab session so re-renders don't reset it
+                    sessionStorage.setItem('otpTimerActive', '1');
+
+                    let otpExpiry = parseInt(localStorage.getItem(STORAGE_KEY_OTP_EXPIRY), 10);
+                    let resendAvailableAt = parseInt(localStorage.getItem(STORAGE_KEY_RESEND_AVAILABLE_AT), 10);
+
+                    // Guard: if localStorage is missing/corrupt, fall back to a fresh start
+                    if (!otpExpiry || !resendAvailableAt) {
+                        otpExpiry = now + OTP_DURATION_MS;
+                        resendAvailableAt = now + RESEND_DURATION_MS;
+                        localStorage.setItem(STORAGE_KEY_OTP_EXPIRY, otpExpiry);
+                        localStorage.setItem(STORAGE_KEY_RESEND_AVAILABLE_AT, resendAvailableAt);
+                    }
+
+                    // ── Helpers ───────────────────────────────────────────────────────────────
+                    const formatTime = (milliseconds) => {
+                        const total = Math.max(0, milliseconds);
+                        const minutes = Math.floor(total / 60000);
+                        const seconds = Math.floor((total % 60000) / 1000);
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+
+                    const setClientError = (message) => {
+                        if (!clientErrorMessage) return;
+                        clientErrorMessage.textContent = message;
+                        clientErrorMessage.style.display = message ? 'block' : 'none';
+                    };
+
+                    const updateResendState = () => {
+                        const n = Date.now();
+                        if (n >= resendAvailableAt) {
+                            resendBtn.disabled = false;
+                            resendBtn.style.opacity = '1';
+                            resendBtn.style.cursor = 'pointer';
+                            resendBtn.textContent = 'Resend Code';
+                        } else {
+                            resendBtn.disabled = true;
+                            resendBtn.style.opacity = '0.4';
+                            resendBtn.style.cursor = 'not-allowed';
+                            const seconds = Math.ceil((resendAvailableAt - n) / 1000);
+                            resendBtn.textContent = `Resend in ${seconds}s`;
                         }
+                    };
 
-                        let resendAvailableAt = parseInt(localStorage.getItem(STORAGE_KEY_RESEND_AVAILABLE_AT), 10);
-                        if (!Number.isFinite(resendAvailableAt) || resendAvailableAt > maxAllowedExpiry) {
-                            resendAvailableAt = now + RESEND_DURATION_MS;
-                            localStorage.setItem(STORAGE_KEY_RESEND_AVAILABLE_AT, resendAvailableAt);
+                    const updateOtpState = () => {
+                        const n = Date.now();
+                        const remaining = otpExpiry - n;
+                        if (remaining <= 0) {
+                            timerDisplay.textContent = 'OTP Expired';
+                            timerDisplay.style.color = 'red';
+                            verifyBtn.disabled = true;
+                            verifyBtn.style.opacity = '0.4';
+                            resendBtn.disabled = false;
+                            resendBtn.style.opacity = '1';
+                            resendBtn.style.cursor = 'pointer';
+                            resendBtn.textContent = 'Request New OTP';
+                        } else {
+                            timerDisplay.textContent = `Expires in ${formatTime(remaining)}`;
+                            timerDisplay.style.color = '';
+                            verifyBtn.disabled = false;
+                            verifyBtn.style.opacity = '1';
+                            verifyBtn.style.cursor = 'pointer';
                         }
+                    };
 
-                        const formatTime = (milliseconds) => {
-                            const total = Math.max(0, milliseconds);
-                            const minutes = Math.floor(total / 60000);
-                            const seconds = Math.floor((total % 60000) / 1000);
-                            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                        };
+                    const updateTimers = () => {
+                        updateResendState();
+                        updateOtpState();
+                    };
 
-                        const setClientError = (message) => {
-                            if (!clientErrorMessage) return;
-                            clientErrorMessage.textContent = message;
-                            clientErrorMessage.style.display = message ? 'block' : 'none';
-                        };
-
-                        const updateResendState = () => {
-                            const now = Date.now();
-                            if (now >= resendAvailableAt) {
-                                resendBtn.disabled = false;
-                                resendBtn.style.opacity = '1';
-                                resendBtn.style.cursor = 'pointer';
-                                resendBtn.textContent = 'Resend Code';
-                            } else {
-                                resendBtn.disabled = true;
-                                resendBtn.style.opacity = '0.4';
-                                resendBtn.style.cursor = 'not-allowed';
-                                const seconds = Math.ceil((resendAvailableAt - now) / 1000);
-                                resendBtn.textContent = `Resend in ${seconds}s`;
+                    // ── OTP input behaviour ───────────────────────────────────────────────────
+                    inputs.forEach((input, index) => {
+                        input.addEventListener('input', (e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                            if (clientErrorMessage && clientErrorMessage.style.display === 'block') {
+                                setClientError('');
                             }
-                        };
-
-                        const updateOtpState = () => {
-                            const now = Date.now();
-                            const remaining = otpExpiry - now;
-                            if (remaining <= 0) {
-                                timerDisplay.textContent = 'OTP Expired';
-                                timerDisplay.style.color = 'red';
-                                verifyBtn.disabled = true;
-                                verifyBtn.style.opacity = '0.4';
-                                resendBtn.disabled = false;
-                                resendBtn.style.opacity = '1';
-                                resendBtn.style.cursor = 'pointer';
-                                resendBtn.textContent = 'Request New OTP';
-                            } else {
-                                timerDisplay.textContent = `Expires in ${formatTime(remaining)}`;
-                                timerDisplay.style.color = '';
-                                verifyBtn.disabled = false;
-                                verifyBtn.style.opacity = '1';
-                                verifyBtn.style.cursor = 'pointer';
+                            if (e.target.value !== '' && index < inputs.length - 1) {
+                                inputs[index + 1].focus();
                             }
-                        };
-
-                        const updateTimers = () => {
-                            updateResendState();
-                            updateOtpState();
-                        };
-
-                        inputs.forEach((input, index) => {
-                            input.addEventListener('input', (e) => {
-                                e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                                if (clientErrorMessage && clientErrorMessage.style.display === 'block') {
-                                    setClientError('');
-                                }
-                                if (e.target.value !== '' && index < inputs.length - 1) {
-                                    inputs[index + 1].focus();
-                                }
-                            });
-
-                            input.addEventListener('keydown', (e) => {
-                                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
-                                    inputs[index - 1].focus();
-                                }
-                            });
-
-                            input.addEventListener('paste', (e) => {
-                                e.preventDefault();
-                                const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, inputs.length);
-                                pastedData.split('').forEach((char, i) => {
-                                    inputs[i].value = char;
-                                    if (i < inputs.length - 1) {
-                                        inputs[i + 1].focus();
-                                    } else {
-                                        inputs[i].focus();
-                                    }
-                                });
-                            });
                         });
 
-                        form.addEventListener('submit', (e) => {
-                            const otpValue = Array.from(inputs).map((input) => input.value.trim()).join('');
-                            if (!/^[0-9]{6}$/.test(otpValue)) {
-                                e.preventDefault();
-                                setClientError('Please enter the full 6-digit verification code.');
-                                return;
-                            }
-                            if (Date.now() >= otpExpiry) {
-                                e.preventDefault();
-                                setClientError('OTP has expired. Please resend the code.');
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                                inputs[index - 1].focus();
                             }
                         });
+
+                        input.addEventListener('paste', (e) => {
+                            e.preventDefault();
+                            const pastedData = e.clipboardData.getData('text')
+                                .replace(/[^0-9]/g, '')
+                                .slice(0, inputs.length);
+                            pastedData.split('').forEach((char, i) => {
+                                inputs[i].value = char;
+                                if (i < inputs.length - 1) {
+                                    inputs[i + 1].focus();
+                                } else {
+                                    inputs[i].focus();
+                                }
+                            });
+                        });
+                    });
+
+                    // ── Form submit guard ────────────────────────────────────────────────────
+                    form.addEventListener('submit', (e) => {
+                        const otpValue = Array.from(inputs).map((input) => input.value.trim()).join('');
+                        if (!/^[0-9]{6}$/.test(otpValue)) {
+                            e.preventDefault();
+                            setClientError('Please enter the full 6-digit verification code.');
+                            return;
+                        }
+                        if (Date.now() >= otpExpiry) {
+                            e.preventDefault();
+                            setClientError('OTP has expired. Please resend the code.');
+                        }
+                    });
+
+                    // ── Start ticking ────────────────────────────────────────────────────────
+                    updateTimers();
+
+                    const intervalId = setInterval(() => {
+                        updateTimers();
+                        if (Date.now() >= otpExpiry) {
+                            clearInterval(intervalId);
+                        }
+                    }, 1000);
+
+                    // ── Resend button ────────────────────────────────────────────────────────
+                    resendBtn.addEventListener('click', () => {
+                        const resetTime = Date.now();
+                        otpExpiry = resetTime + OTP_DURATION_MS;
+                        resendAvailableAt = resetTime + RESEND_DURATION_MS;
+
+                        localStorage.setItem(STORAGE_KEY_OTP_EXPIRY, otpExpiry);
+                        localStorage.setItem(STORAGE_KEY_RESEND_AVAILABLE_AT, resendAvailableAt);
+
+                        // Clear the flag so the resend response is treated as a fresh load
+                        // and the timer resets to the new values above
+                        sessionStorage.removeItem('otpTimerActive');
 
                         updateTimers();
 
-                        const intervalId = setInterval(() => {
-                            updateTimers();
-                            if (Date.now() >= otpExpiry) {
-                                clearInterval(intervalId);
-                            }
-                        }, 1000);
-
-                        resendBtn.addEventListener('click', () => {
-                            const resetTime = Date.now();
-                            otpExpiry = resetTime + OTP_DURATION_MS;
-                            resendAvailableAt = resetTime + RESEND_DURATION_MS;
-                            localStorage.setItem(STORAGE_KEY_OTP_EXPIRY, otpExpiry);
-                            localStorage.setItem(STORAGE_KEY_RESEND_AVAILABLE_AT, resendAvailableAt);
-                            updateTimers();
-
-                            const form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/resend-otp" %>';
-                            document.body.appendChild(form);
-                            form.submit();
-                        });
-
+                        const resendForm = document.createElement('form');
+                        resendForm.method = 'POST';
+                        resendForm.action = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/resend-otp" %>';
+                        document.body.appendChild(resendForm);
+                        resendForm.submit();
                     });
+
+                });
             </script>
 </body>
 

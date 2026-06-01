@@ -41,65 +41,84 @@ document.addEventListener('DOMContentLoaded', () => {
         const COOLDOWN_SECONDS = 60;
         const COOLDOWN_EXPIERS = 540;
 
-        // let resendTimer = null;
+        // Track intervals
         let resendexpire = null;
-        function all() {
+        let resendCooldownInterval = null;
+        let otpExpireInterval = null;
+        let timeexpire = null;
 
-            
+        // Initialize resend button cooldown on page load
+        function initializeResendCooldown() {
+            let timeleft = COOLDOWN_SECONDS;
+            resendBtn.textContent = `Resend Code ${timeleft}`;
+            resendBtn.disabled = true;
+            resendBtn.style.cursor = 'not-allowed';
+            resendBtn.style.opacity = '0.5';
+
+            // Clear any existing interval
+            if (resendCooldownInterval) clearInterval(resendCooldownInterval);
+
+            resendCooldownInterval = setInterval(() => {
+                timeleft--;
+                resendBtn.textContent = `Resend Code ${timeleft}`;
+                if (timeleft <= 0) {
+                    clearInterval(resendCooldownInterval);
+                    resendBtn.textContent = "Resend Code";
+                    resendBtn.disabled = false;
+                    resendBtn.style.cursor = 'pointer';
+                    resendBtn.style.opacity = '1';
+                }
+            }, 1000);
+        }
+
+        // Initialize OTP expiry timer
+        function initializeOtpExpiry() {
             timeexpire = COOLDOWN_EXPIERS;
             timerDisplay.textContent = `Expire in ${timeexpire}`;
             submitBtn.style.opacity = '1';
             submitBtn.style.cursor = 'pointer';
-            submitBtn.disabled = false
+            submitBtn.disabled = false;
 
             otpInputs.forEach(input => {
-                input.value = '';
                 input.style.opacity = '1';
                 input.style.cursor = 'text';
-                input.disabled = false
+                input.disabled = false;
             });
 
-            resendexpire = setInterval(() => {
-                timeexpire--
+            // Clear any existing interval
+            if (otpExpireInterval) clearInterval(otpExpireInterval);
+
+            otpExpireInterval = setInterval(() => {
+                timeexpire--;
                 timerDisplay.textContent = `Expire in ${timeexpire}`;
-                if (timeexpire < 0) {
-                    clearInterval(resendexpire)
+                if (timeexpire <= 0) {
+                    clearInterval(otpExpireInterval);
                     timerDisplay.textContent = `Time Expired`;
 
                     submitBtn.style.opacity = '0.5';
                     submitBtn.style.cursor = 'not-allowed';
-                    submitBtn.disabled = true
+                    submitBtn.disabled = true;
 
                     otpInputs.forEach(input => {
                         input.style.opacity = '0.5';
                         input.style.cursor = 'not-allowed';
-                        input.disabled = true
+                        input.disabled = true;
                     });
                 }
-            }, 1000)
+            }, 1000);
+        }
 
-            resendBtn.addEventListener('click', () => {
-                
-                all()
+        // Handle resend button click
+        resendBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Reset OTP expiry timer
+            initializeOtpExpiry();
+            
+            // Reset resend button cooldown
+            initializeResendCooldown();
+        });
 
-                let timeleft = COOLDOWN_SECONDS;
-                resendBtn.textContent = `Resend Code ${timeleft}`;
-                resendBtn.disabled = true;
-                resendBtn.style.cursor = 'not-allowed';
-                resendBtn.style.opacity = '0.5';
-                resendBtn.style.textDecoration = 'none'
-
-                const interval = setInterval(() => {
-                    timeleft--;
-                    resendBtn.textContent = `Resend Code ${timeleft}`;
-                    if (timeleft < 0) {
-                        clearInterval(interval);
-                        resendBtn.textContent = "Resend Code";
-                        resendBtn.disabled = false;
-                        resendBtn.style.cursor = 'pointer';
-                        resendBtn.style.opacity = '1';
-                    }
-                }, 1000);
-
-            })
-        } all()
+        // Initialize everything on page load
+        initializeResendCooldown();
+        initializeOtpExpiry();

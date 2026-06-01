@@ -15,11 +15,11 @@ const getProfile = async (req, res) => {
 
     if (!user) return res.redirect('/login');
 
-    res.render('User/profile', { user });
+    return res.render('User/profile', { user });
 
   } catch (error) {
     console.error('Profile error:', error);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
@@ -45,19 +45,19 @@ const updateProfile = async (req, res) => {
     console.error('Profile update error:', error.message);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
-    res.status(400).render('User/profile', { user, errorMessage: error.message });
+    return res.status(400).render('User/profile', { user, errorMessage: error.message });
   }
 };
 
 const showOtpPage = async (req, res) => {
   try {
-    res.render('User/auth/otp-verification.ejs', {
+    return res.render('User/auth/otp-verification.ejs', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
     });
   } catch (error) {
     console.error('Show OTP page error:', error.message);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
@@ -76,7 +76,7 @@ const verifyOtp = async (req, res) => {
     });
   } catch (error) {
     console.error('Verify OTP error:', error.message);
-    res.status(400).render('User/auth/otp-verification.ejs', {
+    return res.status(400).render('User/auth/otp-verification.ejs', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       errorMessage: error.message
@@ -90,7 +90,7 @@ const resendOtp = async (req, res) => {
 
     const result = await resendOtpService(userId);
 
-    res.render('User/auth/otp-verification.ejs', {
+    return res.render('User/auth/otp-verification.ejs', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       successMessage: result.message
@@ -98,7 +98,7 @@ const resendOtp = async (req, res) => {
 
   } catch (error) {
     console.error('Resend OTP error:', error.message);
-    res.render('User/auth/otp-verification.ejs', {
+    return res.render('User/auth/otp-verification.ejs', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       errorMessage: error.message
@@ -108,12 +108,12 @@ const resendOtp = async (req, res) => {
 
 const showChangePasswordPage = async (req, res) => {
   try {
-    res.render('User/changepassword', {
+    return res.render('User/changepassword', {
       actionUrl: '/change-password/verify-old'
     });
   } catch (error) {
     console.error('Change password page error:', error.message);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
@@ -130,7 +130,7 @@ const verifyOldPassword = async (req, res) => {
 
   } catch (error) {
     console.error('Verify old password error:', error.message);
-    res.status(400).render('User/changepassword', {
+    return res.status(400).render('User/changepassword', {
       actionUrl: '/change-password/verify-old',
       errorMessage: error.message
     });
@@ -142,12 +142,12 @@ const showNewPasswordPage = async (req, res) => {
     if (!req.session.passwordVerified) {
       return res.redirect('/change-password');
     }
-    res.render('User/auth/reset-password', {
+    return res.render('User/auth/reset-password', {
       actionUrl: '/change-password/new',
     });
   } catch (error) {
     console.error('New password page error:', error.message);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
@@ -162,7 +162,7 @@ const changePassword = async (req, res) => {
 
     await changePasswordService(userId, newPassword, confirmPassword);
 
-    req.session.destroy((err) => {
+    return req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);
         return res.status(500).send('Server error');
@@ -173,7 +173,7 @@ const changePassword = async (req, res) => {
 
   } catch (error) {
     console.error('Change password error:', error.message);
-    res.status(400).render('User/auth/reset-password', {
+    return res.status(400).render('User/auth/reset-password', {
       actionUrl: '/change-password/new',
       errorMessage: error.message
     });

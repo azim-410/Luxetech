@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated, isLogin, checkIfBlocked } from '../middleware/auth.js';
+import { isAuthenticated, isLogin, checkIfBlocked, blockIfGoogleUser } from '../middleware/auth.js';
 import { 
     getProfile,
     updateProfile,
@@ -9,7 +9,8 @@ import {
     showChangePasswordPage,
     verifyOldPassword,      
     showNewPasswordPage,
-    changePassword    
+    changePassword,
+       
 
  } from '../controller/user/profileController.js';  
 const router = express.Router();
@@ -21,14 +22,14 @@ router.get('/favorite', isAuthenticated, checkIfBlocked, (req, res) => res.rende
 router.get('/cart', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/cart'));
 
 router.post('/profile/update', isAuthenticated, checkIfBlocked, updateProfile);
-router.get('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, showOtpPage);
-router.post('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, verifyOtp);
+router.get('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  showOtpPage);
+router.post('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  verifyOtp);
 
-router.post('/verify-emailChange-otp/resend', isAuthenticated, checkIfBlocked, resendOtp); 
+router.post('/verify-emailChange-otp/resend', isAuthenticated, checkIfBlocked, blockIfGoogleUser, resendOtp); 
 
-router.get('/change-password', isAuthenticated, checkIfBlocked, showChangePasswordPage);
-router.post('/change-password/verify-old', isAuthenticated, checkIfBlocked, verifyOldPassword);
+router.get('/change-password', isAuthenticated, checkIfBlocked,blockIfGoogleUser, showChangePasswordPage);
+router.post('/change-password/verify-old', isAuthenticated, checkIfBlocked, blockIfGoogleUser, verifyOldPassword);
 
-router.get('/change-password/new', isAuthenticated, checkIfBlocked, showNewPasswordPage);
-router.post('/change-password/new', isAuthenticated, checkIfBlocked, changePassword);
+router.get('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogleUser, showNewPasswordPage);
+router.post('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogleUser, changePassword);
 export default router;  

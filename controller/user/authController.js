@@ -13,12 +13,12 @@ import {
 const registerPage = (req, res) => {
     const googleError = req.session.googleError || null;
     req.session.googleError = null;
-    res.render('User/auth/register', { googleError });
+    return res.render('User/auth/register', { googleError });
 };
 
 const loginPage = (req, res) => {
     const blocked = req.query.blocked === '1';
-    res.render('User/auth/login', {
+    return res.render('User/auth/login', {
         errorMessage: blocked ? 'Your account has been blocked by the admin. Please contact support.' : null,
         errorField:   blocked ? 'general' : null,
         formData: {}
@@ -26,7 +26,7 @@ const loginPage = (req, res) => {
 };
 
 const otpPage = (req, res) => {
-    res.render('User/auth/otp-verification', {
+    return res.render('User/auth/otp-verification', {
         actionUrl:      '/verify-otp',
         resendUrl:      '/resend-otp',
         errorMessage:   null,
@@ -35,11 +35,11 @@ const otpPage = (req, res) => {
 };
 
 const forgotPasswordPage = (req, res) => {
-    res.render('User/auth/forget-password');
+    return res.render('User/auth/forget-password');
 };
 
 const verifyResetOtpPage = (req, res) => {
-    res.render('User/auth/otp-verification', {
+    return res.render('User/auth/otp-verification', {
         actionUrl:      '/verify-reset-otp',
         resendUrl:      '/resend-reset-otp',
         errorMessage:   null,
@@ -51,7 +51,7 @@ const resetPasswordPage = (req, res) => {
     if (!req.session.canResetPassword) {
         return res.redirect('/forget-password');
     }
-    res.render('User/auth/reset-password', { actionUrl: '/reset-password' });
+    return res.render('User/auth/reset-password', { actionUrl: '/reset-password' });
 };
 
 // ─── REGISTER ───────────────────────────────────────────
@@ -59,10 +59,10 @@ const register = async (req, res) => {
     try {
         const user = await registerUser(req.body);
         req.session.userId = user.user._id;
-        res.redirect('/otp');
+        return res.redirect('/otp');
     } catch (error) {
         console.error("Register Error:", error.message);
-        res.status(400).render('User/auth/register', {
+        return res.status(400).render('User/auth/register', {
             errorMessage: error.message,
             errorField: error.field || 'general',
             formData: req.body
@@ -78,10 +78,10 @@ const login = async (req, res) => {
             id: result.user._id,
             email: result.user.email
         };
-        res.redirect('/');
+        return res.redirect('/');
     } catch (error) {
         console.error("Login Error:", error.message);
-        res.status(400).render('User/auth/login', {
+        return res.status(400).render('User/auth/login', {
             errorMessage: error.message,
             errorField: error.field,
             formData: req.body
@@ -97,7 +97,7 @@ const logout = (req, res) => {
             return res.status(500).redirect('/');
         }
         res.clearCookie('connect.sid');
-        res.redirect('/');
+        return res.redirect('/');
     });
 };
 
@@ -107,10 +107,10 @@ const otp = async (req, res) => {
         const inputValue = Object.values(req.body).join('');
         const userId = req.session.userId;
         await verifyOtp(inputValue, userId);
-        res.redirect('/login');
+        return res.redirect('/login');
     } catch (error) {
         console.error('OTP Error:', error.message);
-        res.status(400).render('User/auth/otp-verification', {
+        return res.status(400).render('User/auth/otp-verification', {
             errorMessage: error.message,
             successMessage: null,
             actionUrl: '/verify-otp',
@@ -160,10 +160,10 @@ const forgotPasswordController = async (req, res) => {
         const { email } = req.body;
         await sendPasswordResetOtpService(email);
         req.session.resetEmail = email;
-        res.redirect('/verify-reset-otp');
+        return res.redirect('/verify-reset-otp');
     } catch (error) {
         console.error("Forgot Password Error:", error.message);
-        res.render('User/auth/forget-password', { errorMessage: error.message, });
+        return res.render('User/auth/forget-password', { errorMessage: error.message, });
     }
 };
 
@@ -175,10 +175,10 @@ const verifyResetOtpController = async (req, res) => {
 
         await verifyResetOtpService(email, otp);
         req.session.canResetPassword = true;
-        res.redirect('/reset-password');
+        return res.redirect('/reset-password');
     } catch (error) {
         console.error("Verify Reset OTP Error:", error.message);
-        res.render('User/auth/otp-verification', {
+        return res.render('User/auth/otp-verification', {
             errorMessage: error.message,
             successMessage: null,
             actionUrl: '/verify-reset-otp',
@@ -230,10 +230,10 @@ const updatePasswordController = async (req, res) => {
         req.session.resetEmail = null;
         req.session.canResetPassword = null;
 
-        res.redirect('/login');
+        return res.redirect('/login');
     } catch (error) {
         console.error("Update Password Error:", error.message);
-        res.render('User/auth/reset-password', { 
+        return res.render('User/auth/reset-password', { 
             actionUrl: '/reset-password',
             errorMessage: error.message 
         });

@@ -11,12 +11,13 @@ import {
     verifyOldPassword,      
     showNewPasswordPage,
     changePassword,
-    deleteProfileImage
+    deleteProfileImage,
+    getAddresses
 
  } from '../controller/user/profileController.js';  
 const router = express.Router();
 
-// ─── PAGES ────────────────────────────────────────────── 
+// ─── prifile Routes ────────────────────────────────────────────── 
 
 router.get('/profile', isAuthenticated, checkIfBlocked, getProfile);
 router.get('/favorite', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/favorite'));
@@ -35,4 +36,9 @@ router.get('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogl
 router.post('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogleUser, changePassword);
 
 router.post('/profile/delete-image', isAuthenticated, checkIfBlocked, deleteProfileImage);
+
+
+// ── address Routes ────────────────────────────────────────────── 
+router.get('/address', isAuthenticated, checkIfBlocked, getAddresses);
+
 export default router;  

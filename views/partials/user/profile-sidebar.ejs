@@ -1,3 +1,19 @@
+<style>
+  :root {
+    --nav-h: 72px;
+  }
+
+  .profile-sidebar {
+    top: var(--nav-h);
+    height: calc(100vh - var(--nav-h));
+  }
+
+  @media (max-width: 1023px) {
+    .profile-main {
+      padding-bottom: 5rem !important;
+    }
+  }
+</style>
 <aside class="profile-sidebar w-64 hidden lg:flex flex-col border-r border-slate-200/50 bg-slate-50 fixed left-0 z-40 overflow-y-auto">
   <div class="flex flex-col gap-2 p-4 pt-8">
     <div class="flex items-center gap-3 mb-8 px-2">
@@ -11,8 +27,8 @@
       </div>
     </div>
     <nav class="space-y-1">
-      <a class="flex items-center gap-3 px-4 py-3 text-[#0D1B2A] bg-[#0D1B2A]/5 font-bold rounded-lg transition-transform duration-200 hover:translate-x-1 border-l-4 border-[#0D1B2A]"
-        href="#">
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-transform duration-200 hover:translate-x-1 sidebar-link"
+        href="/profile" data-path="/profile">
         <span class="material-symbols-outlined text-sm" data-icon="person">person</span>
         <span class="font-manrope text-sm">Personal Info</span>
       </a>
@@ -27,8 +43,8 @@
         <span class="material-symbols-outlined text-sm" data-icon="history">history</span>
         <span class="font-manrope text-sm">Order History</span>
       </a>
-      <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-        href="#">
+      <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1 sidebar-link"
+        href="/address" data-path="/address">
         <span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
         <span class="font-manrope text-sm">Addresses</span>
       </a>
@@ -60,3 +76,18 @@
     </div>
   </div>
 </aside>
+
+<script>
+  (function () {
+    const path = window.location.pathname;
+    document.querySelectorAll('.sidebar-link').forEach(function (link) {
+      if (link.dataset.path === path) {
+        link.classList.add('text-[#0D1B2A]', 'bg-[#0D1B2A]/5', 'font-bold', 'border-l-4', 'border-[#0D1B2A]');
+        link.classList.remove('text-slate-600', 'hover:bg-slate-100');
+      } else {
+        link.classList.add('text-slate-600', 'hover:bg-slate-100');
+        link.classList.remove('text-[#0D1B2A]', 'bg-[#0D1B2A]/5', 'font-bold', 'border-l-4', 'border-[#0D1B2A]');
+      }
+    });
+  })();
+</script>

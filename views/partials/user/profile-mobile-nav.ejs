@@ -1,7 +1,24 @@
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
+<style>
+  .profile-mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    z-index: 50;
+  }
+
+  @media (min-width: 1024px) {
+    .profile-mobile-nav {
+      display: none;
+    }
+  }
+</style>
+<nav class="profile-mobile-nav fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
   <div class="flex items-center justify-around px-1 py-2">
-    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg bg-[#0D1B2A]/5 text-[#0D1B2A]">
-      <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span>
+    <a href="/profile" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg mobile-nav-link" data-path="/profile">
+      <span class="material-symbols-outlined text-xl">person</span>
       <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
     </a>
     <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
@@ -12,7 +29,7 @@
       <span class="material-symbols-outlined text-xl">history</span>
       <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
     </a>
-    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+    <a href="/address" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/address">
       <span class="material-symbols-outlined text-xl">location_on</span>
       <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
     </a>
@@ -24,3 +41,16 @@
     </form>
   </div>
 </nav>
+
+<script>
+  (function () {
+    const path = window.location.pathname;
+    document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+      if (link.dataset.path === path) {
+        link.classList.add('bg-[#0D1B2A]/5', 'text-[#0D1B2A]');
+        link.classList.remove('text-slate-500');
+        link.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+      }
+    });
+  })();
+</script>

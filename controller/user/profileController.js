@@ -213,6 +213,19 @@ const changePassword = async (req, res) => {
     });
   }
 };
+
+const getAddresses = async (req,res)=>{
+  try {
+     const user = await getUserById(req.session.user.id);
+
+     if (!user) return res.redirect('/login');
+
+    return res.render('User/address', { user });
+  } catch (error) {
+     console.error('Profile error:', error);
+     return res.status(500).send('Server error');
+  }
+}
 export {
   getProfile,
   updateProfile,
@@ -223,5 +236,7 @@ export {
   verifyOldPassword,
   showNewPasswordPage,
   changePassword,
-  deleteProfileImage
+  deleteProfileImage,
+  
+  getAddresses
 }

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Luxe Tech - Saved Addresses</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        #addAddressModal .modal-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  #addAddressModal .modal-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#191c1e",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef1",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "on-surface": "#191c1e",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#e6e8eb",
+                        "outline": "#74777d",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e3e6",
+                        "on-tertiary-container": "#dc5d00",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#44474c",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadd",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "tertiary-container": "#341100",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#eff1f4",
+                        "secondary-container": "#cbe7f5",
+                        "secondary": "#48626e",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#c4c6cc",
+                        "surface": "#f7f9fc",
+                        "inverse-surface": "#2d3133",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-fixed": "#cbe7f5",
+                        "inverse-primary": "#b0c6ff",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-primary-fixed-variant": "#00429c",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#4e6874",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-tint": "#2b5bb5",
+                        "primary-container": "#001945",
+                        "on-primary-fixed": "#001945",
+                        "primary": "#000000",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "surface-bright": "#f7f9fc",
+                        "on-secondary-fixed": "#021f29",
+                        "on-primary-container": "#5781de",
+                        "surface-container-low": "#f2f4f7",
+                        "background": "#f7f9fc",
+                        "on-primary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-background font-body">
+  <%- include('../partials/user/main-header', { user }) %>
+  <% const dummyImgUrl='https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0' %>
+  <div class="flex min-h-screen">
+    <%- include('../partials/user/profile-sidebar', { user }) %>
+        <!-- Main Content -->
+        <main class="profile-main flex-1 lg:ml-64 p-6 lg:p-12">
+            <div class="max-w-5xl mx-auto">
+            <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 class="font-headline text-4xl font-extrabold tracking-tight text-on-background">Saved Addresses
+                    </h1>
+                    <p class="text-on-surface-variant mt-2 max-w-lg">Manage your delivery destinations for seamless
+                        precision ordering.</p>
+                </div>
+                <button data-open="addAddress"
+  class="bg-primary-container text-on-primary-container hover:bg-black hover:text-white px-6 py-3 rounded-md font-label text-sm font-bold uppercase tracking-wider flex items-center gap-2 transition-all active:scale-95">
+  <span class="material-symbols-outlined text-sm">add</span>
+  Add New Address
+</button>
+            </header>
+            <!-- Address Grid: Bento Style -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Address Card 1: Home (Featured) -->
+                <div
+                    class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 group hover:border-surface-tint transition-all duration-300 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div
+                            class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm" data-icon="home">home</span>
+                            Home
+                        </div>
+                        <div class="flex gap-2 group-hover:opacity-100 transition-opacity"><button
+                                class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+                                title="Edit">
+                                <span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+                                Edit
+                            </button>
+                            <button
+  class="delete-address-btn flex items-center gap-1.5 px-3 py-1.5 hover:bg-error-container hover:text-error rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+  data-id="address_1"
+  title="Delete">
+  <span class="material-symbols-outlined text-base">delete</span>
+  Remove
+</button>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-headline text-xl font-bold text-on-background">Jonathan Doe</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Primary Residence</p>
+                        </div>
+                        <div class="text-on-surface leading-relaxed">
+                            <p>7240 Precision Parkway</p>
+                            <p>Suite 405, Silicon Valley</p>
+                            <p>CA 94025, USA</p>
+                        </div>
+                        <div
+                            class="pt-4 border-t border-outline-variant/10 flex items-center gap-2 text-on-surface-variant text-sm">
+                            <span class="material-symbols-outlined text-base" data-icon="call">call</span>
+                            +1 (555) 902-3344
+                        </div>
+                    </div>
+                </div>
+                <!-- Address Card 2: Office -->
+                <div
+                    class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 group hover:border-surface-tint transition-all duration-300 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div
+                            class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm" data-icon="work">work</span>
+                            Office
+                        </div>
+                        <div class="flex gap-2 group-hover:opacity-100 transition-opacity"><button
+                                class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+                                title="Edit">
+                                <span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+                                Edit
+                            </button>
+                            <button
+  class="delete-address-btn flex items-center gap-1.5 px-3 py-1.5 hover:bg-error-container hover:text-error rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+  data-id="address_1"
+  title="Delete">
+  <span class="material-symbols-outlined text-base">delete</span>
+  Remove
+</button>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-headline text-xl font-bold text-on-background">Luxe Tech HQ</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Engineering Dept.</p>
+                        </div>
+                        <div class="text-on-surface leading-relaxed">
+                            <p>101 Innovation Way</p>
+                            <p>Floor 12, Tech District</p>
+                            <p>WA 98101, USA</p>
+                        </div>
+                        <div
+                            class="pt-4 border-t border-outline-variant/10 flex items-center gap-2 text-on-surface-variant text-sm">
+                            <span class="material-symbols-outlined text-base" data-icon="call">call</span>
+                            +1 (555) 440-2211
+                        </div>
+                    </div>
+                </div>
+                <!-- Address Card 3: Studio -->
+                <div
+                    class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 group hover:border-surface-tint transition-all duration-300 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div
+                            class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm" data-icon="palette">palette</span>
+                            Studio
+                        </div>
+                        <div class="flex gap-2 group-hover:opacity-100 transition-opacity"><button
+                                class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+                                title="Edit">
+                                <span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+                                Edit
+                            </button>
+                          <button
+  class="delete-address-btn flex items-center gap-1.5 px-3 py-1.5 hover:bg-error-container hover:text-error rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+  data-id="address_1"
+  title="Delete">
+  <span class="material-symbols-outlined text-base">delete</span>
+  Remove
+</button>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-headline text-xl font-bold text-on-background">Creative Loft</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Photography Space</p>
+                        </div>
+                        <div class="text-on-surface leading-relaxed">
+                            <p>55 Artsy Boulevard</p>
+                            <p>Unit 2B, Wynwood</p>
+                            <p>FL 33127, USA</p>
+                        </div>
+                        <div
+                            class="pt-4 border-t border-outline-variant/10 flex items-center gap-2 text-on-surface-variant text-sm">
+                            <span class="material-symbols-outlined text-base" data-icon="call">call</span>
+                            +1 (555) 123-9988
+                        </div>
+                    </div>
+                </div>
+                <!-- Empty State / Add Card -->
+                <button
+                    class="border-2 border-dashed border-outline-variant/30 rounded-xl p-8 flex flex-col items-center justify-center gap-4 text-on-surface-variant hover:border-surface-tint hover:bg-white transition-all group min-h-[320px]">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-3xl" data-icon="add_location">add_location</span>
+                    </div>
+                    <span class="font-headline font-bold">Register New Location</span>
+                    <p class="text-sm text-center max-w-[180px]">Expand your delivery network with a new verified
+                        address.</p>
+                </button>
+            </div>
+            </div><!-- /.max-w-5xl -->
+        </main>
+      <%- include('../partials/user/profile-mobile-nav') %>
+    </div>
+    <!-- Delete Address Confirmation Modal -->
+<div id="deleteAddressModal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 z-10 text-center">
+    
+    <!-- Icon -->
+    <div class="w-14 h-14 bg-error-container rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-2xl text-error">delete</span>
+    </div>
+
+    <h3 class="font-headline text-lg font-extrabold tracking-tight mb-2">Remove Address?</h3>
+    <p class="text-xs text-on-surface-variant mb-8">This address will be permanently removed from your saved locations.</p>
+
+    <div class="flex gap-3">
+      <button type="button" id="cancelDeleteAddressBtn"
+        class="flex-1 px-6 py-2.5 border border-outline-variant text-on-surface-variant text-xs font-bold uppercase tracking-wider rounded-md hover:bg-surface-container transition-all">
+        Cancel
+      </button>
+      <button type="button" id="confirmDeleteAddressBtn"
+        class="flex-1 px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all active:scale-95">
+        Remove
+      </button>
+    </div>
+</div>
+</div>
+<!-- Add Address Modal -->
+<div id="addAddressModal" class="fixed inset-0 z-[300] hidden items-center justify-center py-8 px-4">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+<div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl z-10 max-h-[85vh] overflow-y-auto modal-scroll">
+        <!-- Header -->
+    <div class="p-8 pb-0">
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <h2 class="font-headline text-2xl font-extrabold tracking-tight">Create new Address</h2>
+          <p class="text-xs text-on-surface-variant mt-1">Provide your delivery information below to ensure your precision instruments arrive safely and on time.</p>
+        </div>
+        <button id="closeAddAddressBtn" type="button"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors ml-4 mt-1">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+    </div>
+
+    <form id="addAddressForm" action="/addresses/add" method="POST" class="p-8 space-y-5">
+
+      <!-- Full Name -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Full Name</label>
+        <input type="text" name="fullName" placeholder="E.g. Alexander Vance"
+          class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+      </div>
+
+      <!-- Street Address -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Street Address</label>
+        <input type="text" name="street" placeholder="123 Precision Way"
+          class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+      </div>
+
+      <!-- City + ZIP -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">City</label>
+          <input type="text" name="city" placeholder="San Francisco"
+            class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">ZIP / Postal Code</label>
+          <input type="text" name="zipCode" placeholder="94103"
+            class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+        </div>
+      </div>
+
+      <!-- State + Country -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">State / Province</label>
+          <input type="text" name="state" placeholder="California"
+            class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Country</label>
+          <input type="text" name="country" placeholder="India"
+            class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Phone Number</label>
+        <input type="text" name="phone" placeholder="+1 (555) 000-0000"
+          class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+      </div>
+
+      <!-- Address Type -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Address Type</label>
+        <select name="type"
+          class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all">
+          <option value="home">Home</option>
+          <option value="office">Office</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Default toggle -->
+      <div class="flex items-center justify-between bg-surface-container-low rounded-lg px-4 py-3 border border-outline-variant/30">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest">Set as Default Address</p>
+          <p class="text-[10px] text-on-surface-variant mt-0.5">Used for faster checkout</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" name="isDefault" value="true" class="sr-only peer" />
+          <div class="w-10 h-6 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors"></div>
+          <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+          class="flex-1 py-3 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all active:scale-95">
+          Save Address
+        </button>
+        <button type="button" id="cancelAddAddressBtn"
+          class="flex-1 py-3 border border-outline-variant text-on-surface-variant text-xs font-bold uppercase tracking-wider rounded-md hover:bg-surface-container transition-all">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="px-8 pb-6 flex items-center justify-center gap-6 text-[10px] text-on-surface-variant">
+      <div class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">lock</span>
+        Secure Encryption
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">sync</span>
+        Instant Sync
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+    
+    
+    const deleteModal       = document.getElementById('deleteAddressModal');
+    const cancelDeleteBtn   = document.getElementById('cancelDeleteAddressBtn');
+    const confirmDeleteBtn  = document.getElementById('confirmDeleteAddressBtn');
+    let deleteTargetId      = null;
+    
+    document.querySelectorAll('.delete-address-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            deleteTargetId = btn.dataset.id;
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        });
+    });
+    
+    cancelDeleteBtn.addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
+        deleteModal.classList.remove('flex');
+        deleteTargetId = null;
+    });
+    
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (!deleteTargetId) return;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/address/delete/${deleteTargetId}`;
+        document.body.appendChild(form);
+        form.submit();
+    });
+    
+    // close on backdrop click
+    deleteModal.addEventListener('click', (e) => {
+        if (e.target === deleteModal) {
+            deleteModal.classList.add('hidden');
+            deleteModal.classList.remove('flex');
+            deleteTargetId = null;
+        }
+    });
+
+
+const addAddressModal    = document.getElementById('addAddressModal');
+const addAddressBtn      = document.querySelector('[data-open="addAddress"]');
+const closeAddAddressBtn = document.getElementById('closeAddAddressBtn');
+const cancelAddAddressBtn = document.getElementById('cancelAddAddressBtn');
+
+function openAddModal() {
+  addAddressModal.classList.remove('hidden');
+  addAddressModal.classList.add('flex');
+}
+
+function closeAddModal() {
+  addAddressModal.classList.add('hidden');
+  addAddressModal.classList.remove('flex');
+}
+
+addAddressBtn.addEventListener('click', openAddModal);
+closeAddAddressBtn.addEventListener('click', closeAddModal);
+cancelAddAddressBtn.addEventListener('click', closeAddModal);
+
+addAddressModal.addEventListener('click', (e) => {
+  if (e.target === addAddressModal) closeAddModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAddModal();
+});
+</script>
+</body>
+
+</html>

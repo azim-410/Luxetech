@@ -1,6 +1,6 @@
+import './config/env.js'
 import express from 'express';
 import session from 'express-session'          
-import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import MongoStore from 'connect-mongo';         
@@ -13,7 +13,6 @@ import connectDB from './config/db.js';
 import nocache from 'nocache';
 
 
-dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();

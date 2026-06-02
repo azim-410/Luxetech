@@ -7,14 +7,7 @@ const sendOTP = async (email, otp) => {
             user: process.env.EMAIL,
             pass: process.env.EMAIL_PASS
         }
-    })
-
-    try {
-        await transporter.verify();
-    } catch (verifyError) {
-        console.error('Email transporter verification failed:', verifyError);
-        throw new Error('Unable to connect to email service. Check EMAIL and EMAIL_PASS settings.');
-    }
+    });
 
     try {
         await transporter.sendMail({

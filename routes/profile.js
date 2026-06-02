@@ -1,4 +1,5 @@
 import express from 'express';
+import { upload } from '../config/ cloudinary.js'
 import { isAuthenticated, isLogin, checkIfBlocked, blockIfGoogleUser } from '../middleware/auth.js';
 import { 
     getProfile,
@@ -10,7 +11,7 @@ import {
     verifyOldPassword,      
     showNewPasswordPage,
     changePassword,
-       
+    deleteProfileImage
 
  } from '../controller/user/profileController.js';  
 const router = express.Router();
@@ -21,7 +22,7 @@ router.get('/profile', isAuthenticated, checkIfBlocked, getProfile);
 router.get('/favorite', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/favorite'));
 router.get('/cart', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/cart'));
 
-router.post('/profile/update', isAuthenticated, checkIfBlocked, updateProfile);
+router.post('/profile/update', isAuthenticated, checkIfBlocked, upload.single('avatar'), updateProfile);
 router.get('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  showOtpPage);
 router.post('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  verifyOtp);
 
@@ -32,4 +33,6 @@ router.post('/change-password/verify-old', isAuthenticated, checkIfBlocked, bloc
 
 router.get('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogleUser, showNewPasswordPage);
 router.post('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoogleUser, changePassword);
+
+router.post('/profile/delete-image', isAuthenticated, checkIfBlocked, deleteProfileImage);
 export default router;  

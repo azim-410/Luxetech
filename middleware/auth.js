@@ -35,12 +35,15 @@ const checkIfBlocked = async (req, res, next) => {
 };
 
 
-const blockIfGoogleUser = (req,res,next)=>{
+const blockIfGoogleUser = async (req,res,next)=>{
     if(!req.session.user){
         return res.redirect('/login');
     }
+    const user = await User.findById(req.session.user.id)
 
-    if(req.session.user.authProvider !== 'local'){
+    console.log("user in middlewareNew = "+user)
+    console.log("authProvider is :"+user.authProvider);
+    if(user.authProvider !== 'local'){
        return res.redirect('/profile'); 
     }
 

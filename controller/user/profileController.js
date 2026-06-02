@@ -4,7 +4,8 @@ import {
   verifyOtpService,
   resendOtpService,
   verifyOldPasswordService,
-  changePasswordService
+  changePasswordService,
+  deleteProfileImageServices
 } from '../../services/user/profileService.js';
 
 const getProfile = async (req, res) => {
@@ -24,23 +25,55 @@ const getProfile = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
+  console.log('start')
   try {
-    const { name, email } = req.body;
-    console.log('Received profile update data:', { name, email });
-    const userId = req.session.user.id;
+    console.log("part 1 ")
 
-    const result = await updateProfileService(userId, name, email);
+    const { name, email } = req.body;
+    
+    console.log('[updateProfile] START - data:', { name, email });
+    const userId = req.session.user.id;
+    console.log('[updateProfile] userId:', userId);
+    
+    const profileImage = req.file ? req.file.path : null;
+    console.log('[updateProfile] profileImage:', profileImage);
+
+    console.log('[updateProfile] calling updateProfileService...');
+    const result = await updateProfileService(userId, name, email, profileImage);
+    console.log('[updateProfile] result:', result);
+
     if (result.requiresOtp) {
+      console.log('[updateProfile] requiresOtp=true → redirecting to /verify-emailChange-otp');
       return res.redirect('/verify-emailChange-otp');
     }
 
     const user = await getUserById(userId);
+    console.log('[updateProfile] done, rendering profile with success');
+
     return res.status(200).render('User/profile', {
       user,
       successMessage: result.message
     });
   } catch (error) {
-    console.error('Profile update error:', error.message);
+    console.error('[updateProfile] ERROR:', error.message, error.stack);
+    const userId = req.session.user.id;
+    const user = await getUserById(userId);
+    return res.status(400).render('User/profile', { user, errorMessage: error.message });
+  }
+};
+
+const deleteProfileImage = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+   
+    const result = await deleteProfileImageServices(userId);
+    const user = await getUserById(userId);
+    return res.status(200).render('User/profile', {
+       user,
+       successMessage: result.message
+     });
+  } catch (error) {
+    console.error('Delete image error:', error.message);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
     return res.status(400).render('User/profile', { user, errorMessage: error.message });
@@ -49,23 +82,26 @@ const updateProfile = async (req, res) => {
 
 const showOtpPage = async (req, res) => {
   try {
-    return res.render('User/auth/otp-verification.ejs', {
+    console.log('[showOtpPage] rendering OTP page, session user:', req.session.user);
+    return res.render('User/auth/otp-verification', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
     });
   } catch (error) {
-    console.error('Show OTP page error:', error.message);
+    console.error('[showOtpPage] ERROR:', error.message, error.stack);
     return res.status(500).send('Server error');
   }
 };
 
 const verifyOtp = async (req, res) => {
   try {
-
+    console.log('[verifyOtp] body:', req.body);
     const otp = Object.values(req.body).join('');
     const userId = req.session.user.id;
+    console.log('[verifyOtp] otp:', otp, '| userId:', userId);
 
     const result = await verifyOtpService(userId, otp);
+    console.log('[verifyOtp] result:', result);
     const user = await getUserById(userId);
 
     return res.status(200).render('User/profile', {
@@ -73,8 +109,8 @@ const verifyOtp = async (req, res) => {
       successMessage: result.message
     });
   } catch (error) {
-    console.error('Verify OTP error:', error.message);
-    return res.status(400).render('User/auth/otp-verification.ejs', {
+    console.error('[verifyOtp] ERROR:', error.message);
+    return res.status(400).render('User/auth/otp-verification', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       errorMessage: error.message
@@ -88,7 +124,7 @@ const resendOtp = async (req, res) => {
 
     const result = await resendOtpService(userId);
 
-    return res.render('User/auth/otp-verification.ejs', {
+    return res.render('User/auth/otp-verification', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       successMessage: result.message
@@ -96,7 +132,7 @@ const resendOtp = async (req, res) => {
 
   } catch (error) {
     console.error('Resend OTP error:', error.message);
-    return res.render('User/auth/otp-verification.ejs', {
+    return res.render('User/auth/otp-verification', {
       actionUrl: '/verify-emailChange-otp',
       resendUrl: '/verify-emailChange-otp/resend',
       errorMessage: error.message
@@ -186,5 +222,6 @@ export {
   showChangePasswordPage,
   verifyOldPassword,
   showNewPasswordPage,
-  changePassword
+  changePassword,
+  deleteProfileImage
 }

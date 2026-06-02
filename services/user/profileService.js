@@ -10,8 +10,8 @@ const getUserById = async (userId) => {
     return user;
 }
 
-const updateProfileService = async (userId, name, email) => {
-
+const updateProfileService = async (userId, name, email, profileImage) => {
+    console.log("initialized")
   const currentUser = await getUserById(userId);
 
   const updatedName  = name  ? name.trim()  : currentUser.name;
@@ -35,17 +35,24 @@ const updateProfileService = async (userId, name, email) => {
 
   const nameChanged  = updatedName  !== currentUser.name;
   const emailChanged = updatedEmail !== currentUser.email;
-
-  if (!nameChanged && !emailChanged) {
+  const imageChanged = !!profileImage
+  console.log("part2")
+  if (!nameChanged && !emailChanged && !imageChanged) {
     throw new Error('No changes detected');
   }
 
+  if (imageChanged) {
+    await userModel.findByIdAndUpdate(userId, { profileImage });
+  }
   
+  if (imageChanged && !nameChanged && !emailChanged) {
+  return { success: true, requiresOtp: false, message: 'Profile image updated successfully' };
+}
   if (nameChanged && !emailChanged) {
     await userModel.findByIdAndUpdate(userId, { name: updatedName });
     return { success: true, requiresOtp: false, message: 'Profile updated successfully' };
   }
-
+  
   const isExistEmail = await userModel.findOne({ email: updatedEmail });
   if (isExistEmail) throw new Error('Email already in use');
 
@@ -62,10 +69,24 @@ const updateProfileService = async (userId, name, email) => {
     emailOtpExpiry: expireOtp
   });
   await tempUser.save();
-  await sendOTP(updatedEmail, otp);
+  
+  try {
+    console.log("Sending OTP to:", updatedEmail);
+    await sendOTP(updatedEmail, otp);
+    console.log("OTP sent successfully");
+  } catch (emailError) {
+    console.error("OTP sending error:", emailError.message);
+    // Don't throw here - the OTP was saved, user can still verify or resend
+    console.log("OTP saved in database even though email failed. User can try resending.");
+  }
 
-  return { success: true, requiresOtp: true, message: 'OTP sent to new email. Please verify to update profile.' };
+  return { success: true, requiresOtp: true, message: 'OTP request created. Please check your email.' };
 };
+
+const deleteProfileImageServices = async (userId)=>{
+    await userModel.findByIdAndUpdate(userId,{ profileImage:null })
+    return { success: true, message: ' profile delete successfully' }
+}
 
 const verifyOtpService = async (userId, otp) => {
 
@@ -116,8 +137,16 @@ const resendOtpService = async (userId) => {
         { new: true }
     );
     console.log("Resent otp 2:", otp)
-    await sendOTP(tempUser.tempEmail, otp);
-    console.log("Resent otp 3:", otp)
+    
+    try {
+        await sendOTP(tempUser.tempEmail, otp);
+        console.log("Resent otp 3:", otp)
+    } catch (emailError) {
+        console.error("Resend OTP email error:", emailError.message);
+        // Don't throw - OTP was already saved in database
+        console.log("OTP saved but email failed. User can continue with verification.");
+    }
+    
     return { success: true, message: 'New OTP sent successfully' };
 };
 
@@ -163,5 +192,6 @@ export {
     verifyOtpService,
     resendOtpService,
     verifyOldPasswordService,
-    changePasswordService
+    changePasswordService,
+    deleteProfileImageServices
 }

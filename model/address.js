@@ -6,11 +6,11 @@ const addressSchema = new mongoose.Schema({
         ref:"User",
         required:true
     },
-    FullName:{
+    fullName:{
         type:String,
         required:true
     },
-    StreetAddress:{
+    streetAddress:{
         type:String,
         required:true
     },
@@ -19,14 +19,14 @@ const addressSchema = new mongoose.Schema({
         required:true
     },
     zipCode:{
-        type:Number,
+        type:String,
         required:true
     },
     state:{
         type:String,
         required:true
     },
-    Country:{
+    country:{
         type:String,
         required:true
     },
@@ -34,7 +34,12 @@ const addressSchema = new mongoose.Schema({
          type:String,
         required:true
     },
-    isdefault:{
+    type: {
+        type: String,
+        enum: ['home', 'office', 'other'],
+        default: 'home'
+    },
+    isDefault:{
         type:Boolean,
         default:false
     }
@@ -43,3 +48,7 @@ const addressSchema = new mongoose.Schema({
     timestamps: true
     }
 )
+
+const address = mongoose.model('Address',addressSchema)
+
+export default address

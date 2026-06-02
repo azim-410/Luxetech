@@ -12,9 +12,11 @@ import {
     showNewPasswordPage,
     changePassword,
     deleteProfileImage,
-    getAddresses
-
  } from '../controller/user/profileController.js';  
+
+ import {
+    getAddresses,
+ } from '../controller/user/addressController.js'
 const router = express.Router();
 
 // ─── prifile Routes ────────────────────────────────────────────── 

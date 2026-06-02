@@ -16,6 +16,7 @@ import {
 
  import {
     getAddresses,
+    addAddress
  } from '../controller/user/addressController.js'
 const router = express.Router();
 
@@ -42,5 +43,6 @@ router.post('/profile/delete-image', isAuthenticated, checkIfBlocked, deleteProf
 
 // ── address Routes ────────────────────────────────────────────── 
 router.get('/address', isAuthenticated, checkIfBlocked, getAddresses);
+router.post('/address/add', isAuthenticated, checkIfBlocked, addAddress);
 
 export default router;  

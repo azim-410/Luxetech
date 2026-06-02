@@ -86,70 +86,7 @@
       %>
 
       <div class="flex min-h-screen">
-        <!-- Side Navigation Bar -->
-        <aside
-          class="profile-sidebar w-64 hidden lg:flex flex-col border-r border-slate-200/50 bg-slate-50 fixed left-0 z-40 overflow-y-auto">
-          <div class="flex flex-col gap-2 p-4 pt-8">
-            <div class="flex items-center gap-3 mb-8 px-2">
-              <div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container border-2 border-primary">
-                <img alt="<%= user.name %>" src="<%= user.profileImage || user.avatar || dummyImgUrl%>" />
-              </div>
-              <div>
-                <div class="font-manrope text-sm font-bold text-[#0D1B2A]">
-                  <%= user.name %>
-                </div>
-              </div>
-            </div>
-            <nav class="space-y-1">
-              <a class="flex items-center gap-3 px-4 py-3 text-[#0D1B2A] bg-[#0D1B2A]/5 font-bold rounded-lg transition-transform duration-200 hover:translate-x-1 border-l-4 border-[#0D1B2A]"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="person">person</span>
-                <span class="font-manrope text-sm">Personal Info</span>
-              </a>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm"
-                  data-icon="account_balance_wallet">account_balance_wallet</span>
-                <span class="font-manrope text-sm">Wallet &amp; Balance</span>
-              </a>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="history">history</span>
-                <span class="font-manrope text-sm">Order History</span>
-              </a>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-                <span class="font-manrope text-sm">Addresses</span>
-              </a>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span>
-                <span class="font-manrope text-sm">Payments</span>
-              </a>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
-                <span class="font-manrope text-sm">Security</span>
-              </a>
-            </nav>
-            <div class="mt-auto pb-4 space-y-1">
-              <div class="h-[1px] bg-slate-200 mb-4"></div>
-              <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-transform duration-200 hover:translate-x-1"
-                href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
-                <span class="font-manrope text-sm">Settings</span>
-              </a>
-              <form action="/logout" method="POST" class="w-full">
-                <button type="submit"
-                  class="w-full text-left flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg transition-transform duration-200 hover:translate-x-1">
-                  <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
-                  <span class="font-manrope text-sm">Logout</span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </aside>
+        <%- include('../partials/user/profile-sidebar', { user }) %>
 
         <!-- Main Content Area -->
         <main class="profile-main flex-1 lg:ml-64 p-6 md:p-12">
@@ -424,33 +361,7 @@
         </main>
       </div>
 
-      <!-- ===== MOBILE BOTTOM NAV ===== -->
-      <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
-        <div class="flex items-center justify-around px-1 py-2">
-          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg bg-[#0D1B2A]/5 text-[#0D1B2A]">
-            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span>
-            <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
-          </a>
-          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-            <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
-            <span class="text-[9px] font-bold uppercase tracking-wide">Wallet</span>
-          </a>
-          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-            <span class="material-symbols-outlined text-xl">history</span>
-            <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
-          </a>
-          <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
-            <span class="material-symbols-outlined text-xl">location_on</span>
-            <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
-          </a>
-          <form action="/logout" method="POST">
-            <button type="submit" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-error">
-              <span class="material-symbols-outlined text-xl">logout</span>
-              <span class="text-[9px] font-bold uppercase tracking-wide">Logout</span>
-            </button>
-          </form>
-        </div>
-      </nav>
+      <%- include('../partials/user/profile-mobile-nav') %>
 
       <!-- Edit Profile Modal -->
       <div id="editProfileModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">

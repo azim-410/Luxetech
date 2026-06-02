@@ -1,0 +1,26 @@
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
+  <div class="flex items-center justify-around px-1 py-2">
+    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg bg-[#0D1B2A]/5 text-[#0D1B2A]">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span>
+      <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
+    </a>
+    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+      <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+      <span class="text-[9px] font-bold uppercase tracking-wide">Wallet</span>
+    </a>
+    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+      <span class="material-symbols-outlined text-xl">history</span>
+      <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
+    </a>
+    <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500">
+      <span class="material-symbols-outlined text-xl">location_on</span>
+      <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
+    </a>
+    <form action="/logout" method="POST">
+      <button type="submit" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-error">
+        <span class="material-symbols-outlined text-xl">logout</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide">Logout</span>
+      </button>
+    </form>
+  </div>
+</nav>

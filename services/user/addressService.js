@@ -1,3 +1,4 @@
+// import { errorMonitor } from 'nodemailer/lib/xoauth2/index.js';
 import AddressModel from '../../model/address.js';
 import axios from 'axios';
 const getAddressesService = async (userId) => {
@@ -106,8 +107,19 @@ const editAddressService = async (addressId, addressData) => {
     return updated;
 };
 
+const deleteAddressServices =async (addressId)=>{
+    const isExist = await AddressModel.findById(addressId)
+    console.log("from service isexist"+isExist);
+    if(!isExist){
+        throw new Error("address not found");
+    }
+    await AddressModel.findByIdAndDelete(addressId)
+    return{success:true};
+}
+
 export {
     getAddressesService,
     addAddressService,
-    editAddressService
+    editAddressService,
+    deleteAddressServices
 }

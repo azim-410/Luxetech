@@ -1,7 +1,8 @@
 import {
     getAddressesService,
     addAddressService,
-    editAddressService
+    editAddressService,
+    deleteAddressServices
 } from '../../services/user/addressService.js'
 
 const getAddresses = async (req, res) => {
@@ -48,7 +49,7 @@ const editAddress = async (req, res) => {
         return res.redirect('/address');
     } catch (error) {
         console.error('editAddressControllerError: ' + error);
-        // Validation error → re-render with edit errors so modal pops back open
+        
         if (error.statusCode === 400 && error.errors) {
             const userId = req.session?.user?.id || req.user?._id;
             const user   = req.session?.user || req.user;
@@ -64,8 +65,22 @@ const editAddress = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
+const deleteAddress = async (req,res) => {
+    try {
+      const { addressId } = req.params;
+      await deleteAddressServices(addressId);
+      return res.redirect('/address');  
+    } catch (error) {
+        console.log("address delete controller Error:"+error)
+        return res.redirect('/address');
+    }
+}
+
+
 export {
     getAddresses,
     addAddress,
-    editAddress
+    editAddress,
+    deleteAddress
 }

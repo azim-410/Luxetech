@@ -16,7 +16,8 @@ import {
 
  import {
     getAddresses,
-    addAddress
+    addAddress,
+    editAddress
  } from '../controller/user/addressController.js'
 const router = express.Router();
 
@@ -41,8 +42,8 @@ router.post('/change-password/new', isAuthenticated, checkIfBlocked, blockIfGoog
 router.post('/profile/delete-image', isAuthenticated, checkIfBlocked, deleteProfileImage);
 
 
-// ── address Routes ────────────────────────────────────────────── 
 router.get('/address', isAuthenticated, checkIfBlocked, getAddresses);
 router.post('/address/add', isAuthenticated, checkIfBlocked, addAddress);
+router.post('/address/edit/:addressId', isAuthenticated, checkIfBlocked, editAddress);
 
 export default router;  

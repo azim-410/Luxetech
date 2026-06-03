@@ -134,8 +134,18 @@
                         </div>
                         <div class="flex gap-2">
                           <button
-                            class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
-                            title="Edit">
+                            class="edit-address-btn flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors text-xs font-semibold"
+                            title="Edit"
+                            data-id="<%= address._id %>"
+                            data-fullname="<%= address.fullName %>"
+                            data-street="<%= address.streetAddress %>"
+                            data-city="<%= address.city %>"
+                            data-zip="<%= address.zipCode %>"
+                            data-state="<%= address.state %>"
+                            data-country="<%= address.country %>"
+                            data-phone="<%= address.phoneNumber %>"
+                            data-type="<%= address.type %>"
+                            data-default="<%= address.isDefault %>">
                             <span class="material-symbols-outlined text-base">edit</span>
                             Edit
                           </button>
@@ -224,8 +234,8 @@
           <div class="px-5 pt-3 pb-0 sm:p-8 sm:pb-0">
             <div class="flex items-start justify-between mb-2">
               <div>
-                <h2 class="font-headline text-2xl font-extrabold tracking-tight">Create new Address</h2>
-                <p class="text-xs text-on-surface-variant mt-1">Provide your delivery information below to ensure your
+                <h2 id="addressModalTitle" class="font-headline text-2xl font-extrabold tracking-tight">Create new Address</h2>
+                <p id="addressModalSubtitle" class="text-xs text-on-surface-variant mt-1">Provide your delivery information below to ensure your
                   precision instruments arrive safely and on time.</p>
               </div>
               <button id="closeAddAddressBtn" type="button"
@@ -238,11 +248,13 @@
          <form id="addAddressForm" action="/address/add" method="POST" class="px-5 py-4 sm:p-8 space-y-4 sm:space-y-5">
 
             <%# ── Top-level error banner (uses locals for safety) ── %>
-            <% if (locals.errors && Object.keys(errors).length > 0) { %>
+            <% const _errors = locals.errors || locals.editErrors || {}; %>
+            <% const _formData = locals.formData || locals.editFormData || {}; %>
+            <% if (Object.keys(_errors).length > 0) { %>
               <div class="flex items-start gap-3 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-xs">
                 <span class="material-symbols-outlined text-base shrink-0 mt-0.5">error</span>
                 <div>
-                  <p class="font-bold">Please fix <%= Object.keys(errors).length %> error<%= Object.keys(errors).length > 1 ? 's' : '' %> below</p>
+                  <p class="font-bold">Please fix <%= Object.keys(_errors).length %> error<%= Object.keys(_errors).length > 1 ? 's' : '' %> below</p>
                   <p class="font-normal mt-0.5 opacity-80">Check the highlighted fields and try again.</p>
                 </div>
               </div>
@@ -252,10 +264,10 @@
             <div class="space-y-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Full Name</label>
               <input type="text" name="fullName" placeholder="E.g. Alexander Vance"
-                value="<%= locals.formData ? formData.fullName : '' %>"
-                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.fullName ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-              <% if (locals.errors && errors.fullName) { %>
-                  <p class="text-[10px] text-error mt-1"><%= errors.fullName %></p>
+                value="<%= _formData.fullName || '' %>"
+                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.fullName ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+              <% if (_errors.fullName) { %>
+                  <p class="text-[10px] text-error mt-1"><%= _errors.fullName %></p>
               <% } %>
             </div>
 
@@ -263,10 +275,10 @@
             <div class="space-y-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Street Address</label>
               <input type="text" name="streetAddress" placeholder="123 Precision Way"
-                value="<%= locals.formData ? formData.streetAddress : '' %>"
-                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.streetAddress ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-              <% if (locals.errors && errors.streetAddress) { %>
-                  <p class="text-[10px] text-error mt-1"><%= errors.streetAddress %></p>
+                value="<%= _formData.streetAddress || '' %>"
+                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.streetAddress ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+              <% if (_errors.streetAddress) { %>
+                  <p class="text-[10px] text-error mt-1"><%= _errors.streetAddress %></p>
               <% } %>
             </div>
 
@@ -275,19 +287,19 @@
               <div class="space-y-1.5">
                 <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">City</label>
                 <input type="text" name="city" placeholder="San Francisco"
-                  value="<%= locals.formData ? formData.city : '' %>"
-                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.city ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-                <% if (locals.errors && errors.city) { %>
-                    <p class="text-[10px] text-error mt-1"><%= errors.city %></p>
+                  value="<%= _formData.city || '' %>"
+                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.city ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+                <% if (_errors.city) { %>
+                    <p class="text-[10px] text-error mt-1"><%= _errors.city %></p>
                 <% } %>
               </div>
               <div class="space-y-1.5">
                 <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">ZIP / Postal Code</label>
                 <input type="text" name="zipCode" placeholder="94103"
-                  value="<%= locals.formData ? formData.zipCode : '' %>"
-                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.zipCode ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-                <% if (locals.errors && errors.zipCode) { %>
-                    <p class="text-[10px] text-error mt-1"><%= errors.zipCode %></p>
+                  value="<%= _formData.zipCode || '' %>"
+                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.zipCode ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+                <% if (_errors.zipCode) { %>
+                    <p class="text-[10px] text-error mt-1"><%= _errors.zipCode %></p>
                 <% } %>
               </div>
             </div>
@@ -297,19 +309,19 @@
               <div class="space-y-1.5">
                 <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">State / Province</label>
                 <input type="text" name="state" placeholder="California"
-                  value="<%= locals.formData ? formData.state : '' %>"
-                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.state ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-                <% if (locals.errors && errors.state) { %>
-                    <p class="text-[10px] text-error mt-1"><%= errors.state %></p>
+                  value="<%= _formData.state || '' %>"
+                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.state ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+                <% if (_errors.state) { %>
+                    <p class="text-[10px] text-error mt-1"><%= _errors.state %></p>
                 <% } %>
               </div>
               <div class="space-y-1.5">
                 <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Country</label>
                 <input type="text" name="country" placeholder="India"
-                  value="<%= locals.formData ? formData.country : '' %>"
-                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.country ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-                <% if (locals.errors && errors.country) { %>
-                    <p class="text-[10px] text-error mt-1"><%= errors.country %></p>
+                  value="<%= _formData.country || '' %>"
+                  class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.country ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+                <% if (_errors.country) { %>
+                    <p class="text-[10px] text-error mt-1"><%= _errors.country %></p>
                 <% } %>
               </div>
             </div>
@@ -318,21 +330,21 @@
             <div class="space-y-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Phone Number</label>
               <input type="text" name="phoneNumber" placeholder="+1 (555) 000-0000"
-                value="<%= locals.formData ? formData.phoneNumber : '' %>"
-                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= locals.errors && errors.phoneNumber ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
-              <% if (locals.errors && errors.phoneNumber) { %>
-                  <p class="text-[10px] text-error mt-1"><%= errors.phoneNumber %></p>
+                value="<%= _formData.phoneNumber || '' %>"
+                class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border <%= _errors.phoneNumber ? 'border-error' : 'border-outline-variant/30' %> focus:ring-2 focus:ring-primary focus:outline-none transition-all" />
+              <% if (_errors.phoneNumber) { %>
+                  <p class="text-[10px] text-error mt-1"><%= _errors.phoneNumber %></p>
               <% } %>
             </div>
 
             <!-- Address Type -->
             <div class="space-y-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Address Type</label>
-              <select name="type"
+              <select id="addressTypeSelect" name="type"
                 class="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm border border-outline-variant/30 focus:ring-2 focus:ring-primary focus:outline-none transition-all">
-                <option value="home" <%= locals.formData && formData.type === 'home' ? 'selected' : '' %>>Home</option>
-                <option value="office" <%= locals.formData && formData.type === 'office' ? 'selected' : '' %>>Office</option>
-                <option value="other" <%= locals.formData && formData.type === 'other' ? 'selected' : '' %>>Other</option>
+                <option value="home" <%= _formData.type === 'home' ? 'selected' : '' %>>Home</option>
+                <option value="office" <%= _formData.type === 'office' ? 'selected' : '' %>>Office</option>
+                <option value="other" <%= _formData.type === 'other' ? 'selected' : '' %>>Other</option>
               </select>
             </div>
 
@@ -343,7 +355,7 @@
                 <p class="text-[10px] text-on-surface-variant mt-0.5">Used for faster checkout</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" name="isDefault" value="true" class="sr-only peer" <%= locals.formData && formData.isDefault ? 'checked' : '' %> />
+                <input id="addressIsDefaultChk" type="checkbox" name="isDefault" value="true" class="sr-only peer" <%= _formData.isDefault ? 'checked' : '' %> />
                 <div class="w-10 h-6 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors"></div>
                 <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
               </label>
@@ -351,7 +363,7 @@
 
             <!-- Actions -->
             <div class="flex gap-3 pt-2">
-              <button type="submit"
+              <button id="addressModalSubmitBtn" type="submit"
                 class="flex-1 py-3 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all active:scale-95">
                 Save Address
               </button>
@@ -380,9 +392,102 @@
 
       <script>
 
+        // ── Grab references ────────────────────────────────────────────
+        const modal          = document.getElementById('addAddressModal');
+        const modalForm      = document.getElementById('addAddressForm');
+        const modalTitle     = document.getElementById('addressModalTitle');
+        const modalSubtitle  = document.getElementById('addressModalSubtitle');
+        const modalSubmitBtn = document.getElementById('addressModalSubmitBtn');
+        const typeSelect     = document.getElementById('addressTypeSelect');
+        const isDefaultChk   = document.getElementById('addressIsDefaultChk');
 
-        const deleteModal = document.getElementById('deleteAddressModal');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteAddressBtn');
+        // All plain text inputs inside the form (by name)
+        function field(name) { return modalForm.querySelector(`[name="${name}"]`); }
+
+        // ── Open / Close helpers ───────────────────────────────────────
+        function openModal() {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+        function closeModal() {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+
+        // ── Reset modal back to "Add" mode ─────────────────────────────
+        function setAddMode() {
+          modalForm.action       = '/address/add';
+          modalTitle.textContent = 'Create new Address';
+          modalSubtitle.textContent = 'Provide your delivery information below to ensure your precision instruments arrive safely and on time.';
+          modalSubmitBtn.textContent = 'Save Address';
+          // Clear all fields
+          ['fullName','streetAddress','city','zipCode','state','country','phoneNumber'].forEach(n => field(n).value = '');
+          typeSelect.value    = 'home';
+          isDefaultChk.checked = false;
+        }
+
+        // ── "Add New Address" button ───────────────────────────────────
+        const addAddressBtn = document.querySelector('[data-open="addAddress"]');
+        addAddressBtn.addEventListener('click', () => {
+          setAddMode();
+          openModal();
+        });
+
+        // ── Close buttons ──────────────────────────────────────────────
+        document.getElementById('closeAddAddressBtn').addEventListener('click', closeModal);
+        document.getElementById('cancelAddAddressBtn').addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        const modalBackdrop = modal.querySelector('.absolute.inset-0');
+        if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeModal();
+        });
+
+        // ── Edit buttons — switch to "Edit" mode ───────────────────────
+        document.querySelectorAll('.edit-address-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Change modal to Edit mode
+            modalForm.action       = `/address/edit/${btn.dataset.id}`;
+            modalTitle.textContent = 'Edit Address';
+            modalSubtitle.textContent = 'Update your delivery information below.';
+            modalSubmitBtn.textContent = 'Save Changes';
+
+            // Pre-fill fields with this address's data
+            field('fullName').value      = btn.dataset.fullname;
+            field('streetAddress').value = btn.dataset.street;
+            field('city').value          = btn.dataset.city;
+            field('zipCode').value       = btn.dataset.zip;
+            field('state').value         = btn.dataset.state;
+            field('country').value       = btn.dataset.country;
+            field('phoneNumber').value   = btn.dataset.phone;
+            typeSelect.value             = btn.dataset.type || 'home';
+            isDefaultChk.checked         = (btn.dataset.default === 'true');
+
+            openModal();
+          });
+        });
+
+        // ── Auto-open on server-side validation errors ─────────────────
+        <% if (locals.errors && Object.keys(errors).length > 0) { %>
+        // Add errors: modal stays in Add mode (form action is already /address/add from HTML)
+        openModal();
+        <% } %>
+
+        <% if (locals.editErrors && Object.keys(editErrors).length > 0) { %>
+        // Edit errors: switch to Edit mode then open
+        modalForm.action           = `/address/edit/<%= locals.editAddressId %>`;
+        modalTitle.textContent     = 'Edit Address';
+        modalSubtitle.textContent  = 'Update your delivery information below.';
+        modalSubmitBtn.textContent = 'Save Changes';
+        openModal();
+        <% } %>
+
+        // ── Delete modal ───────────────────────────────────────────────
+        const deleteModal    = document.getElementById('deleteAddressModal');
+        const cancelDeleteBtn  = document.getElementById('cancelDeleteAddressBtn');
         const confirmDeleteBtn = document.getElementById('confirmDeleteAddressBtn');
         let deleteTargetId = null;
 
@@ -409,7 +514,6 @@
           form.submit();
         });
 
-        // close on backdrop click
         deleteModal.addEventListener('click', (e) => {
           if (e.target === deleteModal) {
             deleteModal.classList.add('hidden');
@@ -418,40 +522,6 @@
           }
         });
 
-
-        const addAddressModal = document.getElementById('addAddressModal');
-        const addAddressBtn = document.querySelector('[data-open="addAddress"]');
-        const closeAddAddressBtn = document.getElementById('closeAddAddressBtn');
-        const cancelAddAddressBtn = document.getElementById('cancelAddAddressBtn');
-
-        function openAddModal() {
-          addAddressModal.classList.remove('hidden');
-          addAddressModal.classList.add('flex');
-        }
-
-        function closeAddModal() {
-          addAddressModal.classList.add('hidden');
-          addAddressModal.classList.remove('flex');
-        }
-
-        addAddressBtn.addEventListener('click', openAddModal);
-        closeAddAddressBtn.addEventListener('click', closeAddModal);
-        cancelAddAddressBtn.addEventListener('click', closeAddModal);
-
-        // close on backdrop click
-        const addModalBackdrop = addAddressModal.querySelector('.absolute.inset-0');
-        if (addModalBackdrop) {
-          addModalBackdrop.addEventListener('click', closeAddModal);
-        }
-
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') closeAddModal();
-        });
-
-        // Auto-open modal on validation errors (uses EJS locals safely)
-        <% if (locals.errors && Object.keys(errors).length > 0) { %>
-        openAddModal();
-        <% } %>
       </script>
 </body>
 

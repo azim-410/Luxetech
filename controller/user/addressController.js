@@ -1,6 +1,7 @@
 import {
     getAddressesService,
-    addAddressService
+    addAddressService,
+    editAddressService
 } from '../../services/user/addressService.js'
 
 const getAddresses = async (req, res) => {
@@ -40,7 +41,31 @@ const addAddress = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+const editAddress = async (req, res) => {
+    try {
+        const { addressId } = req.params;
+        await editAddressService(addressId, req.body);
+        return res.redirect('/address');
+    } catch (error) {
+        console.error('editAddressControllerError: ' + error);
+        // Validation error → re-render with edit errors so modal pops back open
+        if (error.statusCode === 400 && error.errors) {
+            const userId = req.session?.user?.id || req.user?._id;
+            const user   = req.session?.user || req.user;
+            const address = await getAddressesService(userId);
+            return res.render('User/address.ejs', {
+                address,
+                user,
+                editErrors:   error.errors,
+                editFormData: req.body,
+                editAddressId: req.params.addressId
+            });
+        }
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
 export {
     getAddresses,
-    addAddress
+    addAddress,
+    editAddress
 }

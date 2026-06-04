@@ -367,10 +367,10 @@
                 class="flex-1 py-3 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all active:scale-95">
                 Save Address
               </button>
-              <button type="button" id="cancelAddAddressBtn"
-                class="flex-1 py-3 border border-outline-variant text-on-surface-variant text-xs font-bold uppercase tracking-wider rounded-md hover:bg-surface-container transition-all">
+              <a href="/address" id="cancelAddAddressBtn"
+                class="flex-1 py-3 border border-outline-variant text-on-surface-variant text-xs font-bold uppercase tracking-wider rounded-md hover:bg-surface-container transition-all text-center">
                 Cancel
-              </button>
+              </a>
             </div>
           </form>
 
@@ -410,12 +410,30 @@
           modal.classList.add('flex');
         }
         function closeModal() {
+          clearErrors();
           modal.classList.add('hidden');
           modal.classList.remove('flex');
         }
 
+        // ── Clear all server-rendered validation errors inside the form ─
+        function clearErrors() {
+          // Remove the top-level error banner
+          const banner = modalForm.querySelector('.bg-error-container');
+          if (banner) banner.remove();
+
+          // Remove all per-field error messages
+          modalForm.querySelectorAll('p.text-error').forEach(el => el.remove());
+
+          // Reset all red-bordered inputs back to normal border
+          modalForm.querySelectorAll('input.border-error, select.border-error').forEach(el => {
+            el.classList.remove('border-error');
+            el.classList.add('border-outline-variant\\/30');
+          });
+        }
+
         // ── Reset modal back to "Add" mode ─────────────────────────────
         function setAddMode() {
+          clearErrors();
           modalForm.action       = '/address/add';
           modalTitle.textContent = 'Create new Address';
           modalSubtitle.textContent = 'Provide your delivery information below to ensure your precision instruments arrive safely and on time.';
@@ -449,6 +467,7 @@
         // ── Edit buttons — switch to "Edit" mode ───────────────────────
         document.querySelectorAll('.edit-address-btn').forEach(btn => {
           btn.addEventListener('click', () => {
+            clearErrors();
             // Change modal to Edit mode
             modalForm.action       = `/address/edit/${btn.dataset.id}`;
             modalTitle.textContent = 'Edit Address';

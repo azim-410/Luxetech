@@ -4,6 +4,9 @@ import bcrypt from 'bcrypt';
 import { generateOTP } from '../../utils/genarateOTP.js';
 import { sendOTP } from '../../utils/sendEmail.js';
 
+// ── Validation helpers ───────────────────────────────────────
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
 // ─── REGISTER ───────────────────────────────────────────
 const registerUser = async (data) => {
     const { name, email, password, confirmPassword, terms } = data;
@@ -109,12 +112,14 @@ const verifyOtp = async (inputValue, userId) => {
     }
     if (otpRecord.otp !== inputValue) throw new Error("Invalid OTP");
 
+    // Use $unset to fully remove the TTL field so MongoDB never auto-deletes this verified user
+    await User.updateOne(
+        { _id: userId },
+        { $set: { isVerified: true }, $unset: { userExpire: "" } }
+    );
+
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
-
-    user.userExpire = null;
-    user.isVerified = true;
-    await user.save();
 
     await OTP.deleteOne({ userId });
     return { success: true, user };
@@ -123,7 +128,11 @@ const verifyOtp = async (inputValue, userId) => {
 // ─── RESEND REGISTRATION OTP ────────────────────────────
 const resendOtpService = async (userId) => {
     const user = await User.findById(userId);
-    if (!user) throw new Error('User not found, please register again.');
+    if (!user) {
+        const err = new Error('Session expired. Please register again.');
+        err.code = 'USER_NOT_FOUND';
+        throw err;
+    }
 
     await OTP.deleteOne({ userId });
 
@@ -134,9 +143,23 @@ const resendOtpService = async (userId) => {
     return { success: true };
 };
 
-// ─── SEND PASSWORD RESET OTP ────────────────────────────
+// ── SEND PASSWORD RESET OTP ────────────────────────────
 const sendPasswordResetOtpService = async (email) => {
-    const user = await User.findOne({ email });
+    // Validate email presence
+    if (!email || email.trim() === '') {
+        const err = new Error('Email address is required.');
+        err.field = 'email';
+        throw err;
+    }
+
+    // Validate email format before querying the DB
+    if (!EMAIL_REGEX.test(email.trim())) {
+        const err = new Error('Please enter a valid email address (e.g. user@example.com).');
+        err.field = 'email';
+        throw err;
+    }
+
+    const user = await User.findOne({ email: email.trim() });
     if (!user) throw new Error('No account found with this email address.');
 
     await OTP.deleteOne({ userId: user._id });

@@ -18,7 +18,8 @@
   <div class="flex flex-col gap-2 p-4 pt-8">
     <div class="flex items-center gap-3 mb-8 px-2">
       <div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container border-2 border-primary">
-        <img alt="<%= user.name %>" src="<%= user.profileImage || user.avatar || dummyImgUrl%>" />
+        <% const fallbackAvatar = dummyImgUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0'; %>
+        <img alt="<%= user.name %>" src="<%= user.profileImage || user.avatar || fallbackAvatar %>" />
       </div>
       <div>
         <div class="font-manrope text-sm font-bold text-[#0D1B2A]">

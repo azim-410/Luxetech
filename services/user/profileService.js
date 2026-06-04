@@ -10,51 +10,67 @@ const getUserById = async (userId) => {
     return user;
 }
 
+// ── Validation helpers ───────────────────────────────────────
+const NAME_REGEX   = /^[A-Za-z\s]+$/;                                    // letters + spaces only
+const EMAIL_REGEX  = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/; // RFC-friendly
+
 const updateProfileService = async (userId, name, email, profileImage) => {
-    console.log("initialized")
   const currentUser = await getUserById(userId);
+
+  // ── Name validation ──────────────────────────────────────
+  if (name !== undefined) {
+    const trimmedName = name.trim();
+    if (trimmedName === '') {
+      throw new Error('Name cannot be empty.');
+    }
+    if (trimmedName.length < 3) {
+      throw new Error('Name must be at least 3 characters.');
+    }
+    if (trimmedName.length > 50) {
+      throw new Error('Name must not exceed 50 characters.');
+    }
+    if (!NAME_REGEX.test(trimmedName)) {
+      throw new Error('Name must contain only letters and spaces.');
+    }
+  }
+
+  // ── Email validation ─────────────────────────────────────
+  if (email !== undefined) {
+    const trimmedEmail = email.trim();
+    if (trimmedEmail === '') {
+      throw new Error('Email cannot be empty.');
+    }
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      throw new Error('Please enter a valid email address (e.g. user@example.com).');
+    }
+  }
 
   const updatedName  = name  ? name.trim()  : currentUser.name;
   const updatedEmail = email ? email.trim() : currentUser.email;
 
-
-  if (name !== undefined && name.trim() === '') {
-    throw new Error('Name cannot be empty');
-  }
-
-  if (name !== undefined && name.trim().length < 3) {
-    throw new Error('Name must be at least 3 characters');
-  }
-
-  if (email !== undefined && email.trim() !== currentUser.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      throw new Error('Invalid email format');
-    }
-  }
-
   const nameChanged  = updatedName  !== currentUser.name;
   const emailChanged = updatedEmail !== currentUser.email;
-  const imageChanged = !!profileImage
-  console.log("part2")
+  const imageChanged = !!profileImage;
+
   if (!nameChanged && !emailChanged && !imageChanged) {
-    throw new Error('No changes detected');
+    throw new Error('No changes detected.');
   }
 
   if (imageChanged) {
     await userModel.findByIdAndUpdate(userId, { profileImage });
   }
-  
+
   if (imageChanged && !nameChanged && !emailChanged) {
-  return { success: true, requiresOtp: false, message: 'Profile image updated successfully' };
-}
+    return { success: true, requiresOtp: false, message: 'Profile image updated successfully.' };
+  }
+
   if (nameChanged && !emailChanged) {
     await userModel.findByIdAndUpdate(userId, { name: updatedName });
-    return { success: true, requiresOtp: false, message: 'Profile updated successfully' };
+    return { success: true, requiresOtp: false, message: 'Profile updated successfully.' };
   }
-  
+
   const isExistEmail = await userModel.findOne({ email: updatedEmail });
-  if (isExistEmail) throw new Error('Email already in use');
+  if (isExistEmail) throw new Error('This email is already in use by another account.');
 
   await tempUserModel.deleteMany({ userId });
 
@@ -69,18 +85,14 @@ const updateProfileService = async (userId, name, email, profileImage) => {
     emailOtpExpiry: expireOtp
   });
   await tempUser.save();
-  
+
   try {
-    console.log("Sending OTP to:", updatedEmail);
     await sendOTP(updatedEmail, otp);
-    console.log("OTP sent successfully");
   } catch (emailError) {
-    console.error("OTP sending error:", emailError.message);
-    // Don't throw here - the OTP was saved, user can still verify or resend
-    console.log("OTP saved in database even though email failed. User can try resending.");
+    console.error('OTP sending error:', emailError.message);
   }
 
-  return { success: true, requiresOtp: true, message: 'OTP request created. Please check your email.' };
+  return { success: true, requiresOtp: true, message: 'OTP sent to your new email. Please verify.' };
 };
 
 const deleteProfileImageServices = async (userId)=>{
@@ -153,30 +165,66 @@ const resendOtpService = async (userId) => {
 
 const verifyOldPasswordService = async (userId, oldPassword) => {
 
-    if (!oldPassword) throw new Error('Password is required');
+    if (!oldPassword || oldPassword.trim() === '') {
+        throw new Error('Current password is required.');
+    }
 
     const user = await userModel.findById(userId);
-    if (!user) throw new Error('User not found');
+    if (!user) throw new Error('User not found.');
+
+    // Validate that the user's account email is in a proper format (integrity check)
+    if (!EMAIL_REGEX.test(user.email)) {
+        throw new Error('Your account email appears to be invalid. Please contact support.');
+    }
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) throw new Error('Incorrect password');
+    if (!isMatch) throw new Error('Incorrect current password.');
 
     return { success: true };
 };
 
 
 const changePasswordService = async (userId, newPassword, confirmPassword) => {
-    if (!newPassword || !confirmPassword) throw new Error('All fields are required');
+    if (!newPassword || !confirmPassword) {
+        throw new Error('All fields are required.');
+    }
 
-    if (newPassword.length < 8) throw new Error('Password must be at least 8 characters');
+    if (newPassword.trim() === '') {
+        throw new Error('New password cannot be empty.');
+    }
 
-    if (newPassword !== confirmPassword) throw new Error('Passwords do not match');
+    if (newPassword.length < 6) {
+        throw new Error('New password must be at least 6 characters.');
+    }
+
+    if (newPassword.length > 64) {
+        throw new Error('New password must not exceed 64 characters.');
+    }
+
+    // Must contain at least one uppercase letter
+    if (!/[A-Z]/.test(newPassword)) {
+        throw new Error('New password must contain at least one uppercase letter.');
+    }
+
+    // Must contain at least one digit
+    if (!/[0-9]/.test(newPassword)) {
+        throw new Error('New password must contain at least one number.');
+    }
+
+    // Must contain at least one special character
+    if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>/?`~\\|]/.test(newPassword)) {
+        throw new Error('New password must contain at least one special character.');
+    }
+
+    if (newPassword !== confirmPassword) {
+        throw new Error('New password and confirm password do not match.');
+    }
 
     const user = await userModel.findById(userId);
-    if (!user) throw new Error('User not found');
+    if (!user) throw new Error('User not found.');
 
     if (await bcrypt.compare(newPassword, user.password)) {
-        throw new Error('New password must be different from old password');
+        throw new Error('New password must be different from your current password.');
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

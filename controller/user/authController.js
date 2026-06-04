@@ -13,7 +13,10 @@ import {
 const registerPage = (req, res) => {
     const googleError = req.session.googleError || null;
     req.session.googleError = null;
-    return res.render('User/auth/register', { googleError });
+    const expiredMessage = req.query.expired === '1'
+        ? 'Your registration session expired (12 minutes). Please register again.'
+        : null;
+    return res.render('User/auth/register', { googleError, expiredMessage });
 };
 
 const loginPage = (req, res) => {
@@ -106,6 +109,17 @@ const otp = async (req, res) => {
     try {
         const inputValue = Object.values(req.body).join('');
         const userId = req.session.userId;
+
+        // Guard: session may be lost after server restart or expiry
+        if (!userId) {
+            return res.status(400).render('User/auth/otp-verification', {
+                errorMessage: 'Session expired. Please register again.',
+                successMessage: null,
+                actionUrl: '/verify-otp',
+                resendUrl: '/resend-otp'
+            });
+        }
+
         await verifyOtp(inputValue, userId);
         return res.redirect('/login');
     } catch (error) {
@@ -141,8 +155,9 @@ const resendOtp = async (req, res) => {
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
 
-        if (error.message.toLowerCase().includes('user not found')) {
-            return res.redirect('/register');
+        // User was deleted by TTL — their 12-minute window expired
+        if (error.code === 'USER_NOT_FOUND') {
+            return res.redirect('/register?expired=1');
         }
 
         return res.status(500).render('User/auth/otp-verification', {
@@ -162,8 +177,12 @@ const forgotPasswordController = async (req, res) => {
         req.session.resetEmail = email;
         return res.redirect('/verify-reset-otp');
     } catch (error) {
-        console.error("Forgot Password Error:", error.message);
-        return res.render('User/auth/forget-password', { errorMessage: error.message, });
+        console.error('Forgot Password Error:', error.message);
+        return res.render('User/auth/forget-password', {
+            errorMessage: error.message,
+            errorField:   error.field || 'email',
+            formData:     req.body
+        });
     }
 };
 

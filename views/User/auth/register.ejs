@@ -41,6 +41,12 @@
 
                         <form action="/register" method="POST" class="registration-form">
 
+                            <% if (locals.expiredMessage) { %>
+                                <div class="general-error" style="background: #1a1a2e; border-left: 3px solid #f39c12; color: #f39c12;">
+                                    ⏱ <%= locals.expiredMessage %>
+                                </div>
+                            <% } %>
+
                             <% if (locals.errorField === 'general') { %>
                                 <div class="general-error">⚠ <%= locals.errorMessage %></div>
                             <% } %>

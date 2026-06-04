@@ -5,64 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Luxe Tech</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5d5e61",
+                        "on-primary": "#f7f7fa",
+                        "secondary": "#476275",
+                        "on-secondary": "#f5f9ff",
+                        "secondary-dim": "#3b5669",
+                        "tertiary": "#526072",
+                        "tertiary-container": "#dbe9ff",
+                        "on-tertiary-container": "#485668",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#2b3437",
+                        "on-surface-variant": "#586064",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f1f4f6",
+                        "surface-container": "#eaeff1",
+                        "surface-container-high": "#e3e9ec",
+                        "surface-container-highest": "#dbe4e7",
+                        "outline": "#737c7f",
+                        "outline-variant": "#abb3b7",
+                        "error": "#9f403d",
+                        "error-container": "#fe8983",
+                        "on-error-container": "#752121",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-            background: #f4f7fb;
-            color: #0d1b2a;
-            margin: 0;
-            padding: 0;
-        }
-        .wrapper {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .card {
-            background: #fff;
-            padding: 3rem;
-            border-radius: 1rem;
-            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
-            max-width: 28rem;
-            width: 100%;
-            text-align: center;
-        }
-        .card h1 {
-            margin-bottom: 1rem;
-            font-size: 2rem;
-        }
-        .card p {
-            margin: 0;
-            font-size: 1rem;
-            color: #475569;
-        }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-            color: #0d1b2a;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-size: 0.75rem;
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
         }
     </style>
 </head>
-<body>
-    <div class="wrapper">
-        <div class="card">
-            <h1>Admin Dashboard</h1>
-            <p>Welcome to the Luxe Tech admin portal. Your login is successful.</p>
-            <div class="badge">
-                <span class="material-symbols-outlined">verified_user</span>
-                Admin Access Granted
-                <a href="/admin/user-management">csutomer magement</a>
+<body class="bg-surface text-on-surface">
+    <%- include('../partials/admin/layout', { activePage: 'dashboard' }) %>
+
+    <!-- Main Content -->
+    <main class="ml-64 pt-16 min-h-screen px-10 py-10">
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-extrabold tracking-tight font-headline text-on-surface mb-1">Dashboard</h1>
+            <p class="text-on-surface-variant text-sm">Welcome back. Here's what's happening at Luxe Tech.</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Total Customers</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold font-headline text-on-surface">1,284</span>
+                    <span class="text-xs font-semibold text-green-600">+12%</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-2">vs. last month</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Total Orders</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold font-headline text-on-surface">3,871</span>
+                    <span class="text-xs font-semibold text-green-600">+8%</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-2">vs. last month</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Revenue</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold font-headline text-on-surface">$1.4M</span>
+                    <span class="text-xs font-semibold text-secondary-dim">Steady</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-2">total lifetime</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Active Sessions</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold font-headline text-on-surface">42</span>
+                    <span class="text-xs font-semibold text-tertiary">Live</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-2">right now</p>
             </div>
         </div>
-    </div>
-    
+
+        <!-- Quick Actions -->
+        <div class="mb-10">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="/admin/user-management"
+                    class="flex items-center gap-4 bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-container-low transition-all group">
+                    <div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-tertiary-container">group</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors">Manage Customers</p>
+                        <p class="text-xs text-on-surface-variant">View and control user accounts</p>
+                    </div>
+                </a>
+                <a href="/admin/product-management"
+                    class="flex items-center gap-4 bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-container-low transition-all group">
+                    <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors">Manage Products</p>
+                        <p class="text-xs text-on-surface-variant">Update catalog and inventory</p>
+                    </div>
+                </a>
+                <a href="/admin/category-management"
+                    class="flex items-center gap-4 bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-container-low transition-all group">
+                    <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-surface-variant">category</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface group-hover:text-secondary transition-colors">Manage Categories</p>
+                        <p class="text-xs text-on-surface-variant">Organise product taxonomy</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="flex items-center gap-3 bg-tertiary-container/30 border border-tertiary-container/60 rounded-xl px-5 py-4 text-sm text-on-tertiary-container font-medium">
+            <span class="material-symbols-outlined text-base">verified_user</span>
+            Admin access granted — you are logged in to the Luxe Tech management portal.
+        </div>
+
+    </main>
 </body>
 </html>

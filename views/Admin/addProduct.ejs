@@ -72,10 +72,11 @@
 </head>
 
 <body class="font-sans antialiased">
-   
+    <%- include('../partials/admin/layout', { activePage: 'products' }) %>
+
     <div class="flex min-h-screen">
         <!-- BEGIN: Main Content Area -->
-        <main class="flex-1 ml-64 p-8 overflow-y-auto">
+        <main class="flex-1 ml-64 pt-20 p-8 overflow-y-auto">
             <!-- Top Header -->
             <div class="flex items-center gap-4 mb-8" data-purpose="content-header">
                 <h2 class="text-xl font-bold">Add New Product</h2>

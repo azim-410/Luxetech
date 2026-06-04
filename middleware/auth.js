@@ -20,10 +20,17 @@ const checkIfBlocked = async (req, res, next) => {
 
         const user = await User.findById(req.session.user.id).select('isBlocked').lean();
 
-        if (!user || user.isBlocked) {
+        if (!user) {
             return req.session.destroy(() => {
                 res.clearCookie('connect.sid');
-                return res.render('User/auth/login.ejs',{errorMessage:'this user bloked by admin',errorField:'general'});
+                return res.render('User/auth/login.ejs', { errorMessage: 'this user deleted by admin', errorField: 'general' });
+            });
+        }
+
+        if (user.isBlocked) {
+            return req.session.destroy(() => {
+                res.clearCookie('connect.sid');
+                return res.render('User/auth/login.ejs', { errorMessage: 'this user bloked by admin', errorField: 'general' });
             });
         }
 

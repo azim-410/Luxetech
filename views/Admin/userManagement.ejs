@@ -356,10 +356,11 @@
 
                                                                 <!-- Block / Unblock -->
                                                                 <% if (user.isBlocked) { %>
-                                                                    <form
+                                                                    <form id="form-unblock-<%= user._id %>"
                                                                         action="/admin/user-management/<%= user._id %>/unblock"
                                                                         method="POST" style="display:inline">
-                                                                        <button type="submit"
+                                                                        <button type="button"
+                                                                            onclick="confirmAction('form-unblock-<%= user._id %>', '<%= user.name %>', 'unblock')"
                                                                             class="text-on-error-container hover:opacity-70 transition-opacity"
                                                                             title="Unblock">
                                                                             <span
@@ -367,10 +368,11 @@
                                                                         </button>
                                                                     </form>
                                                                     <% } else { %>
-                                                                        <form
+                                                                        <form id="form-block-<%= user._id %>"
                                                                             action="/admin/user-management/<%= user._id %>/block"
                                                                             method="POST" style="display:inline">
-                                                                            <button type="submit"
+                                                                            <button type="button"
+                                                                                onclick="confirmAction('form-block-<%= user._id %>', '<%= user.name %>', 'block')"
                                                                                 class="text-outline hover:text-error transition-colors"
                                                                                 title="Block">
                                                                                 <span
@@ -380,10 +382,11 @@
                                                                         <% } %>
 
                                                                             <!-- Delete -->
-                                                                            <form
+                                                                            <form id="form-delete-<%= user._id %>"
                                                                                 action="/admin/user-management/<%= user._id %>/delete"
                                                                                 method="POST" style="display:inline">
-                                                                                <button type="submit"
+                                                                                <button type="button"
+                                                                                    onclick="confirmAction('form-delete-<%= user._id %>', '<%= user.name %>', 'delete')"
                                                                                     class="text-outline hover:text-error transition-colors"
                                                                                     title="Delete">
                                                                                     <span
@@ -402,7 +405,8 @@
                             <!-- Table Footer/Pagination -->
                             <div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/20">
                                 <span class="text-xs text-on-surface-variant font-medium">
-                                    Showing <%= users?.length ?? 0 %> of <%= locals.totalUsers ?? (users?.length ?? 0) %>
+                                    Showing <%= users?.length ?? 0 %> of <%= locals.totalUsers ?? (users?.length ?? 0)
+                                            %>
                                             customer<%= (locals.totalUsers ?? 0) !==1 ? 's' : '' %>
                                 </span>
 
@@ -455,14 +459,7 @@
                             </div>
                         </div>
     </main>
-    <!-- Contextual Security Chip (Fixed Bottom Right) -->
-    <div
-        class="fixed bottom-6 right-8 bg-tertiary-container/80 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
-        <span class="material-symbols-outlined text-on-tertiary-container text-sm"
-            data-icon="verified_user">verified_user</span>
-        <span class="text-[10px] font-bold uppercase tracking-widest text-on-tertiary-container">Encrypted
-            Environment</span>
-    </div>
+
     <!-- Create User Modal -->
     <div id="createModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
@@ -530,6 +527,37 @@
                     </form>
         </div>
     </div>
+
+    <!-- ── Confirmation Modal ─────────────────────────────── -->
+    <div id="confirmModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden"
+        aria-modal="true" role="dialog">
+        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden
+                    translate-y-4 opacity-0 transition-all duration-200" id="confirmModalBox">
+
+            <!-- Icon + Header -->
+            <div class="flex flex-col items-center pt-8 pb-4 px-6 gap-3">
+                <div id="confirmIcon" class="w-14 h-14 rounded-full flex items-center justify-center">
+                    <span id="confirmIconSymbol" class="material-symbols-outlined text-3xl"></span>
+                </div>
+                <h2 id="confirmTitle" class="text-lg font-bold font-manrope text-on-surface text-center"></h2>
+                <p id="confirmMessage" class="text-sm text-on-surface-variant text-center leading-relaxed"></p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-center gap-3 px-6 py-5 border-t border-outline-variant/10">
+                <button onclick="closeConfirm()" class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant
+                           hover:bg-surface-container-low transition-all">
+                    Cancel
+                </button>
+                <button id="confirmBtn" onclick="submitConfirm()" class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-primary
+                           shadow-sm hover:-translate-y-0.5 transition-all">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const modal = document.getElementById('createModal');
 
@@ -558,7 +586,89 @@
             }
         }
 
-  
+        // ── Confirmation modal logic ─────────────────────
+        let _pendingFormId = null;
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalBox = document.getElementById('confirmModalBox');
+
+        const ACTION_CONFIG = {
+            block: {
+                icon: 'block',
+                iconBg: 'bg-error-container/20',
+                iconColor: 'text-on-error-container',
+                btnBg: 'bg-error',
+                title: (name) => `Block ${name}?`,
+                message: (name) => `${name} will lose access to their account immediately. You can unblock them at any time.`
+            },
+            unblock: {
+                icon: 'lock_open',
+                iconBg: 'bg-tertiary-container/40',
+                iconColor: 'text-on-tertiary-container',
+                btnBg: 'bg-secondary',
+                title: (name) => `Unblock ${name}?`,
+                message: (name) => `${name} will regain full access to their account.`
+            },
+            delete: {
+                icon: 'delete_forever',
+                iconBg: 'bg-error-container/20',
+                iconColor: 'text-on-error-container',
+                btnBg: 'bg-error',
+                title: (name) => `Delete ${name}?`,
+                message: (name) => `This action is permanent. All data for ${name} will be removed and cannot be recovered.`
+            }
+        };
+
+        function confirmAction(formId, userName, action) {
+            _pendingFormId = formId;
+            const cfg = ACTION_CONFIG[action];
+
+            // Icon
+            const iconWrap = document.getElementById('confirmIcon');
+            const iconSymbol = document.getElementById('confirmIconSymbol');
+            iconWrap.className = `w-14 h-14 rounded-full flex items-center justify-center ${cfg.iconBg}`;
+            iconSymbol.className = `material-symbols-outlined text-3xl ${cfg.iconColor}`;
+            iconSymbol.textContent = cfg.icon;
+
+            // Text
+            document.getElementById('confirmTitle').textContent = cfg.title(userName);
+            document.getElementById('confirmMessage').textContent = cfg.message(userName);
+
+            // Button colour
+            const btn = document.getElementById('confirmBtn');
+            btn.className = btn.className.replace(/bg-\S+/, '');
+            btn.classList.add(cfg.btnBg, 'text-on-primary', 'px-5', 'py-2.5', 'rounded-md',
+                'text-sm', 'font-semibold', 'shadow-sm', 'hover:-translate-y-0.5', 'transition-all');
+            btn.textContent = action.charAt(0).toUpperCase() + action.slice(1);
+
+            // Show
+            confirmModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                confirmModalBox.classList.remove('translate-y-4', 'opacity-0');
+            });
+        }
+
+        function closeConfirm() {
+            confirmModalBox.classList.add('translate-y-4', 'opacity-0');
+            setTimeout(() => confirmModal.classList.add('hidden'), 200);
+            _pendingFormId = null;
+        }
+
+        function submitConfirm() {
+            if (_pendingFormId) {
+                document.getElementById(_pendingFormId).submit();
+            }
+        }
+
+        // Close on backdrop click
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target === confirmModal) closeConfirm();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !confirmModal.classList.contains('hidden')) closeConfirm();
+        });
+
   <% if (typeof createError !== 'undefined' && createError) { %>
             openModal();
   <% } %>

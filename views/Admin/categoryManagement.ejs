@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Categories Overview | Luxe Tech Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5d5e61",
+                        "on-primary-fixed": "#3e3f42",
+                        "primary-fixed": "#e2e2e5",
+                        "on-primary-fixed-variant": "#5a5c5e",
+                        "on-secondary-container": "#3a5568",
+                        "inverse-surface": "#0c0f10",
+                        "on-primary": "#f7f7fa",
+                        "on-tertiary-container": "#485668",
+                        "surface-container-low": "#f1f4f6",
+                        "on-tertiary": "#f7f9ff",
+                        "error-container": "#fe8983",
+                        "surface-container-high": "#e3e9ec",
+                        "surface-bright": "#f8f9fa",
+                        "on-surface": "#2b3437",
+                        "surface-container": "#eaeff1",
+                        "tertiary-container": "#dbe9ff",
+                        "on-primary-container": "#505254",
+                        "inverse-on-surface": "#9b9d9e",
+                        "error": "#9f403d",
+                        "surface-container-highest": "#dbe4e7",
+                        "on-surface-variant": "#586064",
+                        "surface-dim": "#d1dce0",
+                        "on-background": "#2b3437",
+                        "surface": "#f8f9fa",
+                        "secondary-dim": "#3b5669",
+                        "tertiary": "#526072",
+                        "tertiary-dim": "#465465",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#bcd8ef",
+                        "inverse-primary": "#f9f9fc",
+                        "secondary-fixed": "#cae6fd",
+                        "primary-fixed-dim": "#d4d4d7",
+                        "secondary": "#476275",
+                        "on-tertiary-fixed": "#364455",
+                        "on-secondary-fixed-variant": "#445f72",
+                        "on-error": "#fff7f6",
+                        "outline-variant": "#abb3b7",
+                        "outline": "#737c7f",
+                        "on-error-container": "#752121",
+                        "tertiary-fixed": "#dbe9ff",
+                        "secondary-container": "#cae6fd",
+                        "primary-dim": "#515255",
+                        "error-dim": "#4e0309",
+                        "primary-container": "#e2e2e5",
+                        "on-tertiary-fixed-variant": "#526072",
+                        "background": "#f8f9fa",
+                        "surface-variant": "#dbe4e7",
+                        "tertiary-fixed-dim": "#cddbf0",
+                        "surface-tint": "#5d5e61",
+                        "on-secondary-fixed": "#274254",
+                        "on-secondary": "#f5f9ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+   
+   
+    <!-- Main Content Canvas -->
+    <main class="ml-64 min-h-screen flex flex-col">
+        <!-- Page Header Section -->
+        <section class="px-12 py-10 flex justify-between items-end">
+            <div>
+                <nav class="flex items-center gap-2 text-[10px] uppercase tracking-[0.1em] text-outline mb-2 font-bold">
+                    <span>Admin</span>
+                    <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                    <span class="text-secondary">Categories</span>
+                </nav>
+                <h2 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight">Categories Overview
+                </h2>
+                <p class="text-on-surface-variant mt-1 font-body text-sm">Manage product taxonomy and collection
+                    hierarchies.</p>
+            </div>
+            <button
+                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-primary to-secondary text-on-primary rounded-md font-label font-semibold text-sm shadow-md hover:-translate-y-0.5 transition-all">
+                <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                Add New Category
+            </button>
+        </section>
+        <!-- Category Table Container -->
+        <section class="px-12 pb-20 flex-1">
+            <div
+                class="bg-surface-container-lowest rounded-xl shadow-[0_2Admin Portal
+LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
+                <div class="px-8 py-6 flex items-center justify-between border-b border-outline-variant/15">
+                    <div class="flex items-center gap-8">
+                        <h3 class="font-headline font-bold text-on-surface">All Categories</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">12 Active
+                                Collections</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors rounded">
+                            <span class="material-symbols-outlined text-sm">filter_list</span>
+                            Filter
+                        </button>
+                        <button
+                            class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors rounded">
+                            <span class="material-symbols-outlined text-sm">download</span>
+                            Export
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low/50">
+                                <th
+                                    class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant">
+                                    Category Name</th>
+                                <th
+                                    class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant">
+                                    Slug</th>
+                                <th
+                                    class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant">
+                                    Total Products</th>
+                                <th
+                                    class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant">
+                                    Status</th>
+                                <th
+                                    class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            <!-- Row 1: Monitors -->
+                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-secondary"
+                                                data-icon="monitor">monitor</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-headline font-bold text-on-surface text-sm">Monitors</p>
+                                            <p class="text-[10px] text-on-surface-variant">Displays &amp; Screens</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <code
+                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/monitors</code>
+                                </td>
+                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">124</td>
+                                <td class="px-8 py-5">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                </td>
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
+                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2: Keyboards -->
+                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-secondary"
+                                                data-icon="keyboard">keyboard</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-headline font-bold text-on-surface text-sm">Keyboards</p>
+                                            <p class="text-[10px] text-on-surface-variant">Mechanical &amp; Wireless</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <code
+                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/keyboards</code>
+                                </td>
+                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">86</td>
+                                <td class="px-8 py-5">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                </td>
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
+                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 3: Mice -->
+                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-secondary"
+                                                data-icon="mouse">mouse</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-headline font-bold text-on-surface text-sm">Mice</p>
+                                            <p class="text-[10px] text-on-surface-variant">Optical &amp; Gaming</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <code
+                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/mice</code>
+                                </td>
+                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">52</td>
+                                <td class="px-8 py-5">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                </td>
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
+                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 4: Headsets -->
+                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-secondary"
+                                                data-icon="headset">headset</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-headline font-bold text-on-surface text-sm">Headsets</p>
+                                            <p class="text-[10px] text-on-surface-variant">Studio &amp; Audio</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <code
+                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/headsets</code>
+                                </td>
+                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">31</td>
+                                <td class="px-8 py-5">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-surface-container-highest text-on-surface-variant">Draft</span>
+                                </td>
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
+                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
+                                            <span class="material-symbols-outlined text-lg"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="px-8 py-6 border-t border-outline-variant/15 flex items-center justify-between">
+                    <p class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">Showing 1 to 4 of
+                        12 categories</p>
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">
+                            <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            Previous
+                        </button>
+                        <div class="flex items-center gap-1 mx-2">
+                            <button class="w-8 h-8 rounded bg-primary text-on-primary text-xs font-bold">1</button>
+                            <button
+                                class="w-8 h-8 rounded hover:bg-surface-container transition-colors text-xs font-bold">2</button>
+                            <button
+                                class="w-8 h-8 rounded hover:bg-surface-container transition-colors text-xs font-bold">3</button>
+                        </div>
+                        <button
+                            class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md hover:bg-surface-container transition-colors">
+                            Next
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

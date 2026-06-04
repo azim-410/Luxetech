@@ -75,7 +75,7 @@ const updateProfileService = async (userId, name, email, profileImage) => {
   await tempUserModel.deleteMany({ userId });
 
   const otp = generateOTP();
-  const expireOtp = new Date(Date.now() + 1000 * 60 * 10);
+  const expireOtp = new Date(Date.now() + 1000 * 60 * 4);
 
   const tempUser = new tempUserModel({
     userId,
@@ -140,7 +140,7 @@ const resendOtpService = async (userId) => {
     }
 
     const otp = generateOTP().toString();
-    const expireOtp = new Date(Date.now() + 1000 * 60 * 10);
+    const expireOtp = new Date(Date.now() + 1000 * 60 * 4);
 
     console.log("Resent otp 1:", otp)
     await tempUserModel.findOneAndUpdate(
@@ -233,6 +233,23 @@ const changePasswordService = async (userId, newPassword, confirmPassword) => {
     return { success: true };
 };
 
+// ── Profile email-change OTP timer-data helper ────────────────────────────────
+// Returns remainingSeconds (until OTP expires) and resendCooldownSeconds
+// (how long until resend is allowed again — 60s from when OTP was created).
+const getProfileOtpTimerData = async (userId) => {
+    const tempUser = await tempUserModel.findOne({ userId });
+    if (!tempUser || !tempUser.emailOtpExpiry) return { remainingSeconds: 0, resendCooldownSeconds: 0 };
+
+    const remainingSeconds = Math.max(
+        0,
+        Math.floor((new Date(tempUser.emailOtpExpiry).getTime() - Date.now()) / 1000)
+    );
+    const elapsedSinceCreated = Math.floor((Date.now() - new Date(tempUser.createdAt).getTime()) / 1000);
+    const resendCooldownSeconds = Math.max(0, 60 - elapsedSinceCreated);
+
+    return { remainingSeconds, resendCooldownSeconds };
+};
+
 
 export {
     getUserById,
@@ -241,5 +258,6 @@ export {
     resendOtpService,
     verifyOldPasswordService,
     changePasswordService,
-    deleteProfileImageServices
+    deleteProfileImageServices,
+    getProfileOtpTimerData
 }

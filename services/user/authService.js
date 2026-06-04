@@ -56,7 +56,7 @@ const registerUser = async (data) => {
     await user.save();
 
     const otp = generateOTP();
-    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 5 * 60 * 1000) });
+    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 4 * 60 * 1000) });
 
     await sendOTP(email, otp);
     return { success: true, user };
@@ -137,7 +137,7 @@ const resendOtpService = async (userId) => {
     await OTP.deleteOne({ userId });
 
     const otp = generateOTP();
-    await OTP.create({ userId, otp, expiresAt: new Date(Date.now() + 5 * 60 * 1000) });
+    await OTP.create({ userId, otp, expiresAt: new Date(Date.now() + 4 * 60 * 1000) });
 
     await sendOTP(user.email, otp);
     return { success: true };
@@ -165,7 +165,7 @@ const sendPasswordResetOtpService = async (email) => {
     await OTP.deleteOne({ userId: user._id });
 
     const otp = generateOTP();
-    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 5 * 60 * 1000) });
+    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 4 * 60 * 1000) });
 
     await sendOTP(email, otp);
     return { success: true };
@@ -196,7 +196,7 @@ const resendResetOtpService = async (email) => {
     await OTP.deleteOne({ userId: user._id });
 
     const otp = generateOTP();
-    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 5 * 60 * 1000) });
+    await OTP.create({ userId: user._id, otp, expiresAt: new Date(Date.now() + 4 * 60 * 1000) });
 
     await sendOTP(email, otp);
     return { success: true };
@@ -228,6 +228,24 @@ const updatePasswordService = async (email, newPassword, confirmPassword) => {
     return { success: true };
 };
 
+// ── OTP timer-data helper ────────────────────────────────────────
+// Returns both the remaining OTP seconds AND the resend cooldown seconds.
+// resendCooldownSeconds = how many seconds the user must wait before they
+// can resend (60s window from createdAt). Returns 0 when wait is over.
+const getOtpTimerData = async (userId) => {
+    const otpRecord = await OTP.findOne({ userId });
+    if (!otpRecord) return { remainingSeconds: 0, resendCooldownSeconds: 0 };
+
+    const remainingSeconds = Math.max(
+        0,
+        Math.floor((new Date(otpRecord.expiresAt).getTime() - Date.now()) / 1000)
+    );
+    const elapsedSinceCreated = Math.floor((Date.now() - new Date(otpRecord.createdAt).getTime()) / 1000);
+    const resendCooldownSeconds = Math.max(0, 60 - elapsedSinceCreated);
+
+    return { remainingSeconds, resendCooldownSeconds };
+};
+
 export { 
     registerUser, 
     loginUser, 
@@ -236,5 +254,6 @@ export {
     sendPasswordResetOtpService, 
     verifyResetOtpService, 
     resendResetOtpService,
-    updatePasswordService 
+    updatePasswordService,
+    getOtpTimerData
 };

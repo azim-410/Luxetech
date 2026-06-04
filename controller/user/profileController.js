@@ -5,7 +5,8 @@ import {
   resendOtpService,
   verifyOldPasswordService,
   changePasswordService,
-  deleteProfileImageServices
+  deleteProfileImageServices,
+  getProfileOtpTimerData
 } from '../../services/user/profileService.js';
 
 const getProfile = async (req, res) => {
@@ -82,10 +83,13 @@ const deleteProfileImage = async (req, res) => {
 
 const showOtpPage = async (req, res) => {
   try {
-    console.log('[showOtpPage] rendering OTP page, session user:', req.session.user);
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileOtpTimerData(userId);
     return res.render('User/auth/otp-verification', {
-      actionUrl: '/verify-emailChange-otp',
-      resendUrl: '/verify-emailChange-otp/resend',
+      actionUrl:             '/verify-emailChange-otp',
+      resendUrl:             '/verify-emailChange-otp/resend',
+      remainingSeconds,
+      resendCooldownSeconds
     });
   } catch (error) {
     console.error('[showOtpPage] ERROR:', error.message, error.stack);
@@ -110,10 +114,14 @@ const verifyOtp = async (req, res) => {
     });
   } catch (error) {
     console.error('[verifyOtp] ERROR:', error.message);
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileOtpTimerData(userId);
     return res.status(400).render('User/auth/otp-verification', {
-      actionUrl: '/verify-emailChange-otp',
-      resendUrl: '/verify-emailChange-otp/resend',
-      errorMessage: error.message
+      actionUrl:             '/verify-emailChange-otp',
+      resendUrl:             '/verify-emailChange-otp/resend',
+      errorMessage:          error.message,
+      remainingSeconds,
+      resendCooldownSeconds
     });
   }
 }
@@ -123,19 +131,26 @@ const resendOtp = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await resendOtpService(userId);
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileOtpTimerData(userId);
 
     return res.render('User/auth/otp-verification', {
-      actionUrl: '/verify-emailChange-otp',
-      resendUrl: '/verify-emailChange-otp/resend',
-      successMessage: result.message
+      actionUrl:             '/verify-emailChange-otp',
+      resendUrl:             '/verify-emailChange-otp/resend',
+      successMessage:        result.message,
+      remainingSeconds,
+      resendCooldownSeconds
     });
 
   } catch (error) {
     console.error('Resend OTP error:', error.message);
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileOtpTimerData(userId);
     return res.render('User/auth/otp-verification', {
-      actionUrl: '/verify-emailChange-otp',
-      resendUrl: '/verify-emailChange-otp/resend',
-      errorMessage: error.message
+      actionUrl:             '/verify-emailChange-otp',
+      resendUrl:             '/verify-emailChange-otp/resend',
+      errorMessage:          error.message,
+      remainingSeconds,
+      resendCooldownSeconds
     });
   }
 };

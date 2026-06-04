@@ -14,6 +14,15 @@ import {
     searchUsers,
     createUser 
 } from '../controller/admin/userManagementController.js';
+
+import {
+    getProductList
+} from '../controller/admin/productManagementController.js';
+
+import {
+    getCategoryList
+} from '../controller/admin/categoryManagementController.js';
+
 const router = express.Router()
 
 router.get('/login', isAdminLogin, showLoginPage);
@@ -28,5 +37,9 @@ router.post('/user-management/:userId/block', isAdminAuthenticated, blockUser)
 router.post('/user-management/:userId/unblock', isAdminAuthenticated, unblockUser)
 router.post('/user-management/:userId/delete', isAdminAuthenticated, deleteUser);
 router.post('/user-management/create', isAdminAuthenticated, createUser);
+
+
+router.get('/product-management', isAdminAuthenticated, getProductList)
+router.get('/category-management', isAdminAuthenticated, getCategoryList)
 
 export default router  

@@ -135,8 +135,9 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                         <h3 class="font-headline font-bold text-on-surface">All Categories</h3>
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-secondary"></span>
-                            <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">12 Active
-                                Collections</span>
+                            <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">
+                                <%= (locals.categories || []).filter(c => c.status === true).length %> Active Collections
+                            </span>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
@@ -174,161 +175,75 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant/10">
-                            <!-- Row 1: Monitors -->
-                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-secondary"
-                                                data-icon="monitor">monitor</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-headline font-bold text-on-surface text-sm">Monitors</p>
-                                            <p class="text-[10px] text-on-surface-variant">Displays &amp; Screens</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <code
-                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/monitors</code>
-                                </td>
-                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">124</td>
-                                <td class="px-8 py-5">
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
-                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-                                        </button>
-                                        <button
-                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg"
-                                                data-icon="delete">delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 2: Keyboards -->
-                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-secondary"
-                                                data-icon="keyboard">keyboard</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-headline font-bold text-on-surface text-sm">Keyboards</p>
-                                            <p class="text-[10px] text-on-surface-variant">Mechanical &amp; Wireless</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <code
-                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/keyboards</code>
-                                </td>
-                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">86</td>
-                                <td class="px-8 py-5">
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
-                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-                                        </button>
-                                        <button
-                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg"
-                                                data-icon="delete">delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 3: Mice -->
-                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-secondary"
-                                                data-icon="mouse">mouse</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-headline font-bold text-on-surface text-sm">Mice</p>
-                                            <p class="text-[10px] text-on-surface-variant">Optical &amp; Gaming</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <code
-                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/mice</code>
-                                </td>
-                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">52</td>
-                                <td class="px-8 py-5">
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
-                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-                                        </button>
-                                        <button
-                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg"
-                                                data-icon="delete">delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 4: Headsets -->
-                            <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-secondary"
-                                                data-icon="headset">headset</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-headline font-bold text-on-surface text-sm">Headsets</p>
-                                            <p class="text-[10px] text-on-surface-variant">Studio &amp; Audio</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <code
-                                        class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">/headsets</code>
-                                </td>
-                                <td class="px-8 py-5 font-headline font-semibold text-on-surface">31</td>
-                                <td class="px-8 py-5">
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-surface-container-highest text-on-surface-variant">Draft</span>
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <div class="flex items-center justify-end gap-1 transition-opacity"><button
-                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-                                        </button>
-                                        <button
-                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all">
-                                            <span class="material-symbols-outlined text-lg"
-                                                data-icon="delete">delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <% if (locals.categories && locals.categories.length > 0) { %>
+                                <% locals.categories.forEach((category) => { %>
+                                    <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                        <!-- Category Name -->
+                                        <td class="px-8 py-5">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center overflow-hidden">
+                                                    <% if (category.image) { %>
+                                                        <img src="<%= category.image %>" alt="<%= category.categoryName %>" class="w-full h-full object-cover" />
+                                                    <% } else { %>
+                                                        <span class="material-symbols-outlined text-secondary">category</span>
+                                                    <% } %>
+                                                </div>
+                                                <div>
+                                                    <p class="font-headline font-bold text-on-surface text-sm"><%= category.categoryName %></p>
+                                                    <% if (category.description) { %>
+                                                        <p class="text-[10px] text-on-surface-variant"><%= category.description %></p>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <!-- Slug -->
+                                        <td class="px-8 py-5">
+                                            <% if (category.slug) { %>
+                                                <code class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium"><%= category.slug %></code>
+                                            <% } else { %>
+                                                <span class="text-xs text-on-surface-variant">-</span>
+                                            <% } %>
+                                        </td>
+                                        <!-- Total Products -->
+                                        <td class="px-8 py-5 font-headline font-semibold text-on-surface">
+                                            <%= (typeof category.totalProducts !== 'undefined' && category.totalProducts !== null) ? category.totalProducts : '-' %>
+                                        </td>
+                                        <!-- Status -->
+                                        <td class="px-8 py-5">
+                                            <% if (category.status === true) { %>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                            <% } else { %>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-surface-container-highest text-on-surface-variant">Draft</span>
+                                            <% } %>
+                                        </td>
+                                        <!-- Actions -->
+                                        <td class="px-8 py-5 text-right">
+                                            <div class="flex items-center justify-end gap-1">
+                                                <button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all" title="Edit">
+                                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                                </button>
+                                                <button class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all" title="Delete">
+                                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="px-8 py-12 text-center text-sm text-on-surface-variant">
+                                        No categories found
+                                    </td>
+                                </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
                 <!-- Pagination -->
                 <div class="px-8 py-6 border-t border-outline-variant/15 flex items-center justify-between">
-                    <p class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">Showing 1 to 4 of
-                        12 categories</p>
+                    <p class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">
+                        Showing <%= locals.categories?.length ?? 0 %> of <%= locals.categories?.length ?? 0 %> categories
+                    </p>
                     <div class="flex items-center gap-2">
                         <button
                             class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">

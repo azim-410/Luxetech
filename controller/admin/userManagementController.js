@@ -11,9 +11,10 @@ const getUserList = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; 
         const limit = 5; 
+        const createError = req.query.createError || null;
 
         const {users, totalUsers, totalPages} = await getAllUsersService(page,limit);
-        return res.render('Admin/userManagement.ejs', { users, query: null, errorMessage: null, successMessage: null, totalPages, totalUsers, currentPage: page });
+        return res.render('Admin/userManagement.ejs', { users, query: null, errorMessage: null, successMessage: null, totalPages, totalUsers, currentPage: page, createError });
     } catch (error) {
         console.error('Get user list error:', error.message);
         return res.status(500).send('Server error');

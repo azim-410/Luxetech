@@ -54,6 +54,8 @@ const searchUsersService = async (query) => {
 const createUserService = async (name, email, password) => {
     if (!name || name.trim() === '') throw new Error('Name is required');
     if (name.trim().length < 3) throw new Error('Name must be at least 3 characters');
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(name.trim())) throw new Error('Name must contain only letters and spaces');
 
     if (!email || email.trim() === '') throw new Error('Email is required');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

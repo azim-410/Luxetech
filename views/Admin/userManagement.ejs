@@ -119,7 +119,7 @@
                     <span class="material-symbols-outlined text-sm" data-icon="download">download</span>
                     Export List
                 </button>
-                <button onclick="openModal()"
+                <button onclick="openModal(true)"
                     class="bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">add</span>
                     New Client
@@ -406,27 +406,25 @@
                 </button>
             </div>
 
-            <!-- Error Message -->
-            <% if (typeof createError !=='undefined' && createError) { %>
-                <div class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg">
-                    <%= createError %>
-                </div>
-                <% } %>
+            <!-- Error Message Container -->
+            <div id="modalErrorContainer" class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg <%= (typeof createError !== 'undefined' && createError) ? '' : 'hidden' %>">
+                <span id="modalErrorMessage"><%= (typeof createError !== 'undefined' && createError) ? createError : '' %></span>
+            </div>
 
                     <!-- Modal Form -->
-                    <form action="/admin/user-management/create" method="POST" class="px-6 py-6 flex flex-col gap-4">
+                    <form id="createUserForm" action="/admin/user-management/create" method="POST" class="px-6 py-6 flex flex-col gap-4">
 
                         <div class="flex flex-col gap-1.5">
                             <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Full
                                 Name</label>
-                            <input type="text" name="name" placeholder="John Doe" required
+                            <input type="text" id="modalName" name="name" placeholder="John Doe" required
                                 class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
                         </div>
 
                         <div class="flex flex-col gap-1.5">
                             <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Email
                                 Address</label>
-                            <input type="email" name="email" placeholder="client@example.com" required
+                            <input type="email" id="modalEmail" name="email" placeholder="client@example.com" required
                                 class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
                         </div>
 
@@ -493,8 +491,22 @@
 
     <script>
         const modal = document.getElementById('createModal');
+        const userForm = document.getElementById('createUserForm');
+        const modalErrorContainer = document.getElementById('modalErrorContainer');
+        const modalErrorMessage = document.getElementById('modalErrorMessage');
 
-        function openModal() {
+        function openModal(isNew = false) {
+            if (isNew) {
+                // Reset input values
+                userForm.reset();
+                // Clear and hide errors
+                modalErrorContainer.classList.add('hidden');
+                modalErrorMessage.textContent = '';
+                // Clean up the createError query param from URL so refresh doesn't reopen it
+                if (window.location.search.includes('createError')) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
             modal.classList.remove('hidden');
         }
 
@@ -506,6 +518,46 @@
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
         });
+
+        // Add client-side validation logic
+        userForm.addEventListener('submit', (e) => {
+            const nameInput = document.getElementById('modalName').value.trim();
+            const emailInput = document.getElementById('modalEmail').value.trim();
+            const passwordInput = document.getElementById('modalPassword').value;
+
+            // Name check: only letters and spaces, min length 3
+            if (nameInput.length < 3) {
+                e.preventDefault();
+                showFormError('Name must be at least 3 characters');
+                return;
+            }
+            const nameRegex = /^[A-Za-z\s]+$/;
+            if (!nameRegex.test(nameInput)) {
+                e.preventDefault();
+                showFormError('Name must contain only letters and spaces');
+                return;
+            }
+
+            // Email check: valid pattern
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput)) {
+                e.preventDefault();
+                showFormError('Please enter a valid email address');
+                return;
+            }
+
+            // Password check: min length 6
+            if (passwordInput.length < 6) {
+                e.preventDefault();
+                showFormError('Password must be at least 6 characters');
+                return;
+            }
+        });
+
+        function showFormError(msg) {
+            modalErrorMessage.textContent = msg;
+            modalErrorContainer.classList.remove('hidden');
+        }
 
         function toggleModalPassword() {
             const input = document.getElementById('modalPassword');
@@ -603,7 +655,7 @@
         });
 
   <% if (typeof createError !== 'undefined' && createError) { %>
-            openModal();
+            openModal(false);
   <% } %>
     </script>
 </body>

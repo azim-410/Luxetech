@@ -25,13 +25,15 @@ app.set('views', path.join(__dirname, "views"));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Session with MongoDB store
-app.use(session({
+// User session (cookie: connect.sid)
+const userSession = session({
+    name: 'connect.sid',
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URL,
+        collectionName: 'user_sessions',
         ttl: 60 * 60 * 24 * 7
     }),
     cookie: {
@@ -39,22 +41,55 @@ app.use(session({
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24
     }
-}));
+});
 
+// Admin session (cookie: admin.sid) — completely separate from user session
+const adminSession = session({
+    name: 'admin.sid',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URL,
+        collectionName: 'admin_sessions',
+        ttl: 60 * 60 * 24
+    }),
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+});
+
+// Apply user session ONLY to non-admin routes
+app.use((req, res, next) => {
+    if (req.path.startsWith('/admin')) return next();
+    userSession(req, res, next);
+});
+
+// Passport also only for non-admin routes
 initPassport();
-app.use(passport.initialize());
-app.use(passport.session());
+app.use((req, res, next) => {
+    if (req.path.startsWith('/admin')) return next();
+    passport.initialize()(req, res, next);
+});
+app.use((req, res, next) => {
+    if (req.path.startsWith('/admin')) return next();
+    passport.session()(req, res, next);
+});
 
 app.use((req, res, next) => {
-  res.locals.user = req.user || req.session.user || null;
-  next();
+    res.locals.user = req.user || req.session?.user || null;
+    next();
 });
 
 app.use(nocache());
 
 app.use('/', authRoutes);
 app.use('/', profileRoutes);
-app.use('/admin/', adminRoutes);
+
+// Admin routes get ONLY the admin session — user session never touches these
+app.use('/admin/', adminSession, adminRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log('\nserver running at http://localhost:' + process.env.PORT);

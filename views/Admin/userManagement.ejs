@@ -402,8 +402,8 @@
                             <!-- Table Footer/Pagination -->
                             <div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/20">
                                 <span class="text-xs text-on-surface-variant font-medium">
-                                    Showing <%= users?.length ?? 0 %> of <%= totalUsers ?? (users?.length ?? 0) %>
-                                            customer<%= (totalUsers ?? 0) !==1 ? 's' : '' %>
+                                    Showing <%= users?.length ?? 0 %> of <%= locals.totalUsers ?? (users?.length ?? 0) %>
+                                            customer<%= (locals.totalUsers ?? 0) !==1 ? 's' : '' %>
                                 </span>
 
                                 <div class="flex items-center gap-2">

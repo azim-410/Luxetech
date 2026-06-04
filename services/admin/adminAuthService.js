@@ -2,8 +2,7 @@ import userModel from '../../model/userModel.js';
 import bcrypt from 'bcrypt';
 
 const adminLoginService = async (email, password) => {
-    if (!email || email.trim() === '') throw new Error('Email is required');
-    if (!password || password.trim() === '') throw new Error('Password is required');
+    if (!email || email.trim() === '' || !password || password.trim() === '') throw new Error('All feild required');
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) throw new Error('Invalid email format');

@@ -28,7 +28,7 @@ const adminLogout = async (req, res) => {
             console.error('Admin logout error:', err)
             return res.status(500).send('Server error');
         }
-        res.clearCookie('connect.sid');
+        res.clearCookie('admin.sid');
         return res.redirect('/admin/login');
     })
 }

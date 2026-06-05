@@ -1,6 +1,7 @@
 import {
     getCategoryService,
-    createCategoryService
+    createCategoryService,
+    editCategoryServices
 } from '../../services/admin/categoryManagementService.js'
 const getCategoryList = async (req, res) => {
     try {
@@ -29,7 +30,21 @@ const createCategory = async (req, res) => {
     }
 };
 
+const editCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { categoryName, description, status } = req.body;
+
+        await editCategoryServices(id, categoryName, description, status);
+        return res.json({ success: true });
+    } catch (error) {
+        console.error('Edit category error:', error.message);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
 export {
     getCategoryList,
-    createCategory
+    createCategory,
+    editCategory
 } 

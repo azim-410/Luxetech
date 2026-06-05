@@ -234,7 +234,8 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                                                 <div class="flex items-center justify-end gap-1">
                                                     <button
                                                         class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all"
-                                                        title="Edit">
+                                                        title="Edit"
+                                                        onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>', '<%= (category.description || '').replace(/'/g, "\\'") %>', '<%= category.status %>')">
                                                         <span class="material-symbols-outlined text-lg">edit</span>
                                                     </button>
                                                     <button
@@ -369,6 +370,64 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
         </div>
     </div>
 
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
+        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+                <h2 class="text-lg font-bold font-manrope text-on-surface">Edit Category</h2>
+                <button onclick="closeEditModal()" class="text-outline hover:text-on-surface transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Error Message Container -->
+            <div id="editCategoryErrorContainer" class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
+                <span id="editCategoryErrorMessage"></span>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="editCategoryForm" class="px-6 py-6 flex flex-col gap-4">
+                <input type="hidden" id="editCategoryId" name="id" />
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
+                    <input type="text" id="editCategoryNameInput" name="categoryName" placeholder="e.g. Smartphones" required
+                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Description</label>
+                    <textarea id="editCategoryDescriptionInput" name="description" placeholder="Provide category details..." rows="3"
+                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Status</label>
+                    <select id="editCategoryStatusInput" name="status"
+                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all">
+                        <option value="true">Active</option>
+                        <option value="false">Draft</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeEditModal()"
+                        class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit" id="editCategorySubmitBtn"
+                        class="bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const categoryModal = document.getElementById('createCategoryModal');
         const categoryForm = document.getElementById('createCategoryForm');
@@ -423,6 +482,110 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
         <% if (typeof createError !== 'undefined' && createError) { %>
             openCategoryModal(false);
         <% } %>
+
+        // ── Edit Modal ────────────────────────────────────────────────
+        const editModal             = document.getElementById('editCategoryModal');
+        const editForm              = document.getElementById('editCategoryForm');
+        const editErrorContainer    = document.getElementById('editCategoryErrorContainer');
+        const editErrorMessage      = document.getElementById('editCategoryErrorMessage');
+        const editIdInput           = document.getElementById('editCategoryId');
+        const editNameInput         = document.getElementById('editCategoryNameInput');
+        const editDescriptionInput  = document.getElementById('editCategoryDescriptionInput');
+        const editStatusInput       = document.getElementById('editCategoryStatusInput');
+        const editSubmitBtn         = document.getElementById('editCategorySubmitBtn');
+
+        // holds the values as they were when the modal opened
+        let _originals = { name: '', description: '', status: '' };
+
+        function openEditModal(id, name, description, status) {
+            // pre-fill
+            editIdInput.value           = id;
+            editNameInput.value         = name;
+            editDescriptionInput.value  = description;
+            editStatusInput.value       = String(status);
+
+            // snapshot originals for change-detection
+            _originals = { name: name.trim(), description: (description || '').trim(), status: String(status) };
+
+            // reset error state
+            editErrorContainer.classList.add('hidden');
+            editErrorMessage.textContent = '';
+
+            editModal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
+
+        // close on backdrop click
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) closeEditModal();
+        });
+
+        function showEditError(msg) {
+            editErrorMessage.textContent = msg;
+            editErrorContainer.classList.remove('hidden');
+        }
+
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = editNameInput.value.trim();
+
+            // client-side validation (mirrors create)
+            if (name.length < 3) {
+                showEditError('Category Name must be at least 3 characters long');
+                return;
+            }
+            const nameRegex = /^[A-Za-z0-9\s]+$/;
+            if (!nameRegex.test(name)) {
+                showEditError('Category Name must contain only alphanumeric characters and spaces');
+                return;
+            }
+
+            // ── No-change guard ───────────────────────────────────────
+            const currentDesc   = editDescriptionInput.value.trim();
+            const currentStatus = editStatusInput.value;
+            if (
+                name          === _originals.name        &&
+                currentDesc   === _originals.description &&
+                currentStatus === _originals.status
+            ) {
+                showEditError('No changes made. Please modify at least one field before saving.');
+                return;
+            }
+
+            const id = editIdInput.value;
+            editSubmitBtn.disabled   = true;
+            editSubmitBtn.textContent = 'Saving…';
+
+            try {
+                const res = await fetch(`/admin/category-management/edit/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        categoryName: name,
+                        description: editDescriptionInput.value.trim(),
+                        status: editStatusInput.value
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    closeEditModal();
+                    window.location.reload();
+                } else {
+                    showEditError(data.message || 'Failed to update category');
+                }
+            } catch (err) {
+                showEditError('Network error. Please try again.');
+            } finally {
+                editSubmitBtn.disabled   = false;
+                editSubmitBtn.textContent = 'Save Changes';
+            }
+        });
     </script>
 </body>
 

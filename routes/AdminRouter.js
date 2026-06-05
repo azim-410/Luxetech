@@ -22,7 +22,8 @@ import {
 import {
     getCategoryList,
     createCategory,
-    editCategory
+    editCategory,
+    deleteCategory
 } from '../controller/admin/categoryManagementController.js';
 
 const router = express.Router()
@@ -45,5 +46,6 @@ router.get('/product-management', isAdminAuthenticated, getProductList)
 router.get('/category-management', isAdminAuthenticated, getCategoryList)
 router.post('/category-management/create', isAdminAuthenticated, createCategory)
 router.patch('/category-management/edit/:id',isAdminAuthenticated,editCategory)
+router.patch('/category-management/delete/:id',isAdminAuthenticated,deleteCategory)
 
 export default router  

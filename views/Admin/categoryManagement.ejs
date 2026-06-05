@@ -136,19 +136,52 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-secondary"></span>
                                 <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">
-                                    <%= (locals.totalCategories || []).filter(c=> c.status === true).length %> Active
-                                        Collections
+                                    <%= locals.totalActive || 0 %> Active Collections
                                 </span>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
+                            <!-- Static search bar -->
+                            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-56 group">
+                                <span class="material-symbols-outlined text-[16px] text-outline shrink-0">search</span>
+                                <input
+                                     id="searchInput"
+                                    type="text"
+                                    placeholder="Search categories…"
+                                    class="bg-transparent border-0 text-xs text-on-surface placeholder:text-outline/50 outline-none focus:outline-none focus:ring-0 focus:border-0 w-full"
+                                     />
+                                <button
+                                    id="clearSearch"
+                                    type="button"
+                                    class="hidden shrink-0 w-4 h-4 items-center justify-center rounded-full bg-outline/20 hover:bg-outline/40 text-outline transition-colors"
+                                    title="Clear search">
+                                    <span class="material-symbols-outlined text-[11px] leading-none">close</span>
+                                </button>
+                            </div>
+                            <!-- Filter / Sort dropdown -->
+                            <div class="relative" id="sortDropdownWrapper">
+                                <button id="sortBtn"
+                                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
+                                    <span class="material-symbols-outlined text-sm">filter_list</span>
+                                    Filter
+                                </button>
+                                <div id="sortDropdown"
+                                    class="hidden absolute right-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <p class="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline">Sort by</p>
+                                    <% const sortOptions = [['latest','Latest First'],['oldest','Oldest First'],['a-z','Name A → Z'],['z-a','Name Z → A']]; %>
+                                    <% sortOptions.forEach(([val, label]) => { %>
+                                        <button
+                                            class="sort-option w-full text-left px-4 py-2.5 text-xs font-medium transition-colors
+                                                   <%= (locals.sort || 'latest') === val ? 'bg-secondary/10 text-secondary font-bold' : 'text-on-surface-variant hover:bg-surface-container' %>"
+                                            data-sort="<%= val %>">
+                                            <%= label %>
+                                        </button>
+                                    <% }); %>
+                                    <div class="h-2"></div>
+                                </div>
+                            </div>
                             <button
-                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors rounded">
-                                <span class="material-symbols-outlined text-sm">filter_list</span>
-                                Filter
-                            </button>
-                            <button
-                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors rounded">
+                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
                                 <span class="material-symbols-outlined text-sm">download</span>
                                 Export
                             </button>
@@ -175,10 +208,10 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                                         Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant/10">
-                                <% if (locals.categories && locals.categories.length> 0) { %>
+                            <tbody class="divide-y divide-outline-variant/10" id="categoryTableBody">
+                                 <% if (locals.categories && locals.categories.length > 0) { %>
                                     <% locals.categories.forEach((category)=> { %>
-                                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                                        <tr class="hover:bg-surface-container-low/30 transition-colors group <%= category.status === false ? 'opacity-60' : '' %>">
                                             <!-- Category Name -->
                                             <td class="px-8 py-5">
                                                 <div class="flex items-center gap-4">
@@ -221,28 +254,47 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                                             </td>
                                             <!-- Status -->
                                             <td class="px-8 py-5">
-                                                <% if (category.status===true) { %>
-                                                    <span
-                                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
-                                                    <% } else { %>
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-surface-container-highest text-on-surface-variant">Draft</span>
-                                                        <% } %>
+                                                <% if (category.status === true) { %>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                                <% } else { %>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
+                                                        <span class="material-symbols-outlined text-[11px]">block</span>
+                                                        Inactive
+                                                    </span>
+                                                <% } %>
                                             </td>
                                             <!-- Actions -->
                                             <td class="px-8 py-5 text-right">
                                                 <div class="flex items-center justify-end gap-1">
-                                                    <button
-                                                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all"
-                                                        title="Edit"
-                                                        onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>', '<%= (category.description || '').replace(/'/g, "\\'") %>', '<%= category.status %>')">
-                                                        <span class="material-symbols-outlined text-lg">edit</span>
-                                                    </button>
-                                                    <button
-                                                        class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all"
-                                                        title="Delete">
-                                                        <span class="material-symbols-outlined text-lg">delete</span>
-                                                    </button>
+                                                    <% if (category.status === false) { %>
+                                                        <!-- Edit disabled -->
+                                                        <button
+                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed"
+                                                            title="Cannot edit an inactive category"
+                                                            disabled>
+                                                            <span class="material-symbols-outlined text-lg">edit</span>
+                                                        </button>
+                                                        <!-- Delete disabled -->
+                                                        <button
+                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed"
+                                                            title="Category is already inactive"
+                                                            disabled>
+                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                        </button>
+                                                    <% } else { %>
+                                                        <button
+                                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all"
+                                                            title="Edit"
+                                                            onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>', '<%= (category.description || '').replace(/'/g, "\\'") %>')">
+                                                            <span class="material-symbols-outlined text-lg">edit</span>
+                                                        </button>
+                                                        <button
+                                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all"
+                                                            title="Deactivate"
+                                                            onclick="openDeleteModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>')">
+                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                        </button>
+                                                    <% } %>
                                                 </div>
                                             </td>
                                         </tr>
@@ -261,7 +313,7 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                     <!-- Pagination -->
                     <div class="px-8 py-6 border-t border-outline-variant/15 flex items-center justify-between">
                         <p class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">
-                            Showing <%= locals.categories?.length ?? 0 %> of <%= locals.totalCategories?.length ?? 0 %>
+                            Showing <%= locals.categories?.length ?? 0 %> of <%= locals.totalCategories ?? 0 %>
                                     categories
                         </p>
                         <div class="flex items-center gap-2">
@@ -345,14 +397,8 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                         class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
                 </div>
 
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Status</label>
-                    <select id="categoryStatusInput" name="status"
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all">
-                        <option value="true">Active</option>
-                        <option value="false">Draft</option>
-                    </select>
-                </div>
+                <!-- status is always active on create -->
+                <input type="hidden" name="status" value="true" />
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-2">
@@ -404,15 +450,6 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                         class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
                 </div>
 
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Status</label>
-                    <select id="editCategoryStatusInput" name="status"
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all">
-                        <option value="true">Active</option>
-                        <option value="false">Draft</option>
-                    </select>
-                </div>
-
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-2">
                     <button type="button" onclick="closeEditModal()"
@@ -425,6 +462,53 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteCategoryModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
+        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-error-container/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-error text-lg">delete_forever</span>
+                    </div>
+                    <h2 class="text-lg font-bold font-manrope text-on-surface">Delete Category</h2>
+                </div>
+                <button onclick="closeDeleteModal()" class="text-outline hover:text-on-surface transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 py-6">
+                <p class="text-sm text-on-surface-variant leading-relaxed">
+                    You are about to deactivate
+                    <span id="deleteCategoryName" class="font-bold text-on-surface"></span>.
+                    It will be removed from the list and its status set to <span class="text-error font-semibold">inactive</span>.
+                </p>
+
+                <!-- Inline error -->
+                <div id="deleteCategoryErrorContainer" class="mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
+                    <span id="deleteCategoryErrorMessage"></span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeDeleteModal()"
+                        class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                        Cancel
+                    </button>
+                    <button id="deleteCategoryConfirmBtn"
+                        class="flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold bg-error text-on-error hover:-translate-y-0.5 shadow-sm transition-all">
+                        <span class="material-symbols-outlined text-sm">delete_forever</span>
+                        Delete
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -491,21 +575,19 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
         const editIdInput           = document.getElementById('editCategoryId');
         const editNameInput         = document.getElementById('editCategoryNameInput');
         const editDescriptionInput  = document.getElementById('editCategoryDescriptionInput');
-        const editStatusInput       = document.getElementById('editCategoryStatusInput');
         const editSubmitBtn         = document.getElementById('editCategorySubmitBtn');
 
         // holds the values as they were when the modal opened
-        let _originals = { name: '', description: '', status: '' };
+        let _originals = { name: '', description: '' };
 
-        function openEditModal(id, name, description, status) {
+        function openEditModal(id, name, description) {
             // pre-fill
             editIdInput.value           = id;
             editNameInput.value         = name;
             editDescriptionInput.value  = description;
-            editStatusInput.value       = String(status);
 
             // snapshot originals for change-detection
-            _originals = { name: name.trim(), description: (description || '').trim(), status: String(status) };
+            _originals = { name: name.trim(), description: (description || '').trim() };
 
             // reset error state
             editErrorContainer.classList.add('hidden');
@@ -545,12 +627,10 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
             }
 
             // ── No-change guard ───────────────────────────────────────
-            const currentDesc   = editDescriptionInput.value.trim();
-            const currentStatus = editStatusInput.value;
+            const currentDesc = editDescriptionInput.value.trim();
             if (
-                name          === _originals.name        &&
-                currentDesc   === _originals.description &&
-                currentStatus === _originals.status
+                name        === _originals.name &&
+                currentDesc === _originals.description
             ) {
                 showEditError('No changes made. Please modify at least one field before saving.');
                 return;
@@ -566,8 +646,7 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         categoryName: name,
-                        description: editDescriptionInput.value.trim(),
-                        status: editStatusInput.value
+                        description: editDescriptionInput.value.trim()
                     })
                 });
 
@@ -586,6 +665,179 @@ LUXURY CURATOR0px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                 editSubmitBtn.textContent = 'Save Changes';
             }
         });
+
+        // ── Delete Modal ───────────────────────────────────────────────
+        const deleteModal        = document.getElementById('deleteCategoryModal');
+        const deleteCatName      = document.getElementById('deleteCategoryName');
+        const deleteErrContainer = document.getElementById('deleteCategoryErrorContainer');
+        const deleteErrMessage   = document.getElementById('deleteCategoryErrorMessage');
+        const deleteConfirmBtn   = document.getElementById('deleteCategoryConfirmBtn');
+        let _deleteTargetId      = null;
+
+        function openDeleteModal(id, name) {
+            _deleteTargetId = id;
+            deleteCatName.textContent = name;
+            deleteErrContainer.classList.add('hidden');
+            deleteErrMessage.textContent = '';
+            deleteModal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            _deleteTargetId = null;
+        }
+
+        // close on backdrop click
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) closeDeleteModal();
+        });
+
+        deleteConfirmBtn.addEventListener('click', async () => {
+            if (!_deleteTargetId) return;
+
+            deleteConfirmBtn.disabled = true;
+            deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Deleting…';
+
+            try {
+                const res  = await fetch(`/admin/category-management/delete/${_deleteTargetId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    closeDeleteModal();
+                    window.location.reload();
+                } else {
+                    deleteErrMessage.textContent = data.message || 'Failed to delete category.';
+                    deleteErrContainer.classList.remove('hidden');
+                }
+            } catch (err) {
+                deleteErrMessage.textContent = 'Network error. Please try again.';
+                deleteErrContainer.classList.remove('hidden');
+            } finally {
+                deleteConfirmBtn.disabled = false;
+                deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm">delete_forever</span> Delete';
+            }
+        });
+
+    let debounceTimer;
+    let currentSort = '<%= locals.sort || "latest" %>';
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn    = document.getElementById('clearSearch');
+    const sortBtn     = document.getElementById('sortBtn');
+    const sortDropdown = document.getElementById('sortDropdown');
+
+    // ── Sort dropdown toggle
+    sortBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortDropdown.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => sortDropdown.classList.add('hidden'));
+
+    // ── Sort option click
+    sortDropdown.querySelectorAll('.sort-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentSort = btn.dataset.sort;
+            // highlight active
+            sortDropdown.querySelectorAll('.sort-option').forEach(b => {
+                b.classList.remove('bg-secondary/10','text-secondary','font-bold');
+                b.classList.add('text-on-surface-variant','hover:bg-surface-container');
+            });
+            btn.classList.add('bg-secondary/10','text-secondary','font-bold');
+            btn.classList.remove('text-on-surface-variant','hover:bg-surface-container');
+            sortDropdown.classList.add('hidden');
+            fetchTable(searchInput.value.trim(), currentSort);
+        });
+    });
+
+    // ── Search input
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        clearBtn.classList.toggle('hidden', !this.value);
+        clearBtn.classList.toggle('flex', !!this.value);
+        debounceTimer = setTimeout(() => fetchTable(this.value.trim(), currentSort), 300);
+    });
+
+    clearBtn.addEventListener('click', function () {
+        searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        clearBtn.classList.remove('flex');
+        fetchTable('', currentSort);
+    });
+
+    async function fetchTable(query, sort = 'latest') {
+        try {
+            const res = await fetch(`/admin/category-management?search=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}`, {
+                headers: { 'x-requested-with': 'XMLHttpRequest' }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('categoryTableBody');
+
+            if (!data.categories.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-8 py-12 text-center text-sm text-on-surface-variant">No categories found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.categories.map(c => {
+                const isInactive = c.status === false;
+                const statusBadge = isInactive
+                    ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
+                           <span class="material-symbols-outlined text-[11px]">block</span>Inactive
+                       </span>`
+                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>`;
+
+                const safeId   = c._id;
+                const safeName = (c.categoryName || '').replace(/'/g, "\\'");
+                const safeDesc = (c.description  || '').replace(/'/g, "\\'");
+
+                const actionBtns = isInactive
+                    ? `<button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Cannot edit an inactive category">
+                           <span class="material-symbols-outlined text-lg">edit</span>
+                       </button>
+                       <button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Category is already inactive">
+                           <span class="material-symbols-outlined text-lg">delete</span>
+                       </button>`
+                    : `<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all" title="Edit"
+                           onclick="openEditModal('${safeId}','${safeName}','${safeDesc}')">
+                           <span class="material-symbols-outlined text-lg">edit</span>
+                       </button>
+                       <button class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all" title="Deactivate"
+                           onclick="openDeleteModal('${safeId}','${safeName}')">
+                           <span class="material-symbols-outlined text-lg">delete</span>
+                       </button>`;
+
+                return `
+                <tr class="hover:bg-surface-container-low/30 transition-colors group ${isInactive ? 'opacity-60' : ''}">
+                    <td class="px-8 py-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center overflow-hidden">
+                                <span class="material-symbols-outlined text-secondary">category</span>
+                            </div>
+                            <div>
+                                <p class="font-headline font-bold text-on-surface text-sm">${c.categoryName}</p>
+                                ${c.description ? `<p class="text-[10px] text-on-surface-variant">${c.description}</p>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        ${c.slug
+                            ? `<code class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">${c.slug}</code>`
+                            : `<span class="text-xs text-on-surface-variant">-</span>`}
+                    </td>
+                    <td class="px-8 py-5 font-headline font-semibold text-on-surface">
+                        ${c.totalProducts != null ? c.totalProducts : '-'}
+                    </td>
+                    <td class="px-8 py-5">${statusBadge}</td>
+                    <td class="px-8 py-5 text-right">
+                        <div class="flex items-center justify-end gap-1">${actionBtns}</div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (err) {
+            console.error('Fetch error:', err);
+        }
+    }
     </script>
 </body>
 

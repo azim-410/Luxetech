@@ -1,5 +1,6 @@
 import express from 'express'
 import { isAdminLogin, isAdminAuthenticated } from '../middleware/adminAuth.js'
+import { upload } from '../config/ cloudinary.js'
 import {
     showLoginPage,
     adminLogin,
@@ -16,14 +17,17 @@ import {
 } from '../controller/admin/userManagementController.js';
 
 import {
-    getProductList
+    getProductList,
+    getProductAdd
 } from '../controller/admin/productManagementController.js';
 
 import {
     getCategoryList,
     createCategory,
     editCategory,
-    deleteCategory
+    deleteCategory,
+    deleteCategoryImage,
+    toggleCategoryVisibility
 } from '../controller/admin/categoryManagementController.js';
 
 const router = express.Router()
@@ -44,8 +48,11 @@ router.post('/user-management/create', isAdminAuthenticated, createUser);
 
 router.get('/product-management', isAdminAuthenticated, getProductList)
 router.get('/category-management', isAdminAuthenticated, getCategoryList)
-router.post('/category-management/create', isAdminAuthenticated, createCategory)
-router.patch('/category-management/edit/:id',isAdminAuthenticated,editCategory)
+router.post('/category-management/create', isAdminAuthenticated, upload.single('image'), createCategory)
+router.patch('/category-management/edit/:id', isAdminAuthenticated, upload.single('image'), editCategory)
+router.post('/category-management/delete-image/:id', isAdminAuthenticated, deleteCategoryImage)
 router.patch('/category-management/delete/:id',isAdminAuthenticated,deleteCategory)
+router.patch('/category-management/toggle-visibility/:id', isAdminAuthenticated, toggleCategoryVisibility)
 
+router.get('/product-management/add',isAdminAuthenticated,getProductAdd)
 export default router  

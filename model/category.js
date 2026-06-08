@@ -13,13 +13,20 @@ const categorySchema = new mongoose.Schema({
         type:Boolean,
         default:true
        },
+       isHidden:{
+        type:Boolean,
+        default:false
+       },
        slug:{
         type:String,
         required:true
+       },
+       image:{
+        type:String
        }
 },{
     timestamps:true
 })
 
-const categoryModel = new mongoose.model("cetogory",categorySchema);
+const categoryModel = mongoose.model("category",categorySchema);
 export default categoryModel

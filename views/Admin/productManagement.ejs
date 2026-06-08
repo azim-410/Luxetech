@@ -130,11 +130,13 @@
                     </p>
                 </div>
                 <div>
+                    <a href="product-management/add">
                     <button
                         class="bg-gradient-to-br from-primary to-secondary text-on-primary px-6 py-3 rounded-md font-manrope font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/10 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">add</span>
                         Add Product
                     </button>
+                    </a>
                 </div>
             </section>
             <!-- Table & Filters Container -->
@@ -144,28 +146,37 @@
                     <!-- Internal Header/Filters -->
                     <div class="px-8 py-6 flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <div class="flex items-center bg-surface-container px-3 py-2 rounded-md">
-                                <span
-                                    class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mr-3">Filter
-                                    By:</span>
-                                <select
-                                    class="bg-transparent border-none text-xs font-medium focus:ring-0 p-0 pr-8 text-on-surface cursor-pointer">
-                                    <option>All Categories</option>
-                                    <option>Monitors</option>
-                                    <option>Peripherals</option>
-                                    <option>Audio</option>
-                                </select>
+                            <!-- Category Filter Dropdown -->
+                            <div class="relative" id="categoryDropdownWrapper">
+                                <button id="categoryBtn"
+                                    class="flex items-center bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mr-2 select-none">Category:</span>
+                                    <span id="selectedCategoryLabel">All Categories</span>
+                                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                                </button>
+                                <div id="categoryDropdown"
+                                    class="hidden absolute left-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="All Categories">All Categories</button>
+                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Monitors">Monitors</button>
+                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Peripherals">Peripherals</button>
+                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Audio">Audio</button>
+                                </div>
                             </div>
-                            <div class="flex items-center bg-surface-container px-3 py-2 rounded-md">
-                                <span
-                                    class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mr-3">Status:</span>
-                                <select
-                                    class="bg-transparent border-none text-xs font-medium focus:ring-0 p-0 pr-8 text-on-surface cursor-pointer">
-                                    <option>Any Status</option>
-                                    <option>In Stock</option>
-                                    <option>Low Stock</option>
-                                    <option>Out of Stock</option>
-                                </select>
+                            <!-- Status Filter Dropdown -->
+                            <div class="relative" id="statusDropdownWrapper">
+                                <button id="statusBtn"
+                                    class="flex items-center bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mr-2 select-none">Status:</span>
+                                    <span id="selectedStatusLabel">Any Status</span>
+                                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                                </button>
+                                <div id="statusDropdown"
+                                    class="hidden absolute left-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Any Status">Any Status</button>
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="In Stock">In Stock</button>
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Low Stock">Low Stock</button>
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Out of Stock">Out of Stock</button>
+                                </div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -426,5 +437,60 @@
             </div>
         </div>
     </main>
+
+    <script>
+        // ── Dropdown Toggling & Selection Handling
+        const categoryBtn = document.getElementById('categoryBtn');
+        const categoryDropdown = document.getElementById('categoryDropdown');
+        const selectedCategoryLabel = document.getElementById('selectedCategoryLabel');
+
+        const statusBtn = document.getElementById('statusBtn');
+        const statusDropdown = document.getElementById('statusDropdown');
+        const selectedStatusLabel = document.getElementById('selectedStatusLabel');
+
+        // Toggle Category Dropdown
+        categoryBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            categoryDropdown.classList.toggle('hidden');
+            statusDropdown.classList.add('hidden'); // Close other
+        });
+
+        // Toggle Status Dropdown
+        statusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            statusDropdown.classList.toggle('hidden');
+            categoryDropdown.classList.add('hidden'); // Close other
+        });
+
+        // Click outside closes both
+        document.addEventListener('click', () => {
+            categoryDropdown.classList.add('hidden');
+            statusDropdown.classList.add('hidden');
+        });
+
+        // Category selection
+        categoryDropdown.querySelectorAll('.category-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.dataset.value;
+                selectedCategoryLabel.textContent = val;
+                categoryDropdown.classList.add('hidden');
+                
+                // Add your fetch/filtering call here if needed
+                console.log('Category selected:', val);
+            });
+        });
+
+        // Status selection
+        statusDropdown.querySelectorAll('.status-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.dataset.value;
+                selectedStatusLabel.textContent = val;
+                statusDropdown.classList.add('hidden');
+
+                // Add your fetch/filtering call here if needed
+                console.log('Status selected:', val);
+            });
+        });
+    </script>
 </body>
 </html>

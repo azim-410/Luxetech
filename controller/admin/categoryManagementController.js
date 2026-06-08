@@ -2,8 +2,11 @@ import {
     getCategoryService,
     createCategoryService,
     editCategoryServices,
-    deleteCategoryService
+    deleteCategoryService,
+    deleteCategoryImageService,
+    toggleCategoryVisibilityService
 } from '../../services/admin/categoryManagementService.js'
+
 const getCategoryList = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1
@@ -27,8 +30,9 @@ const getCategoryList = async (req, res) => {
 
 const createCategory = async (req, res) => {
     try {
-        const { categoryName, description } = req.body;
-        await createCategoryService(categoryName, description, true);
+        const { categoryName, description, isHidden } = req.body;
+        const image = req.file ? req.file.path : null;
+        await createCategoryService(categoryName, description, true, image, isHidden);
         return res.redirect('/admin/category-management');
     } catch (error) {
         console.error('Create category error:', error.message);
@@ -39,9 +43,10 @@ const createCategory = async (req, res) => {
 const editCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { categoryName, description } = req.body;
+        const { categoryName, description, isHidden } = req.body;
+        const image = req.file ? req.file.path : null;
 
-        await editCategoryServices(id, categoryName, description);
+        await editCategoryServices(id, categoryName, description, image, isHidden);
         return res.json({ success: true });
     } catch (error) {
         console.error('Edit category error:', error.message);
@@ -59,9 +64,34 @@ const deleteCategory = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+const deleteCategoryImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await deleteCategoryImageService(id);
+        return res.json({ success: true });
+    } catch (error) {
+        console.error('Delete category image error:', error.message);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+const toggleCategoryVisibility = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await toggleCategoryVisibilityService(id);
+        return res.json(result);
+    } catch (error) {
+        console.error('Toggle visibility error:', error.message);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
 export {
     getCategoryList,
     createCategory,
     editCategory,
-    deleteCategory
+    deleteCategory,
+    deleteCategoryImage,
+    toggleCategoryVisibility
 } 

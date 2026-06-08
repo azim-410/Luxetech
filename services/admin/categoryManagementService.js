@@ -26,7 +26,7 @@ const getCategoryService = async (page, limit, search = '',sort = 'latest') => {
     return { categories, totalCategories, totalPage, totalActive };
 };
 
-const createCategoryService = async (categoryName, description, status) => {
+const createCategoryService = async (categoryName, description, status, image, isHidden) => {
     if (!categoryName || categoryName.trim() === '') throw new Error('Category Name is required');
     if (categoryName.trim().length < 3) throw new Error('Category Name must be at least 3 characters');
 
@@ -50,14 +50,16 @@ const createCategoryService = async (categoryName, description, status) => {
         categoryName: categoryName.trim(),
         description: description ? description.trim() : '',
         status: status === 'true' || status === true,
-        slug
+        isHidden: isHidden === 'true' || isHidden === true,
+        slug,
+        image
     });
 
     await newCategory.save();
     return { success: true };
 };
 
-const editCategoryServices = async (id, categoryName, description) => {
+const editCategoryServices = async (id, categoryName, description, image, isHidden) => {
     if (!categoryName || categoryName.trim() === '') throw new Error('Category Name is required');
     if (categoryName.trim().length < 3) throw new Error('Category Name must be at least 3 characters');
 
@@ -80,14 +82,19 @@ const editCategoryServices = async (id, categoryName, description) => {
     const existingSlug = await categoryModel.findOne({ slug, status: true, _id: { $ne: id } });
     if (existingSlug) throw new Error('Category slug already exists');
 
+    const updateData = {
+        categoryName: categoryName.trim(),
+        description: description ? description.trim() : '',
+        slug,
+        isHidden: isHidden === 'true' || isHidden === true
+    };
+    if (image) {
+        updateData.image = image;
+    }
+
     const updated = await categoryModel.findByIdAndUpdate(
         id,
-        {
-            categoryName: categoryName.trim(),
-            description: description ? description.trim() : '',
-            slug
-           
-        },
+        updateData,
         { new: true }
     );
 
@@ -104,10 +111,35 @@ const deleteCategoryService = async (id) => {
     );
     if (!updated) throw new Error('Category not found');
     return { success: true };
-} 
+}
+
+const deleteCategoryImageService = async (id) => {
+    const updated = await categoryModel.findByIdAndUpdate(
+        id,
+        { $unset: { image: "" } },
+        { new: true }
+    );
+    if (!updated) throw new Error('Category not found');
+    return { success: true };
+};
+
+const toggleCategoryVisibilityService = async (id) => {
+    const category = await categoryModel.findById(id);
+    if (!category) throw new Error('Category not found');
+    const updated = await categoryModel.findByIdAndUpdate(
+        id,
+        { isHidden: !category.isHidden },
+        { new: true }
+    );
+    if (!updated) throw new Error('Category not found');
+    return { success: true, isHidden: updated.isHidden };
+};
+
 export {
     getCategoryService,
     createCategoryService,
     editCategoryServices,
-    deleteCategoryService
+    deleteCategoryService,
+    deleteCategoryImageService,
+    toggleCategoryVisibilityService
 }

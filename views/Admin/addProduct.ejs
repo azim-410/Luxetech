@@ -26,7 +26,7 @@
                         'luxe-muted': '#64748B'
                     },
                     borderRadius: {
-                        'luxe': '4px',
+                        'luxe': '12px',
                     }
                 }
             }
@@ -57,7 +57,7 @@
         textarea {
             background-color: #F8FAFC !important;
             border: 1px solid #E2E8F0 !important;
-            border-radius: 4px !important;
+            border-radius: 8px !important;
             font-size: 0.875rem !important;
         }
 
@@ -71,16 +71,24 @@
     </style>
 </head>
 
-<body class="font-sans antialiased">
-    <%- include('../partials/admin/layout', { activePage: 'products' }) %>
+<body class="font-sans antialiased bg-[#F1F5F9]">
+    <!-- Top Header -->
+    <header class="bg-white border-b border-luxe-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+            <a href="/admin/product-management"
+                class="w-8 h-8 rounded-full bg-[#F1F5F9] hover:bg-luxe-border flex items-center justify-center text-luxe-obsidian transition-colors"
+                title="Back to Products">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <h1 class="text-lg font-bold text-luxe-obsidian">Add New Product</h1>
+        </div>
+    </header>
 
-    <div class="flex min-h-screen">
+    <div class="min-h-screen bg-[#F1F5F9]">
         <!-- BEGIN: Main Content Area -->
-        <main class="flex-1 ml-64 pt-20 p-8 overflow-y-auto">
-            <!-- Top Header -->
-            <div class="flex items-center gap-4 mb-8" data-purpose="content-header">
-                <h2 class="text-xl font-bold">Add New Product</h2>
-            </div>
+        <main class="max-w-7xl mx-auto px-6 py-8">
             <div class="grid grid-cols-12 gap-8">
                 <!-- Left Column: Primary Product Data -->
                 <div class="col-span-8 space-y-6">
@@ -99,30 +107,39 @@
                             </div>
                             <div>
                                 <label
-                                    class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">Category</label>
+                                    class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">categories</label>
                                 <select class="w-full px-3 py-2">
-                                    <option>Select Category</option>
-                                    <option>Monitors</option>
-                                    <option>Laptops</option>
-                                    <option>Accessories</option>
+                                    <% if(locals.categories) { %>
+                                        <% categories.forEach(category=>{ %>
+                                            <% if(category.status){ %>
+                                                <option>
+                                                    <%= category.categoryName%>
+                                                </option>
+                                                <% } %>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <option>fetching data not wroking or something went wrong
+                                                            </option>
+                                                            <% }%>
                                 </select>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">Technical
-                                        Summary</label>
-                                    <input class="w-full px-3 py-2 mb-2" placeholder="Response Time" type="text" />
-                                    <input class="w-full px-3 py-2" placeholder="HDR Format" type="text" />
+                            <div id="summaryContainer" class="space-y-3">
+                                <!-- existing two rows stay here -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input class="w-full px-3 py-2" placeholder="Response Time" type="text"
+                                        name="summaryKey[]" />
+                                    <input class="w-full px-3 py-2 font-semibold" type="text" placeholder="0.03ms (GtG)"
+                                        name="summaryValue[]" />
                                 </div>
-                                <div class="flex flex-col justify-end gap-2">
-                                    <input class="w-full px-3 py-2 font-semibold" type="text" value="0.03ms (GtG)" />
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input class="w-full px-3 py-2" placeholder="HDR Format" type="text"
+                                        name="summaryKey[]" />
                                     <input class="w-full px-3 py-2 font-semibold" type="text"
-                                        value="Dolby Vision, HDR10+" />
+                                        placeholder="Dolby Vision, HDR10+" name="summaryValue[]" />
                                 </div>
                             </div>
-                            <button
-                                class="flex items-center gap-2 text-[10px] font-bold uppercase border border-luxe-border px-4 py-2 rounded-luxe hover:bg-luxe-slate transition-colors">
+                            <button type="button" id="addSummaryBtn"
+                                class="flex items-center gap-2 text-[10px] font-bold uppercase border border-luxe-border px-4 py-2 rounded-luxe hover:bg-luxe-slate transition-colors mt-3">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2"></path>
@@ -137,56 +154,6 @@
                             </div>
                             <div class="pt-4 border-t border-luxe-border">
                                 <div class="flex justify-between items-center mb-4">
-                                    <label
-                                        class="text-[10px] font-bold text-luxe-muted uppercase tracking-tight">Product
-                                        Details</label>
-                                    <button class="p-1 rounded bg-luxe-obsidian text-white"><svg class="w-3 h-3"
-                                            fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                            <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"></path>
-                                        </svg></button>
-                                </div>
-                                <div class="grid grid-cols-3 gap-4">
-                                    <!-- Specs Columns -->
-                                    <div class="space-y-2">
-                                        <div class="text-[9px] text-luxe-muted font-bold px-1">PANEL TECHNOLOGY</div>
-                                        <div class="bg-luxe-accent text-white p-2 text-[10px] rounded-luxe">
-                                            Architecture: <br />OLED Pro Next Gen</div>
-                                        <div class="bg-luxe-accent/70 text-white p-2 text-[10px] rounded-luxe">Color
-                                            Accuracy: <br />DCI-P3 99% Near-Gen</div>
-                                        <button
-                                            class="w-full text-white bg-black py-2 text-[9px] font-bold uppercase flex items-center justify-center gap-1 rounded-luxe"><svg
-                                                class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                                <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2"></path>
-                                            </svg> Add Specification</button>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <div class="text-[9px] text-luxe-muted font-bold px-1">PIXEL TECHNOLOGY</div>
-                                        <div class="bg-luxe-accent text-white p-2 text-[10px] rounded-luxe">
-                                            Architecture: <br />OLED Eco Next Gen</div>
-                                        <div class="bg-luxe-accent/70 text-white p-2 text-[10px] rounded-luxe">Pixel
-                                            Accuracy: <br />OLED Eco Next Gen</div>
-                                        <button
-                                            class="w-full text-white bg-black py-2 text-[9px] font-bold uppercase flex items-center justify-center gap-1 rounded-luxe"><svg
-                                                class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                                <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2"></path>
-                                            </svg> Add Specification</button>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <div class="text-[9px] text-luxe-muted font-bold px-1">PANEL TECHNOLOGY</div>
-                                        <div class="bg-luxe-accent text-white p-2 text-[10px] rounded-luxe">
-                                            Architecture: <br />OLED Eco Next Gen</div>
-                                        <div class="bg-luxe-accent/70 text-white p-2 text-[10px] rounded-luxe">Pixel
-                                            Accuracy: <br />OLED Emission Gen</div>
-                                        <button
-                                            class="w-full text-white bg-black py-2 text-[9px] font-bold uppercase flex items-center justify-center gap-1 rounded-luxe"><svg
-                                                class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                                <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2"></path>
-                                            </svg> Add Specification</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -228,98 +195,144 @@
                     <!-- Section: Variants & Stock -->
                     <section class="bg-white p-8 rounded-luxe border border-luxe-border shadow-sm"
                         data-purpose="variants-stock">
+
+                        <!-- Header row -->
                         <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-luxe-obsidian">Variants &amp;
-                                Stock</h3>
-                            <button
-                                class="flex items-center gap-2 text-[10px] font-bold uppercase bg-luxe-slate px-3 py-1.5 rounded-luxe border border-luxe-border">
-                                <div class="w-2 h-2 rounded-full bg-luxe-obsidian"></div>
+                            <h3 class="text-[22px] font-bold tracking-tight text-luxe-obsidian"
+                                style="font-family:'Manrope',sans-serif;">Variants &amp; Stock</h3>
+                            <button id="addVariantsBtn" type="button"
+                                class="flex items-center gap-2.5 text-[11px] font-bold uppercase bg-[#F1F5F9] hover:bg-luxe-border px-5 py-2.5 rounded-full transition-colors text-luxe-obsidian tracking-widest"
+                                style="font-family:'Manrope',sans-serif; letter-spacing:0.08em;">
+                                <span
+                                    class="w-4 h-4 rounded-full bg-luxe-obsidian inline-flex items-center justify-center flex-shrink-0"></span>
                                 Add Variants
                             </button>
                         </div>
-                        <!-- Size Grid -->
-                        <div class="space-y-8">
+
+                        <div id="variantsContainer" class="space-y-9">
+
+                            <!-- SIZE & STOCK INVENTORY -->
                             <div>
-                                <h4 class="text-[10px] font-bold uppercase text-luxe-muted mb-4 tracking-widest">Size
-                                    &amp; Stock Inventory</h4>
+                                <p class="text-[10px] font-bold uppercase text-luxe-muted mb-4 tracking-[0.14em]"
+                                    style="font-family:'Manrope',sans-serif;">Size &amp; Stock Inventory</p>
                                 <div class="grid grid-cols-3 gap-4">
-                                    <div class="bg-luxe-slate p-3 rounded-luxe border border-luxe-border">
-                                        <span
-                                            class="text-[9px] font-bold uppercase text-luxe-obsidian block mb-3">27-inch
-                                            Display</span>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Units</span>
+
+                                    <!-- Card macro: just repeat 3 times -->
+                                    <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5"
+                                        style="background:#E8EDF5;">
+                                        <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4"
+                                            style="font-family:'Manrope',sans-serif;">27-Inch Display</p>
+                                        <div class="flex items-center gap-0 mb-2.5">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Units</span>
                                         </div>
-                                        <div class="flex items-center justify-between gap-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Price</span>
-                                        </div>
-                                    </div>
-                                    <div class="bg-luxe-slate p-3 rounded-luxe border border-luxe-border">
-                                        <span
-                                            class="text-[9px] font-bold uppercase text-luxe-obsidian block mb-3">32-inch
-                                            Display</span>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Units</span>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Price</span>
+                                        <div class="flex items-center gap-0">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Price</span>
                                         </div>
                                     </div>
-                                    <div class="bg-luxe-slate p-3 rounded-luxe border border-luxe-border">
-                                        <span
-                                            class="text-[9px] font-bold uppercase text-luxe-obsidian block mb-3">34-inch
-                                            Display</span>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Units</span>
+
+                                    <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5"
+                                        style="background:#E8EDF5;">
+                                        <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4"
+                                            style="font-family:'Manrope',sans-serif;">32-Inch Display</p>
+                                        <div class="flex items-center gap-0 mb-2.5">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Units</span>
                                         </div>
-                                        <div class="flex items-center justify-between gap-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Price</span>
+                                        <div class="flex items-center gap-0">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Price</span>
                                         </div>
                                     </div>
+
+                                    <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5"
+                                        style="background:#E8EDF5;">
+                                        <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4"
+                                            style="font-family:'Manrope',sans-serif;">34-Inch Display</p>
+                                        <div class="flex items-center gap-0 mb-2.5">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Units</span>
+                                        </div>
+                                        <div class="flex items-center gap-0">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Price</span>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
-                            <!-- Refresh Rate Grid -->
+
+                            <!-- HZ & STOCK INVENTORY -->
                             <div>
-                                <h4 class="text-[10px] font-bold uppercase text-luxe-muted mb-4 tracking-widest">Hz
-                                    &amp; Stock Inventory</h4>
+                                <p class="text-[10px] font-bold uppercase text-luxe-muted mb-4 tracking-[0.14em]"
+                                    style="font-family:'Manrope',sans-serif;">Hz &amp; Stock Inventory</p>
                                 <div class="grid grid-cols-3 gap-4">
-                                    <div class="bg-luxe-slate p-3 rounded-luxe border border-luxe-border">
-                                        <span
-                                            class="text-[9px] font-bold uppercase text-luxe-obsidian block mb-3">144-Hz
-                                            Display</span>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Units</span>
+
+                                    <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5"
+                                        style="background:#E8EDF5;">
+                                        <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4"
+                                            style="font-family:'Manrope',sans-serif;">144-Hz Display</p>
+                                        <div class="flex items-center gap-0 mb-2.5">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Units</span>
                                         </div>
-                                        <div class="flex items-center justify-between gap-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Price</span>
-                                        </div>
-                                    </div>
-                                    <div class="bg-luxe-slate p-3 rounded-luxe border border-luxe-border">
-                                        <span
-                                            class="text-[9px] font-bold uppercase text-luxe-obsidian block mb-3">180-Hz
-                                            Display</span>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Units</span>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-2">
-                                            <input class="w-16 h-8 text-center bg-white" type="number" value="0" />
-                                            <span class="text-[9px] text-luxe-muted font-bold">Price</span>
+                                        <div class="flex items-center gap-0">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Price</span>
                                         </div>
                                     </div>
+
+                                    <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5"
+                                        style="background:#E8EDF5;">
+                                        <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4"
+                                            style="font-family:'Manrope',sans-serif;">180-Hz Display</p>
+                                        <div class="flex items-center gap-0 mb-2.5">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Units</span>
+                                        </div>
+                                        <div class="flex items-center gap-0">
+                                            <input type="number" value="0"
+                                                class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium text-[#1A1C1E]"
+                                                style="min-width:0;" />
+                                            <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5"
+                                                style="font-family:'Manrope',sans-serif;">Price</span>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
-                        </div>
+
                     </section>
                 </div>
+
                 <!-- Right Column: Pricing & Organization -->
                 <aside class="col-span-4 space-y-6">
                     <!-- Section: Pricing -->
@@ -333,7 +346,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
-                                    <input class="w-full pl-7 py-2 font-medium" type="text" value="0.00" />
+                                    <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" />
                                 </div>
                             </div>
                             <div>
@@ -342,7 +355,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
-                                    <input class="w-full pl-7 py-2 font-medium" type="text" value="0.00" />
+                                    <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" />
                                 </div>
                             </div>
                         </div>
@@ -356,14 +369,13 @@
                             <div>
                                 <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">SKU / Product
                                     Code</label>
-                                <input class="w-full px-3 py-2 font-medium" type="text" value="LX-MON-34-CURV" />
+                                <input class="w-full px-3 py-2 font-medium" type="text" placeholder="LX-MON-34-CURV" />
                             </div>
                             <div>
                                 <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Status</label>
                                 <select class="w-full px-3 py-2 font-medium">
                                     <option>InStock</option>
                                     <option>Out of Stock</option>
-                                    <option>Draft</option>
                                 </select>
                             </div>
                         </div>
@@ -374,10 +386,12 @@
                             class="w-full bg-luxe-accent hover:bg-luxe-obsidian text-white font-bold py-3 text-xs uppercase tracking-widest rounded-luxe transition-all shadow-lg shadow-slate-200">
                             Save Product
                         </button>
-                        <button
-                            class="w-full bg-white hover:bg-luxe-slate text-luxe-obsidian border border-luxe-border font-bold py-3 text-xs uppercase tracking-widest rounded-luxe transition-all">
-                            Cancel
-                        </button>
+                        <a href="/admin/product-management" class="block w-full">
+                            <button type="button"
+                                class="w-full bg-white hover:bg-luxe-slate text-luxe-obsidian border border-luxe-border font-bold py-3 text-xs uppercase tracking-widest rounded-luxe transition-all">
+                                Cancel
+                            </button>
+                        </a>
                     </div>
                     <!-- Security Notice -->
                     <div class="bg-luxe-slate p-4 rounded-luxe border border-luxe-border flex gap-3">
@@ -400,7 +414,148 @@
         </main>
         <!-- END: Main Content Area -->
     </div>
-    <!-- END: Main Dashboard Layout -->
+   
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
+
+    <!-- Variant Modal -->
+    <div id="variantModal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-luxe border border-luxe-border w-full max-w-md p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xs font-bold text-luxe-obsidian uppercase tracking-wider" style="font-family:'Manrope',sans-serif;">Add Variant Group</h3>
+                <button id="closeModal" type="button" class="text-luxe-muted hover:text-luxe-obsidian transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-1.5 tracking-wider" style="font-family:'Manrope',sans-serif;">Group Name</label>
+                    <input id="groupName" type="text" class="w-full px-3 py-2 bg-luxe-slate border border-luxe-border rounded-lg text-sm text-luxe-obsidian focus:border-luxe-obsidian focus:ring-0" placeholder="e.g. Color" />
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-1.5 tracking-wider" style="font-family:'Manrope',sans-serif;">Options (Comma Separated)</label>
+                    <input id="groupOptions" type="text" class="w-full px-3 py-2 bg-luxe-slate border border-luxe-border rounded-lg text-sm text-luxe-obsidian focus:border-luxe-obsidian focus:ring-0" placeholder="e.g. Black, White, Silver" />
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button id="cancelModalBtn" type="button" class="px-4 py-2 border border-luxe-border text-luxe-obsidian hover:bg-luxe-slate rounded-lg text-xs font-bold uppercase tracking-wider transition-colors" style="font-family:'Manrope',sans-serif;">
+                    Cancel
+                </button>
+                <button id="addVariantGroup" type="button" class="px-4 py-2 bg-luxe-accent hover:bg-luxe-obsidian text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors" style="font-family:'Manrope',sans-serif;">
+                    Add Group
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const addSummaryBtn = document.getElementById('addSummaryBtn');
+        const summaryContainer = document.getElementById('summaryContainer');
+
+        addSummaryBtn.addEventListener('click', () => {
+            const row = document.createElement('div');
+            row.classList.add('grid', 'grid-cols-2', 'gap-4', 'mt-3');
+            row.innerHTML = `
+            <input 
+                class="w-full px-3 py-2" 
+                type="text" 
+                placeholder="e.g. Panel Type" 
+                name="summaryKey[]" 
+            />
+            <div class="flex items-center gap-2">
+                <input 
+                    class="w-full px-3 py-2" 
+                    type="text" 
+                    placeholder="e.g. OLED" 
+                    name="summaryValue[]" 
+                />
+                <button type="button" class="removeRow text-black-400 hover:text-black-600 text-lg font-bold">✕</button>
+            </div>
+        `;
+            summaryContainer.appendChild(row);
+
+            
+            row.querySelector('.removeRow').addEventListener('click', () => {
+                row.remove();
+            });
+        });
+
+        const addVariantsBtn = document.getElementById('addVariantsBtn');
+        const variantsContainer = document.getElementById('variantsContainer');
+        const variantModal = document.getElementById('variantModal');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        // Open modal
+        addVariantsBtn.addEventListener('click', () => {
+            variantModal.classList.remove('hidden');
+            modalOverlay.classList.remove('hidden');
+        });
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+
+        function closeModal() {
+            variantModal.classList.add('hidden');
+            modalOverlay.classList.add('hidden');
+            document.getElementById('groupName').value = '';
+            document.getElementById('groupOptions').value = '';
+        }
+
+        // Add variant group
+        document.getElementById('addVariantGroup').addEventListener('click', () => {
+            const groupName = document.getElementById('groupName').value.trim();
+            const optionsRaw = document.getElementById('groupOptions').value.trim();
+
+            if (!groupName || !optionsRaw) return alert('Fill both fields');
+
+            const options = optionsRaw.split(',').map(o => o.trim()).filter(Boolean);
+
+            const section = document.createElement('div');
+            section.classList.add('variant-group', 'border-t', 'border-luxe-border', 'pt-6');
+            section.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-[10px] font-bold uppercase text-[#64748B] tracking-[0.14em]" style="font-family:'Manrope',sans-serif;">
+                        ${groupName} &amp; Stock Inventory
+                    </h4>
+                    <button type="button" class="text-[10px] text-red-500 hover:text-red-700 font-bold uppercase tracking-wider flex items-center gap-1"
+                        onclick="this.closest('.variant-group').remove()">
+                        &minus; Remove Group
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    ${options.map(option => `
+                        <div class="border border-[#DDE3EC] rounded-[12px] p-5" style="background:#E8EDF5;">
+                            <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4" style="font-family:'Manrope',sans-serif;">
+                                ${option}
+                            </p>
+                            <div class="flex items-center gap-0 mb-2.5">
+                                <input type="number" value="0"
+                                    name="variant_${groupName}_${option}_units"
+                                    class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium"
+                                    style="min-width:0;" />
+                                <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Units</span>
+                            </div>
+                            <div class="flex items-center gap-0">
+                                <input type="number" value="0"
+                                    name="variant_${groupName}_${option}_price"
+                                    class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium"
+                                    style="min-width:0;" />
+                                <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Price</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            variantsContainer.appendChild(section);
+            closeModal();
+        });
+    </script>
+
+
 </body>
 
 </html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>
+        <%= locals.product.name %> | LUXE TECH
+    </title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "surface-container-low": "#f2f4f7",
+                        "background": "#f7f9fc",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface": "#f7f9fc",
+                        "on-tertiary-container": "#dc5d00",
+                        "outline-variant": "#c4c6cc",
+                        "on-error": "#ffffff",
+                        "primary-container": "#001945",
+                        "on-surface-variant": "#44474c",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "on-surface": "#191c1e",
+                        "primary-fixed": "#d9e2ff",
+                        "on-secondary-container": "#4e6874",
+                        "surface-variant": "#e0e3e6",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#021f29",
+                        "on-background": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001945",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#2b5bb5",
+                        "secondary": "#48626e",
+                        "on-primary-fixed-variant": "#00429c",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d8dadd",
+                        "surface-bright": "#f7f9fc",
+                        "secondary-container": "#cbe7f5",
+                        "surface-container": "#eceef1",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eff1f4",
+                        "inverse-primary": "#b0c6ff",
+                        "primary": "#000000",
+                        "secondary-fixed": "#cbe7f5",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#341100",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "on-primary-container": "#5781de",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-tertiary-fixed": "#341100",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#e6e8eb",
+                        "primary-fixed-dim": "#b0c6ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+
+<body class="bg-surface font-body text-on-surface antialiased">
+    <%- include('../partials/user/main-header', { user: locals.user || null }) %>
+        <main class="pt-36 pb-0">
+            <% let initialImages=[]; if (variants && variants.length> 0 && variants[0].images &&
+                variants[0].images.length > 0) {
+                initialImages = variants[0].images;
+                }
+                %>
+                <!-- Product Hero Section -->
+                <section class="max-w-screen-2xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-36">
+                    <!-- Asymmetric Gallery -->
+                    <div id="gallery-container" class="lg:col-span-7 grid grid-cols-6 gap-4">
+                        <div id="main-img-container"
+                            class="col-span-6 aspect-video bg-surface-container-low rounded-xl overflow-hidden relative group cursor-zoom-in">
+                            <img id="main-product-img"
+                                class="w-full h-full object-cover transition-transform duration-75 ease-out"
+                                src="<%= initialImages.length > 0 ? initialImages[0] : '' %>"
+                                style="<%= initialImages.length > 0 ? 'display: block; transform-origin: center center;' : 'display: none;' %>"
+                                alt="<%= product.name %>" />
+                            <div id="main-product-img-placeholder"
+                                class="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold"
+                                style="<%= initialImages.length > 0 ? 'display: none;' : 'display: flex;' %>">
+                                No Image Available
+                            </div>
+                            <div class="absolute top-6 left-6 flex gap-2">
+                                <span
+                                    class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-bold tracking-widest uppercase">
+                                    <%= product.category ? product.category.name : 'Product' %>
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Thumbnails Wrapper -->
+                        <div id="thumbnails-wrapper" class="col-span-6 grid grid-cols-6 gap-4">
+                            <% for (let i=0; i < Math.min(initialImages.length, 4); i++) { %>
+                                <div class="col-span-2 aspect-square bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10 cursor-pointer"
+                                    onclick="document.getElementById('main-product-img').src='<%= initialImages[i] %>'">
+                                    <img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                                        src="<%= initialImages[i] %>" alt="<%= product.name %> Gallery Image" />
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
+                    <!-- Product Info -->
+                    <div class="lg:col-span-5 flex flex-col justify-center">
+                        <p class="text-on-surface-variant font-label text-xs tracking-[0.2em] uppercase mb-4">
+                            <%= product.category ? product.category.name : 'Gear' %>
+                        </p>
+                        <h1
+                            class="text-5xl lg:text-7xl font-black font-headline tracking-tighter text-on-surface leading-none mb-6">
+                            <%= product.name %>
+                        </h1>
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="flex text-on-tertiary-container">
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                            </div>
+                            <span class="text-on-surface-variant text-sm font-medium">5.0 (24 Reviews)</span>
+                        </div>
+                        <div class="space-y-6 mb-10">
+                            <div class="flex items-baseline gap-4">
+                                <% if (product.discountedPrice && product.discountedPrice> 0) { %>
+                                    <span id="product-price" data-base-discounted="<%= product.discountedPrice %>"
+                                        class="text-4xl font-headline font-extrabold text-on-surface">
+                                        ₹<%= product.discountedPrice + (variants.length> 0 ? variants[0].priceAdd : 0)
+                                            %>
+                                    </span>
+                                    <span id="product-base-price" data-base-original="<%= product.basePrice %>"
+                                        class="text-on-surface-variant line-through text-xl">
+                                        ₹<%= product.basePrice + (variants.length> 0 ? variants[0].priceAdd : 0) %>
+                                    </span>
+                                    <% } else { %>
+                                        <span id="product-price" data-base-original="<%= product.basePrice %>"
+                                            class="text-4xl font-headline font-extrabold text-on-surface">
+                                            ₹<%= product.basePrice + (variants.length> 0 ? variants[0].priceAdd : 0) %>
+                                        </span>
+                                        <% } %>
+                            </div>
+                            <p class="text-on-surface-variant leading-relaxed text-lg max-w-md">
+                                <%= product.description %>
+                            </p>
+                        </div>
+                        <div class="space-y-6">
+                            <!-- Redesigned Actions -->
+                            <div class="flex flex-col gap-3">
+                                <!-- Add to Cart Button -->
+                                <button
+                                    class="w-full py-5 bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202] transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                                    <span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to
+                                    Cart
+                                </button>
+                                <!-- Buy Now Button -->
+                                <button
+                                    class="w-full py-5 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                                    Buy Now
+                                </button>
+                            </div>
+                            <!-- Options & Add to Wishlist -->
+                            <div class="flex items-center gap-3">
+                                <!-- Variant Selection -->
+                                <% if (variants && variants.length> 0) { %>
+                                    <div class="relative flex-grow h-12">
+                                        <select id="variant-select" onchange="updateVariantGallery(this)"
+                                            class="w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] cursor-pointer focus:outline-none">
+                                            <% for (let i=0; i < variants.length; i++) { %>
+                                                <% const v=variants[i]; %>
+                                                    <option value="<%= v._id %>" data-price-add="<%= v.priceAdd %>"
+                                                        data-images="<%= v.images ? v.images.join(',') : '' %>">
+                                                        <%= v.groupName %>: <%= v.option %>
+                                                                <%= v.priceAdd> 0 ? '(+₹' + v.priceAdd + ')' : '' %>
+                                                    </option>
+                                                    <% } %>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-[#0D1B2A]">expand_more</span>
+                                    </div>
+                                    <% } %>
+                                        <!-- Add to Wishlist Button -->
+                                        <button
+                                            class="flex-grow h-12 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
+                                            Add to Wishlist
+                                        </button>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-sm">local_shipping</span>
+                                <p class="text-xs font-medium">Complimentary delivery included</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Product Details / Engineering Vision -->
+                <section class="bg-surface-container-low py-36">
+                    <div class="max-w-screen-2xl mx-auto px-10">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-24">
+                            <div class="lg:col-span-2 space-y-12">
+                                <div>
+                                    <h2 class="text-3xl font-headline font-bold mb-8">The Engineering Vision</h2>
+                                    <div
+                                        class="prose prose-slate max-w-none text-on-surface-variant leading-relaxed space-y-6 text-lg">
+                                        <p>
+                                            <%= product.description %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-12">
+                                <div>
+                                    <h3
+                                        class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-6 border-b border-outline-variant/20 pb-2">
+                                        Technical Summary
+                                    </h3>
+                                    <ul class="space-y-4">
+                                        <% if (product.summary && product.summary.length> 0) { %>
+                                            <% for (let i=0; i < product.summary.length; i++) { %>
+                                                <% const item=product.summary[i]; %>
+                                                    <% if (item.key && item.value) { %>
+                                                        <li
+                                                            class="flex justify-between text-sm py-2 border-b border-outline-variant/5">
+                                                            <span class="text-on-surface-variant">
+                                                                <%= item.key %>
+                                                            </span>
+                                                            <span class="font-bold">
+                                                                <%= item.value %>
+                                                            </span>
+                                                        </li>
+                                                        <% } %>
+                                                            <% } %>
+                                                                <% } else { %>
+                                                                    <li class="text-sm py-2 text-on-surface-variant">No
+                                                                        specifications available.</li>
+                                                                    <% } %>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reviews Section -->
+                <section class="py-36 max-w-screen-2xl mx-auto px-10 border-b border-surface-container-high">
+                    <div class="flex flex-col lg:flex-row gap-16">
+                        <!-- Score Breakdown -->
+                        <div class="lg:w-1/3">
+                            <h2 class="text-4xl font-headline font-black tracking-tighter mb-8 uppercase">User
+                                Intelligence</h2>
+                            <div
+                                class="bg-surface-container-lowest p-10 rounded-2xl shadow-sm border border-outline-variant/10">
+                                <div class="text-center mb-8">
+                                    <p class="text-7xl font-headline font-black text-on-surface leading-none mb-2">4.9
+                                    </p>
+                                    <div class="flex justify-center text-on-tertiary-container mb-2">
+                                        <span class="material-symbols-outlined">star</span>
+                                        <span class="material-symbols-outlined">star</span>
+                                        <span class="material-symbols-outlined">star</span>
+                                        <span class="material-symbols-outlined">star</span>
+                                        <span class="material-symbols-outlined">star</span>
+                                    </div>
+                                    <p class="text-sm text-on-surface-variant uppercase tracking-widest font-label">
+                                        Global Score
+                                    </p>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs font-label w-4">5</span>
+                                        <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-surface-tint w-[92%]"></div>
+                                        </div>
+                                        <span class="text-xs text-on-surface-variant">92%</span>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs font-label w-4">4</span>
+                                        <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-surface-tint w-[6%]"></div>
+                                        </div>
+                                        <span class="text-xs text-on-surface-variant">6%</span>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs font-label w-4">3</span>
+                                        <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-surface-tint w-[2%]"></div>
+                                        </div>
+                                        <span class="text-xs text-on-surface-variant">2%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- Review Feed -->
+                        <div class="lg:w-2/3 space-y-12">
+                            <!-- Review 1 -->
+                            <div class="border-b border-surface-container pb-12">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-headline font-bold text-lg">Absolute Game Changer</h4>
+                                        <div class="flex text-on-tertiary-container text-xs mt-1">
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-label text-on-surface-variant uppercase">Nov 12,
+                                        2024</span>
+                                </div>
+                                <p class="text-on-surface-variant leading-relaxed mb-6">"As a colorist, I was skeptical
+                                    about
+                                    leaving my reference CRT, but the Luxe-X has completely won me over. The blacks are
+                                    ink-deep
+                                    and the peak highlights don't bloom. Worth every penny for professional work."</p>
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold">
+                                        JD</div>
+                                    <span class="text-xs font-bold text-on-surface">James D.</span>
+                                    <span
+                                        class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Verified
+                                        Owner</span>
+                                </div>
+                            </div>
+                            <!-- Review 2 -->
+                            <div class="border-b border-surface-container pb-12">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-headline font-bold text-lg">Build quality is insane</h4>
+                                        <div class="flex text-on-tertiary-container text-xs mt-1">
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="material-symbols-outlined text-sm"
+                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-label text-on-surface-variant uppercase">Oct 29,
+                                        2024</span>
+                                </div>
+                                <p class="text-on-surface-variant leading-relaxed mb-6">"Everything about this feels
+                                    premium.
+                                    The aluminum stand is heavy and solid. Thunderbolt 4 daisy-chaining works perfectly
+                                    with my
+                                    MacBook Pro setup. Best aesthetic in the market."</p>
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold">
+                                        MK</div>
+                                    <span class="text-xs font-bold text-on-surface">Marcus K.</span>
+                                    <span
+                                        class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Verified
+                                        Owner</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Related Products Section -->
+                <section class="bg-surface-container-low py-36 w-full">
+                    <div class="max-w-screen-2xl mx-auto px-10">
+                        <h2 class="text-2xl font-headline font-bold mb-10 border-l-4 border-surface-tint pl-6">Complete
+                            Your
+                            Ecosystem</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <!-- Related Item 1 -->
+                            <div class="group cursor-pointer">
+                                <div
+                                    class="aspect-square bg-surface-container rounded-lg overflow-hidden mb-4 relative">
+                                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        data-alt="Ergonomic precision mouse for high-end creative work"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVExBDU_QkDRY5az0VjJdgkWnn6ToDA3_X1O1JWBNOfVZfNYY608mLKie6t_Si8ZV8zjyUZgXu6zU1pTrBUHvJn958bh7wONKTDhEWWAZmiX2bjjdWiUykSbp1GOpHRE1kD7j5RNL1uPg5_ZTtNz3wA0qBmuHwBdKRfUajtkYpb0kBRAdmo1Fb3zlPaYJ5XnIHpy9OhHnffqhOWO46Q3Ok6qgscDWJYIbiWEw-MvFlJJp8J3dnaxds99_3jAxhNCpjFGLWTh1mo-Q" />
+                                </div>
+                                <p
+                                    class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">
+                                    Accessories
+                                </p>
+                                <h3 class="font-headline font-bold text-lg mb-1">Luxe Precision Mouse</h3>
+                                <p class="text-surface-tint font-bold">$129.00</p>
+                            </div>
+                            <!-- Related Item 2 -->
+                            <div class="group cursor-pointer">
+                                <div
+                                    class="aspect-square bg-surface-container rounded-lg overflow-hidden mb-4 relative">
+                                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        data-alt="Low-profile mechanical keyboard with aluminum frame"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuZBAJ_3Uy9zA4L6FjYXnNv50mYT3nJT5Yan6WGZekV3ywTYs_Eh0h4Ne8AhPddCBwnDHC_5GKrnJ25-0NQVGWOXA9rLMCgZMpW27mQHLM6QSG-73Cl0qvXnJ5T3eNtuXxrms9-8DNb_sg1SCfS0pZdqJuBC3GvXw3LTxGM5XWDCZK4X5k7bpSS_M-RHWpwLEgBYYA4CO0mOXCMOZrofEXELJagy9k4T-i06LnZQYKCW6vwroIg49kjx2wGV34J3j4fchWty-oBnY" />
+                                </div>
+                                <p
+                                    class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">
+                                    Gear</p>
+                                <h3 class="font-headline font-bold text-lg mb-1">Tactile Elite Keyboard</h3>
+                                <p class="text-surface-tint font-bold">$249.00</p>
+                            </div>
+                            <!-- Related Item 3 -->
+                            <div class="group cursor-pointer">
+                                <div
+                                    class="aspect-square bg-surface-container rounded-lg overflow-hidden mb-4 relative">
+                                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        data-alt="Professional over-ear studio headphones"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe3mFWD1enOTusZS3DdcRKOUUy9btJ66Bn1iyUplRrXEhGYAuEmBdszzD4Iu8L-fTgUFpTtGc2x2O2v4wTPJ1aJRh_kki-kgRlitc9mtUw7-nzNH5Sr2PgtC4sYY5nuUpWmYhA4bTVzBG15sPUHhzeLztFAZXhhA7QX4PnJt2mrl2mKGXXGn_QbExW9odppMcrQBTZb2q3fJ9Ow9L3b5eSl5Ja7ZM6mICbUCYvGOrzunKLC_Vbr-eefUu4qWk_tfHEpkx_oGBsGAI" />
+                                </div>
+                                <p
+                                    class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">
+                                    Audio</p>
+                                <h3 class="font-headline font-bold text-lg mb-1">Acoustic Reference S1</h3>
+                                <p class="text-surface-tint font-bold">$499.00</p>
+                            </div>
+                            <!-- Related Item 4 -->
+                            <div class="group cursor-pointer">
+                                <div
+                                    class="aspect-square bg-surface-container rounded-lg overflow-hidden mb-4 relative">
+                                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        data-alt="Modern minimal desk lamp for creative studio"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrLt8FdAHzLNnHnwBpdkaDGEGzcaFNkqbpaJRaruCwj4Ugge8jBWSBisy5T1F8m_mciGvhjmcLxz83PF5EAJHWj-Zr1GhDuy6k2eBxZBuXogMKF0apLXmBv2iaVjEOah9LHoer-_E0K48SjF0kBwE4h0uD-ehNEJVwEc2lWUtAIUnJ4iDeqtD_yaqv-GpDRKhg0r_SRvqxUrKJ4dVfcDKPW2ML2Z3BQmu71ygpyMOwljfmzccgT3V4rc87wQQR0nDuwFkcWUXTtjI" />
+                                </div>
+                                <p
+                                    class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">
+                                    Environment
+                                </p>
+                                <h3 class="font-headline font-bold text-lg mb-1">Lumen Pro Studio Light</h3>
+                                <p class="text-surface-tint font-bold">$189.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+        </main>
+        <!-- Footer Shell -->
+        <footer class="bg-[#0D1B2A] dark:bg-black text-white py-16 w-full flex flex-col items-center gap-8 px-10">
+            <div class="max-w-screen-2xl w-full flex flex-col md:flex-row justify-between items-center gap-12">
+                <div class="flex flex-col gap-4 text-center md:text-left">
+                    <span class="font-headline font-bold text-white text-2xl tracking-tighter uppercase">LUXE
+                        TECH</span>
+                    <p class="text-slate-400 font-body text-sm max-w-xs leading-relaxed">Precision engineering for the
+                        modern creator. Redefining the boundaries of visual technology.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-10 font-['Inter'] text-xs tracking-widest uppercase">
+                    <a class="text-slate-400 hover:text-white transition-colors" href="#">Privacy Policy</a>
+                    <a class="text-slate-400 hover:text-white transition-colors" href="#">Terms of Service</a>
+                    <a class="text-slate-400 hover:text-white transition-colors" href="#">Sustainability</a>
+                    <a class="text-slate-400 hover:text-white transition-colors" href="#">Global Offices</a>
+                </div>
+            </div>
+            <div class="w-full h-px bg-slate-800/50 max-w-screen-2xl"></div>
+            <p class="font-['Inter'] text-xs tracking-widest uppercase text-slate-500 text-center">
+                © 2024 Luxe Tech Precision Engineering. All rights reserved.
+            </p>
+        </footer>
+        <script>
+            function updateVariantGallery(selectElement) {
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const imagesAttr = selectedOption.getAttribute('data-images') || '';
+                const images = imagesAttr ? imagesAttr.split(',') : [];
+                const priceAdd = parseFloat(selectedOption.getAttribute('data-price-add') || '0');
+
+                // 1. Update Price dynamically
+                const priceEl = document.getElementById('product-price');
+                const basePriceEl = document.getElementById('product-base-price');
+
+                if (priceEl) {
+                    const baseDiscounted = parseFloat(priceEl.getAttribute('data-base-discounted'));
+                    const baseOriginal = parseFloat(priceEl.getAttribute('data-base-original'));
+
+                    if (!isNaN(baseDiscounted)) {
+                        priceEl.textContent = '₹' + (baseDiscounted + priceAdd);
+                    } else if (!isNaN(baseOriginal)) {
+                        priceEl.textContent = '₹' + (baseOriginal + priceAdd);
+                    }
+                }
+
+                if (basePriceEl) {
+                    const baseOriginal = parseFloat(basePriceEl.getAttribute('data-base-original'));
+                    if (!isNaN(baseOriginal)) {
+                        basePriceEl.textContent = '₹' + (baseOriginal + priceAdd);
+                    }
+                }
+
+                // 2. Update Gallery images dynamically
+                const mainImg = document.getElementById('main-product-img');
+                const placeholder = document.getElementById('main-product-img-placeholder');
+                const thumbnailsWrapper = document.getElementById('thumbnails-wrapper');
+
+                if (images.length > 0) {
+                    mainImg.src = images[0];
+                    mainImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+
+                    // Rebuild thumbnails starting from index 0
+                    thumbnailsWrapper.innerHTML = '';
+                    for (let i = 0; i < Math.min(images.length, 4); i++) {
+                        const thumbDiv = document.createElement('div');
+                        thumbDiv.className = 'col-span-2 aspect-square bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10 cursor-pointer';
+                        thumbDiv.onclick = function () {
+                            mainImg.src = images[i];
+                        };
+
+                        const imgEl = document.createElement('img');
+                        imgEl.className = 'w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity';
+                        imgEl.src = images[i];
+                        imgEl.alt = 'Gallery Image';
+
+                        thumbDiv.appendChild(imgEl);
+                        thumbnailsWrapper.appendChild(thumbDiv);
+                    }
+                } else {
+                    mainImg.src = '';
+                    mainImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                    thumbnailsWrapper.innerHTML = '';
+                }
+            }
+
+            // Image Zoom Functionality
+            const mainImgContainer = document.getElementById('main-img-container');
+            const mainImg = document.getElementById('main-product-img');
+
+            if (mainImgContainer && mainImg) {
+                mainImgContainer.addEventListener('mousemove', function (e) {
+                    const rect = mainImgContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const xPercent = (x / rect.width) * 100;
+                    const yPercent = (y / rect.height) * 100;
+
+                    mainImg.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                    mainImg.style.transform = 'scale(2.2)';
+                });
+
+                mainImgContainer.addEventListener('mouseleave', function () {
+                    mainImg.style.transform = 'scale(1)';
+                    mainImg.style.transformOrigin = 'center center';
+                });
+            }
+        </script>
+</body>
+
+</html>

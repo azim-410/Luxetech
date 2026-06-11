@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>High-Performance Gear – Luxe Tech</title>
+  <meta name="description" content="Shop high-performance gear from Luxe Tech."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/User/css/main-global.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f0f0f0;color:#111;font-size:13px;overflow:hidden;height:100vh}
+
+    /* ── MAIN LAYOUT ── */
+    .layout-wrap{
+      display:flex;
+      align-items:stretch;
+      height:calc(100vh - 72px);
+      overflow:hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      width:200px;
+      flex-shrink:0;
+      background:#fff;
+      border-right:1px solid #e0e0e0;
+      padding:28px 20px;
+      height:100%;
+      overflow:hidden;
+    }
+    .mobile-sidebar{display:none}
+
+    .sidebar-section{margin-bottom:0;padding:20px 0}
+    .sidebar-section + .sidebar-section{border-top:1px solid #e8e8e8}
+    .sidebar-title{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+      color:#111;
+      margin-bottom:16px;
+    }
+
+    .sidebar-list{list-style:none}
+    .sidebar-list li{margin-bottom:11px}
+    .sidebar-list li label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      font-weight:400;
+      color:#444;
+      cursor:pointer;
+      letter-spacing:0.01em;
+    }
+    .sidebar-list li label:hover{color:#111}
+    .sidebar-list li label input[type="checkbox"]{
+      accent-color:#111;
+      width:15px;
+      height:15px;
+      cursor:pointer;
+      flex-shrink:0;
+      border-radius:2px;
+    }
+    .sidebar-list li label.active-label{color:#111;font-weight:600}
+
+    .price-list{list-style:none}
+    .price-list li{margin-bottom:11px}
+    .price-list li label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      font-weight:400;
+      color:#444;
+      cursor:pointer;
+      letter-spacing:0.01em;
+    }
+    .price-list li label:hover{color:#111}
+    .price-list li label input[type="checkbox"]{
+      accent-color:#111;
+      width:15px;
+      height:15px;
+      cursor:pointer;
+      border-radius:2px;
+    }
+
+    /* ── CONTENT AREA ── */
+    .content-wrap{
+      flex:1;
+      min-width:0;
+      padding:20px 100px 80px 80px;
+      height:100%;
+      overflow-y:auto;
+    }
+
+    /* BREADCRUMB */
+    .breadcrumb{font-size:10px;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+    .breadcrumb a{color:#999;text-decoration:none}
+    .breadcrumb a:hover{color:#555}
+    .breadcrumb span{margin:0 6px}
+
+    .eng-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#c8820a;margin-bottom:8px}
+
+    .page-heading{font-size:30px;font-weight:800;letter-spacing:-0.02em;text-transform:uppercase;margin-bottom:24px}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .toolbar-count{font-size:12px;color:#888}
+    .sort-wrap{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#111}
+    .sort-wrap select{
+      font-family:'Inter',sans-serif;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      border:1.5px solid #d0d0d0;
+      border-radius:4px;
+      background:#fff;
+      color:#111;
+      cursor:pointer;
+      outline:none;
+      padding:6px 32px 6px 12px;
+      appearance:none;
+      -webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 10px center;
+      transition:border-color 0.2s;
+    }
+    .sort-wrap select:hover{border-color:#999;}
+
+    /* PRODUCT GRID */
+    .product-grid{display:grid;grid-template-columns:repeat(4,360px);row-gap:50px;column-gap:100px;}
+
+    .product-card{
+      background:#fff;
+      border:1px solid #e8e8e8;
+      border-radius:6px;
+      cursor:pointer;
+      transition:box-shadow 0.25s, transform 0.25s;
+      overflow:hidden;
+      box-shadow:0 1px 4px rgba(0,0,0,0.06);
+    }
+    .product-card:hover{
+      box-shadow:0 8px 28px rgba(0,0,0,0.13);
+      transform:translateY(-3px);
+    }
+
+    .product-img{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden}
+    .img-placeholder{width:100%;height:100%}
+    .c1{background:#c4c4c4}
+    .c2{background:#d4cdc6}
+    .c3{background:#b8c4cc}
+    .c4{background:#1c1f2e}
+    .c5{background:#22252e}
+    .c6{background:#b5aa98}
+    .c7{background:#1a1a1a}
+    .c8{background:#3a3530}
+     .c9{background:#141c28}
+
+    .product-info{padding:12px 14px 14px;margin-top:8px;border-top:1px solid #f0f0f0}
+    .product-meta{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;gap:6px}
+    .product-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#111;line-height:1.4}
+    .product-price{font-size:12px;font-weight:800;color:#111;white-space:nowrap;flex-shrink:0}
+    .stars{display:flex;align-items:center;gap:2px}
+    .star{color:#e0b840;font-size:11px}
+    .star.e{color:#e0e0e0}
+    .review-count{font-size:10px;color:#bbb;margin-left:4px;font-weight:400}
+
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px}
+    .pg-btn{width:32px;height:32px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;transition:all 0.15s;border-radius:2px}
+    .pg-btn:hover{border-color:#111;color:#111}
+    .pg-btn.active{background:#111;color:#fff;border-color:#111}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1024px){
+      body{overflow:auto;height:auto}
+      .layout-wrap{height:auto;overflow:visible;flex-direction:column}
+      .desktop-sidebar{display:none}
+      .mobile-sidebar{
+        display:flex;gap:32px;flex-wrap:wrap;
+        width:100%;height:auto;
+        border-right:none;border-bottom:1px solid #e0e0e0;
+        padding:16px 24px;
+        background:#fff;
+        margin-top:16px;
+      }
+      .sidebar-section{padding:8px 0}
+      .content-wrap{height:auto;overflow-y:visible;padding:20px 24px 60px}
+      .product-grid{grid-template-columns:repeat(3,1fr);row-gap:24px;column-gap:16px}
+      .product-grid .product-card{width:auto}
+    }
+    @media(max-width:768px){
+      .product-grid{grid-template-columns:repeat(2,1fr);row-gap:20px;column-gap:12px}
+      .content-wrap{padding:16px 16px 48px}
+      .page-heading{font-size:22px}
+      .toolbar{flex-direction:column;align-items:flex-start;gap:10px}
+    }
+    @media(max-width:480px){
+      .product-grid{grid-template-columns:1fr;row-gap:16px}
+      .mobile-sidebar{flex-direction:column;gap:12px}
+      .page-heading{font-size:18px}
+      .newsletter{padding:32px 16px}
+      .footer-inner{flex-direction:column;align-items:flex-start}
+      .footer-links{flex-wrap:wrap;gap:12px}
+    }
+  </style>
+</head>
+<body>
+
+<%- include('../partials/user/main-header', { user }) %>
+
+<!-- LAYOUT WRAP: sidebar + content -->
+<div class="layout-wrap">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar desktop-sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-title">Category</p>
+      <ul class="sidebar-list">
+        <li>
+          <label class="<%= selectedCategories.length === 0 ? 'active-label' : '' %>">
+            <input type="checkbox" class="category-filter-all" value="all" <%= selectedCategories.length === 0 ? 'checked' : '' %> onchange="toggleCategoryAll(this)"/> All Gear
+          </label>
+        </li>
+        <% for (let i = 0; i < categories.length; i++) { %>
+          <% const cat = categories[i]; %>
+          <li>
+            <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
+              <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
+            </label>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-title">Price</p>
+      <ul class="price-list">
+        <li>
+          <label class="<%= selectedPrices.includes('under-200') ? 'active-label' : '' %>">
+            <input type="checkbox" class="price-filter-item" value="under-200" <%= selectedPrices.includes('under-200') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> Under ₹200
+          </label>
+        </li>
+        <li>
+          <label class="<%= selectedPrices.includes('200-500') ? 'active-label' : '' %>">
+            <input type="checkbox" class="price-filter-item" value="200-500" <%= selectedPrices.includes('200-500') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> ₹200 – ₹500
+          </label>
+        </li>
+        <li>
+          <label class="<%= selectedPrices.includes('500-1000') ? 'active-label' : '' %>">
+            <input type="checkbox" class="price-filter-item" value="500-1000" <%= selectedPrices.includes('500-1000') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> ₹500 – ₹1,000
+          </label>
+        </li>
+        <li>
+          <label class="<%= selectedPrices.includes('over-1000') ? 'active-label' : '' %>">
+            <input type="checkbox" class="price-filter-item" value="over-1000" <%= selectedPrices.includes('over-1000') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> Over ₹1,000
+          </label>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- RIGHT CONTENT -->
+  <div class="content-wrap">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="#">Home</a><span>/</span>All Gear
+    </div>
+
+    <!-- Tag + Heading -->
+    <div class="eng-tag">Engineered for Pros</div>
+    <h1 class="page-heading">High-Performance Gear</h1>
+
+    <!-- Mobile Sidebar (only visible on small screens below heading) -->
+    <aside class="sidebar mobile-sidebar">
+      <div class="sidebar-section">
+        <p class="sidebar-title">Category</p>
+        <ul class="sidebar-list">
+          <li>
+            <label class="<%= selectedCategories.length === 0 ? 'active-label' : '' %>">
+              <input type="checkbox" class="category-filter-all" value="all" <%= selectedCategories.length === 0 ? 'checked' : '' %> onchange="toggleCategoryAll(this)"/> All Gear
+            </label>
+          </li>
+          <% for (let i = 0; i < categories.length; i++) { %>
+            <% const cat = categories[i]; %>
+            <li>
+              <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
+                <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
+              </label>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <p class="sidebar-title">Price</p>
+        <ul class="price-list">
+          <li>
+            <label class="<%= selectedPrices.includes('under-200') ? 'active-label' : '' %>">
+              <input type="checkbox" class="price-filter-item" value="under-200" <%= selectedPrices.includes('under-200') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> Under ₹200
+            </label>
+          </li>
+          <li>
+            <label class="<%= selectedPrices.includes('200-500') ? 'active-label' : '' %>">
+              <input type="checkbox" class="price-filter-item" value="200-500" <%= selectedPrices.includes('200-500') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> ₹200 – ₹500
+            </label>
+          </li>
+          <li>
+            <label class="<%= selectedPrices.includes('500-1000') ? 'active-label' : '' %>">
+              <input type="checkbox" class="price-filter-item" value="500-1000" <%= selectedPrices.includes('500-1000') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> ₹500 – ₹1,000
+            </label>
+          </li>
+          <li>
+            <label class="<%= selectedPrices.includes('over-1000') ? 'active-label' : '' %>">
+              <input type="checkbox" class="price-filter-item" value="over-1000" <%= selectedPrices.includes('over-1000') ? 'checked' : '' %> onchange="handlePriceChange(this)"/> Over ₹1,000
+            </label>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <span class="toolbar-count">Showing <%= locals.products ? locals.products.length : 0 %> results</span>
+      <div class="sort-wrap">
+        <span>Sort By:</span>
+        <select id="sort-select" onchange="applyFilters()">
+          <option value="featured" <%= selectedSort === 'featured' ? 'selected' : '' %>>Featured</option>
+          <option value="price-asc" <%= selectedSort === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+          <option value="price-desc" <%= selectedSort === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+          <option value="newest" <%= selectedSort === 'newest' ? 'selected' : '' %>>Newest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <% if (locals.products && products.length > 0) { %>
+        <% for (let i = 0; i < products.length; i++) { %>
+          <% const product = products[i]; %>
+          <div class="product-card" onclick="window.location.href='/product-details?id=<%= product._id %>'" style="cursor: pointer;">
+            <div class="product-img">
+              <% if (product.firstImage) { %>
+                <img src="<%= product.firstImage %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+              <% } else { %>
+                <div class="img-placeholder c1"></div>
+              <% } %>
+            </div>
+            <div class="product-info">
+              <div class="product-meta">
+                <span class="product-name"><%= product.name %></span>
+                <% if (product.discountedPrice && product.discountedPrice > 0) { %>
+                  <span class="product-price">₹<%= product.discountedPrice %> <span style="text-decoration: line-through; color: #888; font-size: 0.9em; margin-left: 5px;">₹<%= product.basePrice %></span></span>
+                <% } else { %>
+                  <span class="product-price">₹<%= product.basePrice %></span>
+                <% } %>
+              </div>
+              <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star e">★</span>
+                <span class="review-count">(24 Reviews)</span>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      <% } else { %>
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
+          <p>No products found.</p>
+        </div>
+      <% } %>
+    </div><!-- /product-grid -->
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="pg-btn active" id="pg1">1</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<script>
+  document.querySelectorAll('.pg-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(btn.id==='pg-next') return;
+      document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  function toggleCategoryAll(checkbox) {
+      const isChecked = checkbox.checked;
+      // Sync all Category All checkboxes (desktop & mobile)
+      document.querySelectorAll('.category-filter-all').forEach(el => el.checked = isChecked);
+      
+      if (isChecked) {
+          const items = document.querySelectorAll('.category-filter-item');
+          items.forEach(el => el.checked = false);
+      }
+      applyFilters();
+  }
+
+  function toggleCategoryItem(checkbox) {
+      const val = checkbox.value;
+      const isChecked = checkbox.checked;
+      // Sync all Category Item checkboxes with this value (desktop & mobile)
+      document.querySelectorAll(`.category-filter-item[value="${val}"]`).forEach(el => el.checked = isChecked);
+
+      if (isChecked) {
+          const allCheckboxes = document.querySelectorAll('.category-filter-all');
+          allCheckboxes.forEach(el => el.checked = false);
+      } else {
+          const items = document.querySelectorAll('.category-filter-item:checked');
+          if (items.length === 0) {
+              const allCheckboxes = document.querySelectorAll('.category-filter-all');
+              allCheckboxes.forEach(el => el.checked = true);
+          }
+      }
+      applyFilters();
+  }
+
+  function handlePriceChange(checkbox) {
+      const val = checkbox.value;
+      const isChecked = checkbox.checked;
+      // Sync all price checkboxes with this value (desktop & mobile)
+      document.querySelectorAll(`.price-filter-item[value="${val}"]`).forEach(el => el.checked = isChecked);
+      applyFilters();
+  }
+
+  function applyFilters() {
+      const categories = [];
+      document.querySelectorAll('.category-filter-item:checked').forEach(el => {
+          if (!categories.includes(el.value)) {
+              categories.push(el.value);
+          }
+      });
+
+      const prices = [];
+      document.querySelectorAll('.price-filter-item:checked').forEach(el => {
+          if (!prices.includes(el.value)) {
+              prices.push(el.value);
+          }
+      });
+
+      const sortVal = document.getElementById('sort-select').value;
+
+      const params = new URLSearchParams();
+      if (categories.length > 0) {
+          params.set('category', categories.join(','));
+      }
+      if (prices.length > 0) {
+          params.set('price', prices.join(','));
+      }
+      if (sortVal && sortVal !== 'featured') {
+          params.set('sort', sortVal);
+      }
+
+      window.location.href = '/shop?' + params.toString();
+  }
+</script>
+</body>
+</html>

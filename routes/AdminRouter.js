@@ -18,7 +18,11 @@ import {
 
 import {
     getProductList,
-    getProductAdd
+    getProductAdd,
+    addProduct,
+    getProductEdit,
+    updateProduct,
+    deleteProduct
 } from '../controller/admin/productManagementController.js';
 
 import {
@@ -54,5 +58,26 @@ router.post('/category-management/delete-image/:id', isAdminAuthenticated, delet
 router.patch('/category-management/delete/:id',isAdminAuthenticated,deleteCategory)
 router.patch('/category-management/toggle-visibility/:id', isAdminAuthenticated, toggleCategoryVisibility)
 
-router.get('/product-management/add',isAdminAuthenticated,getProductAdd)
+router.get('/product-management/add',isAdminAuthenticated,getProductAdd);
+router.post('/product-management/add', isAdminAuthenticated, (req, res, next) => {
+    upload.any()(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                message: err.message 
+            });
+        }
+        next();
+    });
+}, addProduct);
+router.get('/product-management/edit/:id', isAdminAuthenticated, getProductEdit);
+router.post('/product-management/edit/:id', isAdminAuthenticated, (req, res, next) => {
+    upload.any()(req, res, (err) => {
+        if (err) {
+            req.uploadError = err.message;
+        }
+        next();
+    });
+}, updateProduct);
+router.delete('/product-management/delete/:id', isAdminAuthenticated, deleteProduct);
 export default router  

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Add New Product | Luxe Obsidian</title>
+    <title>Edit Product | Luxe Obsidian</title>
     <!-- Tailwind CSS CDN with plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Cropper.js CDN -->
@@ -105,7 +105,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </a>
-            <h1 class="text-lg font-bold text-luxe-obsidian">Add New Product</h1>
+            <h1 class="text-lg font-bold text-luxe-obsidian">Edit Product</h1>
         </div>
     </header>
 
@@ -119,7 +119,11 @@
                     </div>
                 </div>
             <% } %>
-            <form id="addProductForm" action="/admin/product-management/add" method="POST" enctype="multipart/form-data">
+            <form id="editProductForm" action="/admin/product-management/edit/<%= locals.product ? locals.product._id : '' %>" method="POST" enctype="multipart/form-data">
+                <!-- Hidden inputs for custom arrays -->
+                <input type="hidden" name="variantData" id="variantData" />
+                <input type="hidden" name="removedImages" id="removedImagesInput" value="" />
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
                     <!-- Left Column: Primary Product Data -->
                     <div class="col-span-1 md:col-span-1 lg:col-span-8 space-y-6">
@@ -134,7 +138,7 @@
                                         class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">Product
                                         Name</label>
                                     <input class="w-full px-3 py-2" placeholder='e.g. UltraWide Curved Gaming Monitor 34"'
-                                        type="text" name="productName" value="<%= locals.formData ? locals.formData.productName : '' %>" />
+                                        type="text" name="productName" value="<%= locals.product ? locals.product.name : '' %>" />
                                 </div>
                                 <div>
                                     <label
@@ -143,28 +147,27 @@
                                         <% if(locals.categories) { %>
                                             <% categories.forEach(category=>{ %>
                                                 <% if(category.status){ %>
-                                                    <option value="<%= category._id %>" <%= (locals.formData && String(locals.formData.category) === String(category._id)) ? 'selected' : '' %>>
+                                                    <option value="<%= category._id %>" <%= (locals.product && String(locals.product.category._id || locals.product.category) === String(category._id)) ? 'selected' : '' %>>
                                                         <%= category.categoryName%>
                                                     </option>
-                                                    <% } %>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <option>fetching data not wroking or something went wrong
-                                                                </option>
-                                                                <% }%>
+                                                <% } %>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <option>fetching data not working or something went wrong</option>
+                                        <% }%>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-1.5 tracking-tight">Technical Summary</label>
                                     <div id="summaryContainer" class="space-y-3">
-                                        <% if (locals.formData && locals.formData.summaryKey && locals.formData.summaryKey.length > 0) { %>
-                                            <% locals.formData.summaryKey.forEach((key, i) => { %>
+                                        <% if (locals.product && locals.product.summary && locals.product.summary.length > 0) { %>
+                                            <% locals.product.summary.forEach((item, i) => { %>
                                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                                                     <input class="w-full px-3 py-2" type="text" placeholder="e.g. Panel Type" 
-                                                        name="summaryKey[]" value="<%= key %>" />
+                                                        name="summaryKey[]" value="<%= item.key %>" />
                                                     <div class="flex items-center gap-2">
                                                         <input class="w-full px-3 py-2" type="text" placeholder="e.g. OLED" 
-                                                            name="summaryValue[]" value="<%= locals.formData.summaryValue[i] %>" />
+                                                            name="summaryValue[]" value="<%= item.value %>" />
                                                         <% if (i > 0) { %>
                                                             <button type="button" class="removeRow text-black-400 hover:text-black-600 text-lg font-bold">✕</button>
                                                         <% } %>
@@ -194,7 +197,7 @@
                                     <label
                                         class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">Description</label>
                                     <textarea class="w-full px-3 py-2"
-                                        placeholder="Highlight the key features and luxury specs..." rows="4" name="description"><%= locals.formData ? locals.formData.description : '' %></textarea>
+                                        placeholder="Highlight the key features and luxury specs..." rows="4" name="description"><%= locals.product ? locals.product.description : '' %></textarea>
                                 </div>
                                 <div class="pt-4 border-t border-luxe-border">
                                     <div class="flex justify-between items-center mb-4">
@@ -236,7 +239,7 @@
                                     <div class="relative">
                                         <span
                                             class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
-                                        <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="basePrice" value="<%= locals.formData ? locals.formData.basePrice : '' %>" />
+                                        <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="basePrice" value="<%= locals.product ? locals.product.basePrice : '' %>" />
                                     </div>
                                 </div>
                                 <div>
@@ -245,7 +248,7 @@
                                     <div class="relative">
                                         <span
                                             class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
-                                        <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="discountedPrice" value="<%= locals.formData ? locals.formData.discountedPrice : '' %>" />
+                                        <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="discountedPrice" value="<%= locals.product ? locals.product.discountedPrice : '' %>" />
                                     </div>
                                 </div>
                             </div>
@@ -259,15 +262,15 @@
                                 <div>
                                     <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Status</label>
                                     <select class="w-full px-3 py-2 font-medium" name="status">
-                                        <option <%= (locals.formData && locals.formData.status === 'InStock') ? 'selected' : '' %>>InStock</option>
-                                        <option <%= (locals.formData && locals.formData.status === 'Out of Stock') ? 'selected' : '' %>>Out of Stock</option>
+                                        <option value="InStock" <%= (locals.product && (locals.product.status === 'InStock' || locals.product.status === true)) ? 'selected' : '' %>>InStock</option>
+                                        <option value="Out of Stock" <%= (locals.product && (locals.product.status === 'Out of Stock' || locals.product.status === false)) ? 'selected' : '' %>>Out of Stock</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Visibility</label>
                                     <select class="w-full px-3 py-2 font-medium" name="isHidden">
-                                        <option value="false" <%= (locals.formData && locals.formData.isHidden === 'false') ? 'selected' : '' %>>Visible</option>
-                                        <option value="true" <%= (locals.formData && locals.formData.isHidden === 'true') ? 'selected' : '' %>>Hidden</option>
+                                        <option value="false" <%= (locals.product && locals.product.isHidden === false) ? 'selected' : '' %>>Visible</option>
+                                        <option value="true" <%= (locals.product && locals.product.isHidden === true) ? 'selected' : '' %>>Hidden</option>
                                     </select>
                                 </div>
                             </div>
@@ -276,7 +279,7 @@
                         <div class="space-y-2">
                             <button type="submit"
                                 class="w-full bg-luxe-accent hover:bg-luxe-obsidian text-white font-bold py-3 text-xs uppercase tracking-widest rounded-luxe transition-all shadow-lg shadow-slate-200">
-                                Save Product
+                                Update Product
                             </button>
                             <a href="/admin/product-management" class="block w-full">
                                 <button type="button"
@@ -375,7 +378,9 @@
     </div>
 
     <script>
-        const initialFormData = <% if (locals.formData) { %> <%- JSON.stringify(formData).replace(/</g, '\\u003c') %> <% } else { %> null <% } %>;
+        const product = <% if (locals.product) { %> <%- JSON.stringify(product).replace(/</g, '\\u003c') %> <% } else { %> null <% } %>;
+        const preloadedVariants = <% if (locals.variants) { %> <%- JSON.stringify(variants).replace(/</g, '\\u003c') %> <% } else { %> [] <% } %>;
+
         const addSummaryBtn = document.getElementById('addSummaryBtn');
         const summaryContainer = document.getElementById('summaryContainer');
 
@@ -421,16 +426,29 @@
         let editingGroupElement = null;
 
         // Image Management for Variants
-        const variantImages = {}; // key: `${groupName}_${option}`, value: Array of File objects
+        const existingVariantImages = {}; // key: `${groupName}_${option}`, value: Array of Cloudinary URLs
+        const newVariantImages = {};      // key: `${groupName}_${option}`, value: Array of File objects
+        const removedImages = [];         // Array of removed Cloudinary URLs
+
         let cropQueue = [];       // array of { file, groupName, option }
         let cropperInstance = null;
 
+        // Pre-populate existing images cache from preloadedVariants
+        preloadedVariants.forEach(variant => {
+            const key = `${variant.groupName}_${variant.option}`;
+            existingVariantImages[key] = variant.images || [];
+            newVariantImages[key] = [];
+        });
+
         function createOrUpdateGroup(groupName, options, elementToUpdate = null) {
-            // Ensure variantImages array is initialized for each option
+            // Ensure variantImages arrays are initialized for each option
             options.forEach(option => {
                 const key = `${groupName}_${option}`;
-                if (!variantImages[key]) {
-                    variantImages[key] = [];
+                if (!existingVariantImages[key]) {
+                    existingVariantImages[key] = [];
+                }
+                if (!newVariantImages[key]) {
+                    newVariantImages[key] = [];
                 }
             });
 
@@ -455,27 +473,38 @@
                     ${options.map(option => {
                         const escapedOption = option.replace(/'/g, "\\'");
                         const idSuffix = `${groupName.replace(/[^a-zA-Z0-9]/g, '_')}_${option.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        
+                        const existingVariant = preloadedVariants.find(v => v.groupName === groupName && v.option === option);
+                        const varId = existingVariant ? existingVariant._id : '';
+                        const varUnits = existingVariant ? (existingVariant.stock !== undefined ? existingVariant.stock : existingVariant.units) : '0';
+                        const varPrice = existingVariant ? (existingVariant.priceAdd !== undefined ? existingVariant.priceAdd : existingVariant.price) : '0';
+                        const varSku = existingVariant ? (existingVariant.sku || '') : '';
+
                         return `
-                            <div class="border border-[#DDE3EC] rounded-[12px] p-5" style="background:#E8EDF5;">
+                            <div class="variant-card border border-[#DDE3EC] rounded-[12px] p-5" 
+                                 style="background:#E8EDF5;"
+                                 data-variant-id="${varId}"
+                                 data-group-name="${groupName}"
+                                 data-option="${option}">
                                 <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4" style="font-family:'Manrope',sans-serif;">
                                     ${option}
                                 </p>
                                 <div class="flex items-center gap-0 mb-2.5">
-                                    <input type="number" value="${initialFormData && initialFormData[`variant_${groupName}_${option}_units`] !== undefined ? initialFormData[`variant_${groupName}_${option}_units`] : '0'}"
+                                    <input type="number" value="${varUnits}"
                                         name="variant_${groupName}_${option}_units"
                                         class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium"
                                         style="min-width:0;" />
                                     <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Units</span>
                                 </div>
                                 <div class="flex items-center gap-0 mb-2.5">
-                                    <input type="number" value="${initialFormData && initialFormData[`variant_${groupName}_${option}_price`] !== undefined ? initialFormData[`variant_${groupName}_${option}_price`] : '0'}"
+                                    <input type="number" value="${varPrice}"
                                         name="variant_${groupName}_${option}_price"
                                         class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium"
                                         style="min-width:0;" />
                                     <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Price</span>
                                 </div>
                                 <div class="flex items-center gap-0 mb-3">
-                                    <input type="text" placeholder="SKU Code" value="${initialFormData && initialFormData[`variant_${groupName}_${option}_sku`] !== undefined ? initialFormData[`variant_${groupName}_${option}_sku`] : ''}"
+                                    <input type="text" placeholder="SKU Code" value="${varSku}"
                                         name="variant_${groupName}_${option}_sku"
                                         class="flex-1 h-[40px] rounded-[8px] border border-[#DDE3EC] bg-white px-3 text-[14px] font-medium"
                                         style="min-width:0;" />
@@ -582,35 +611,22 @@
             closeModal();
         });
 
-        // Initialize groups (either from submitted formData or defaults)
-        if (initialFormData) {
-            const groups = {}; // groupName -> array of options
-            Object.keys(initialFormData).forEach(key => {
-                const match = key.match(/^variant_(.+)_(units|price|sku)$/);
-                if (match) {
-                    const middle = match[1]; // e.g. Color_Black
-                    const lastUnderscore = middle.lastIndexOf('_');
-                    if (lastUnderscore !== -1) {
-                        const groupName = middle.substring(0, lastUnderscore);
-                        const option = middle.substring(lastUnderscore + 1);
-                        if (!groups[groupName]) {
-                            groups[groupName] = [];
-                        }
-                        if (!groups[groupName].includes(option)) {
-                            groups[groupName].push(option);
-                        }
-                    }
-                }
-            });
-
-            const groupNames = Object.keys(groups);
-            if (groupNames.length > 0) {
-                groupNames.forEach(groupName => {
-                    createOrUpdateGroup(groupName, groups[groupName]);
-                });
-            } else {
-                createOrUpdateGroup('Color', ['Black', 'White', 'Silver']);
+        // Group and render variants on load
+        const groups = {}; // groupName -> array of options
+        preloadedVariants.forEach(variant => {
+            if (!groups[variant.groupName]) {
+                groups[variant.groupName] = [];
             }
+            if (!groups[variant.groupName].includes(variant.option)) {
+                groups[variant.groupName].push(variant.option);
+            }
+        });
+
+        const groupNames = Object.keys(groups);
+        if (groupNames.length > 0) {
+            groupNames.forEach(groupName => {
+                createOrUpdateGroup(groupName, groups[groupName]);
+            });
         } else {
             createOrUpdateGroup('Color', ['Black', 'White', 'Silver']);
         }
@@ -618,10 +634,13 @@
         // Variant Image Cropping & Management Logic
         window.handleVariantFiles = function(input, groupName, option) {
             const key = `${groupName}_${option}`;
-            if (!variantImages[key]) {
-                variantImages[key] = [];
+            if (!newVariantImages[key]) {
+                newVariantImages[key] = [];
             }
-            const currentCount = variantImages[key].length;
+            if (!existingVariantImages[key]) {
+                existingVariantImages[key] = [];
+            }
+            const currentCount = (existingVariantImages[key]?.length || 0) + (newVariantImages[key]?.length || 0);
             const newFiles = Array.from(input.files).filter(file => file.type.startsWith('image/'));
             
             if (currentCount + newFiles.length > 3) {
@@ -704,10 +723,10 @@
                 });
                 
                 const key = `${currentItem.groupName}_${currentItem.option}`;
-                if (!variantImages[key]) {
-                    variantImages[key] = [];
+                if (!newVariantImages[key]) {
+                    newVariantImages[key] = [];
                 }
-                variantImages[key].push(croppedFile);
+                newVariantImages[key].push(croppedFile);
                 
                 renderVariantPreviews(currentItem.groupName, currentItem.option);
                 updateVariantInputFiles(currentItem.groupName, currentItem.option);
@@ -734,18 +753,33 @@
             if (!container) return;
             
             container.innerHTML = '';
-            const files = variantImages[key] || [];
+            
             const escapedGroupName = groupName.replace(/'/g, "\\'");
             const escapedOption = option.replace(/'/g, "\\'");
             
-            files.forEach((file, index) => {
+            // 1. Render existing Cloudinary images
+            const existingUrls = existingVariantImages[key] || [];
+            existingUrls.forEach(url => {
+                const previewCard = document.createElement('div');
+                previewCard.className = 'w-10 h-10 rounded-lg border border-luxe-border overflow-hidden relative group shadow-sm bg-luxe-slate flex items-center justify-center';
+                previewCard.innerHTML = `
+                    <img src="${url}" alt="Preview" class="w-full h-full object-cover" />
+                    <button type="button" class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition-opacity duration-200" 
+                        onclick="removeExistingImage('${escapedGroupName}', '${escapedOption}', '${url.replace(/'/g, "\\'")}')">✕</button>
+                `;
+                container.appendChild(previewCard);
+            });
+
+            // 2. Render new cropped images
+            const newFiles = newVariantImages[key] || [];
+            newFiles.forEach((file, index) => {
                 const url = URL.createObjectURL(file);
                 const previewCard = document.createElement('div');
                 previewCard.className = 'w-10 h-10 rounded-lg border border-luxe-border overflow-hidden relative group shadow-sm bg-luxe-slate flex items-center justify-center';
                 previewCard.innerHTML = `
                     <img src="${url}" alt="Preview" class="w-full h-full object-cover" />
                     <button type="button" class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition-opacity duration-200" 
-                        onclick="removeVariantImage('${escapedGroupName}', '${escapedOption}', ${index})">✕</button>
+                        onclick="removeNewVariantImage('${escapedGroupName}', '${escapedOption}', ${index})">✕</button>
                 `;
                 container.appendChild(previewCard);
             });
@@ -758,19 +792,60 @@
             if (!input) return;
             
             const dataTransfer = new DataTransfer();
-            const files = variantImages[key] || [];
+            const files = newVariantImages[key] || [];
             files.forEach(file => dataTransfer.items.add(file));
             input.files = dataTransfer.files;
         }
 
-        window.removeVariantImage = function(groupName, option, index) {
+        window.removeNewVariantImage = function(groupName, option, index) {
             const key = `${groupName}_${option}`;
-            if (variantImages[key]) {
-                variantImages[key].splice(index, 1);
+            if (newVariantImages[key]) {
+                newVariantImages[key].splice(index, 1);
                 renderVariantPreviews(groupName, option);
                 updateVariantInputFiles(groupName, option);
             }
         };
+
+        window.removeExistingImage = function(groupName, option, imageUrl) {
+            const key = `${groupName}_${option}`;
+            if (existingVariantImages[key]) {
+                existingVariantImages[key] = existingVariantImages[key].filter(url => url !== imageUrl);
+                removedImages.push(imageUrl);
+                document.getElementById('removedImagesInput').value = removedImages.join(',');
+                renderVariantPreviews(groupName, option);
+            }
+        };
+
+        // Form Submit Handler to package variant data array
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            const cards = document.querySelectorAll('.variant-card');
+            const variantData = [];
+            
+            cards.forEach(card => {
+                const id = card.getAttribute('data-variant-id') || null;
+                const groupName = card.getAttribute('data-group-name');
+                const option = card.getAttribute('data-option');
+                
+                const unitsInput = card.querySelector(`[name="variant_${groupName}_${option}_units"]`);
+                const priceInput = card.querySelector(`[name="variant_${groupName}_${option}_price"]`);
+                const skuInput = card.querySelector(`[name="variant_${groupName}_${option}_sku"]`);
+                
+                const units = unitsInput ? parseFloat(unitsInput.value) || 0 : 0;
+                const price = priceInput ? parseFloat(priceInput.value) || 0 : 0;
+                const sku = skuInput ? skuInput.value.trim() : '';
+                
+                variantData.push({
+                    _id: id ? id : null,
+                    groupName: groupName,
+                    option: option,
+                    units: units,
+                    price: price,
+                    sku: sku
+                });
+            });
+            
+            document.getElementById('variantData').value = JSON.stringify(variantData);
+        });
     </script>
 
 </body>

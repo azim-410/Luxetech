@@ -111,10 +111,10 @@
 <body class="bg-surface text-on-surface flex min-h-screen">
     <%- include('../partials/admin/layout', { activePage: 'products' }) %>
     <!-- Main Content Area -->
-    <main class="ml-64 flex-1 flex flex-col min-h-screen pt-16">
+    <main class="ml-0 md:ml-64 flex-1 flex flex-col min-h-screen pt-16">
         
         <!-- Product Management Canvas -->
-        <div class="px-12 py-10 space-y-10">
+        <div class="px-4 sm:px-12 py-6 sm:py-10 space-y-6 sm:space-y-10">
             <!-- Hero Header Section -->
             <section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
@@ -123,7 +123,7 @@
                         <span class="material-symbols-outlined text-[12px]">chevron_right</span>
                         <span class="text-secondary">Products</span>
                     </nav>
-                    <h1 class="text-4xl font-extrabold font-headline tracking-tighter text-on-background">Product
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline tracking-tighter text-on-background">Product
                         Inventory</h1>
                     <p class="text-on-surface-variant font-body mt-2 max-w-lg">Manage your high-end electronics catalog
                         with architectural precision. Control stock, pricing, and visibility from a single interface.
@@ -144,51 +144,117 @@
                 <div
                     class="bg-surface-container-lowest rounded-lg shadow-[0_20px_40px_rgba(43,52,55,0.06)] overflow-hidden">
                     <!-- Internal Header/Filters -->
-                    <div class="px-8 py-6 flex flex-wrap items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
+                    <div class="px-4 sm:px-8 py-4 sm:py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-outline-variant/15">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+                            <!-- Static search bar -->
+                            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-full sm:w-56 group">
+                                <span class="material-symbols-outlined text-[16px] text-outline shrink-0">search</span>
+                                <input
+                                    id="searchInput"
+                                    type="text"
+                                    placeholder="Search products..."
+                                    value="<%= locals.search || '' %>"
+                                    class="bg-transparent border-0 text-xs text-on-surface placeholder:text-outline/50 outline-none focus:outline-none focus:ring-0 focus:border-0 w-full"
+                                />
+                                <button
+                                    id="clearSearch"
+                                    type="button"
+                                    class="<%= (locals.search || '') ? 'flex' : 'hidden' %> shrink-0 w-4 h-4 items-center justify-center rounded-full bg-outline/20 hover:bg-outline/40 text-outline transition-colors"
+                                    title="Clear search">
+                                    <span class="material-symbols-outlined text-[11px] leading-none">close</span>
+                                </button>
+                            </div>
+
                             <!-- Category Filter Dropdown -->
-                            <div class="relative" id="categoryDropdownWrapper">
+                            <div class="relative w-full sm:w-auto" id="categoryDropdownWrapper">
                                 <button id="categoryBtn"
-                                    class="flex items-center bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
+                                    class="flex items-center justify-between sm:justify-start w-full sm:w-auto bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
                                     <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mr-2 select-none">Category:</span>
-                                    <span id="selectedCategoryLabel">All Categories</span>
-                                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                                    <% 
+                                        let selectedCatName = 'All Categories';
+                                        if (locals.category && locals.categoriesList) {
+                                            const matched = locals.categoriesList.find(c => c._id.toString() === locals.category);
+                                            if (matched) selectedCatName = matched.categoryName;
+                                        }
+                                    %>
+                                    <span id="selectedCategoryLabel"><%= selectedCatName %></span>
+                                    <span class="material-symbols-outlined text-sm ml-1 select-none">expand_more</span>
                                 </button>
                                 <div id="categoryDropdown"
-                                    class="hidden absolute left-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
-                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="All Categories">All Categories</button>
-                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Monitors">Monitors</button>
-                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Peripherals">Peripherals</button>
-                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Audio">Audio</button>
+                                    class="hidden absolute left-0 mt-1 w-full sm:w-48 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <button class="category-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors <%= !locals.category ? 'bg-secondary/10 text-secondary font-bold' : '' %>" data-value="">All Categories</button>
+                                    <% if (locals.categoriesList && locals.categoriesList.length > 0) { %>
+                                        <% locals.categoriesList.forEach(cat => { %>
+                                            <button class="category-option w-full text-left px-4 py-2.5 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors <%= locals.category === cat._id.toString() ? 'bg-secondary/10 text-secondary font-bold' : '' %>" data-value="<%= cat._id %>"><%= cat.categoryName %></button>
+                                        <% }) %>
+                                    <% } %>
                                 </div>
                             </div>
+
                             <!-- Status Filter Dropdown -->
-                            <div class="relative" id="statusDropdownWrapper">
+                            <div class="relative w-full sm:w-auto" id="statusDropdownWrapper">
                                 <button id="statusBtn"
-                                    class="flex items-center bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
+                                    class="flex items-center justify-between sm:justify-start w-full sm:w-auto bg-surface-container border border-outline-variant/20 px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface">
                                     <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mr-2 select-none">Status:</span>
-                                    <span id="selectedStatusLabel">Any Status</span>
-                                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                                    <%
+                                        let selectedStatusName = 'Any Status';
+                                        if (locals.status === 'active') selectedStatusName = 'Active Only';
+                                        if (locals.status === 'deleted') selectedStatusName = 'Deleted Only';
+                                    %>
+                                    <span id="selectedStatusLabel"><%= selectedStatusName %></span>
+                                    <span class="material-symbols-outlined text-sm ml-1 select-none">expand_more</span>
                                 </button>
                                 <div id="statusDropdown"
-                                    class="hidden absolute left-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
-                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Any Status">Any Status</button>
-                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="In Stock">In Stock</button>
-                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Low Stock">Low Stock</button>
-                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors" data-value="Out of Stock">Out of Stock</button>
+                                    class="hidden absolute left-0 mt-1 w-full sm:w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors <%= !locals.status ? 'bg-secondary/10 text-secondary font-bold' : '' %>" data-value="">Any Status</button>
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors <%= locals.status === 'active' ? 'bg-secondary/10 text-secondary font-bold' : '' %>" data-value="active">Active Only</button>
+                                    <button class="status-option w-full text-left px-4 py-2 text-xs font-medium text-on-surface hover:bg-surface-container transition-colors <%= locals.status === 'deleted' ? 'bg-secondary/10 text-secondary font-bold' : '' %>" data-value="deleted">Deleted Only</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
+
+                        <!-- Sort / Filter Dropdown like Category Page -->
+                        <div class="flex items-center justify-between sm:justify-start gap-4 w-full lg:w-auto">
+                            <div class="relative w-full sm:w-auto" id="sortDropdownWrapper">
+                                <button id="sortBtn"
+                                    class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-full text-xs font-semibold text-on-surface">
+                                    <span class="material-symbols-outlined text-sm select-none">filter_list</span>
+                                    Sort
+                                </button>
+                                <div id="sortDropdown"
+                                    class="hidden absolute right-0 mt-1 w-full sm:w-48 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    <p class="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline">Sort by</p>
+                                    <% 
+                                        const productSortOptions = [
+                                            ['latest','Latest First'],
+                                            ['oldest','Oldest First'],
+                                            ['price-low-high','Price: Low to High'],
+                                            ['price-high-low','Price: High to Low'],
+                                            ['name-a-z','Name: A → Z'],
+                                            ['name-z-a','Name: Z → A']
+                                        ]; 
+                                    %>
+                                    <% productSortOptions.forEach(([val, label]) => { %>
+                                        <button
+                                            class="sort-option w-full text-left px-4 py-2.5 text-xs font-medium transition-colors
+                                                   <%= (locals.sort || 'latest') === val ? 'bg-secondary/10 text-secondary font-bold' : 'text-on-surface-variant hover:bg-surface-container' %>"
+                                            data-sort="<%= val %>">
+                                            <%= label %>
+                                        </button>
+                                    <% }); %>
+                                    <div class="h-2"></div>
+                                </div>
+                            </div>
+
                             <span
-                                class="text-[10px] font-medium text-on-surface-variant uppercase tracking-normal">Showing
-                                4 of 128 Products</span>
+                                class="text-[10px] font-medium text-on-surface-variant uppercase tracking-normal shrink-0">Showing
+                                <%= locals.products ? locals.products.length : 0 %> of <%= locals.totalProducts || 0 %> Products</span>
                         </div>
                     </div>
                     <!-- Products Table -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
+                        <table class="w-full text-left border-collapse block md:table">
+                            <thead class="hidden md:table-header-group">
                                 <tr class="bg-surface-container-low/50">
                                     <th
                                         class="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
@@ -203,209 +269,156 @@
                                         class="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
                                         Stock Status</th>
                                     <th
+                                        class="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
+                                        Visibility</th>
+                                    <th
+                                        class="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
+                                        Status</th>
+                                    <th
                                         class="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant text-right">
                                         Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant/10">
-                                <!-- Product 1 -->
-                                <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0">
-                                                <img alt="4K Gaming Monitor"
-                                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    data-alt="High end ultra wide computer monitor"
-                                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnMlJo8YhMEOgb9TkWzbMEtMoqrOA1Cgd-NRr3BVGrlm-paFHUOXpT0ANmWPqW52OvQ7dIINZ1F_KKcxJVvr71cGt_N0o1dj0Nve7Yo26oLoX0RM2VPUE3Rg78pGOv4s_tukUkTRorkzKgl_40yTwcb7zGaM3J_8RO1qX2OMRFTki-NrIp3YH7l32E0yoRATGLIIdrdyafaN2SYLWfuk4vstlVgrVGLnnmkmbOBOzxfmZWz_DxuiaD3kwlVjwFMHkOlYXMX-s7Cx7h" />
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold font-manrope text-on-background">4K Gaming
-                                                    Monitor</div>
-                                                <div
-                                                    class="text-[10px] font-mono text-outline uppercase tracking-wider">
-                                                    SKU: MON-4K-G-001</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-xs font-medium text-secondary">Displays</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm font-bold font-manrope">$899.00</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span
-                                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container text-on-tertiary-container">In
-                                            Stock</span>
-                                    </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <button
-                                                class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">edit</span>
-                                            </button>
-                                            <button
-                                                class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Product 2 -->
-                                <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0">
-                                                <img alt="RGB Mechanical Keyboard"
-                                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    data-alt="Backlit mechanical keyboard with aluminum frame"
-                                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuACYM_KF9oDEKhYG-m_jzKItYnT8r6ok9QQJv4qrUDCINpy6BhqMif3sO6oe5Q96HTIFqHvwxccjwPb8rcmLo80bYAbX7YaOEXrmz5s5kujOuEocRuNdu50lS1dg9uQS0wqmcw8hCL-3qC0dbJeSHLRWa8scCjYCMNV1Z2efmiZFwD8I9IBt5NgZG7WcFeCu1g7Y620UoI5rjcpwydefAfbLR5cEu4j7oNATw0eQgRmo0fG9wxrEP8oSJOcVNr10O-kePmmRvlezu9U" />
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold font-manrope text-on-background">RGB
-                                                    Mechanical Keyboard</div>
-                                                <div
-                                                    class="text-[10px] font-mono text-outline uppercase tracking-wider">
-                                                    SKU: KEY-MECH-RGB-04</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-xs font-medium text-secondary">Peripherals</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm font-bold font-manrope">$159.99</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span
-                                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-container-highest text-on-surface-variant">Low
-                                            Stock</span>
-                                    </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <button
-                                                class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">edit</span>
-                                            </button>
-                                            <button
-                                                class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Product 3 -->
-                                <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0">
-                                                <img alt="Precision Laser Mouse"
-                                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    data-alt="Matte black ergonomic computer mouse"
-                                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYtWm3dCNCRZFX8mRMGTVNjcCw5BvpIHVZ_0iCOy68IdiUHZgkvx4t6SVGOPIC7ZibSAMyy3TeNchWHURytOhKDfRgqzD3Duq1bx7A5SDCu1qUOPIl-cY36mU0YE61PMchM6ZW9YC2LeppA0W_h8cOtAujqTro2pbR61lJFsyRMSjOcvfl4LPvzWNtxL1QwYAjjTvSFY-6Fv_VcZ8T6i9VHcAio2mcw9SU7K5PjZxhisl6k0sWtA5nEn37OXX40eqTok5dKd8brmBm" />
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold font-manrope text-on-background">Precision
-                                                    Laser Mouse</div>
-                                                <div
-                                                    class="text-[10px] font-mono text-outline uppercase tracking-wider">
-                                                    SKU: MSE-PRC-LSR-88</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-xs font-medium text-secondary">Peripherals</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm font-bold font-manrope">$79.50</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span
-                                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container text-on-tertiary-container">In
-                                            Stock</span>
-                                    </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <button
-                                                class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">edit</span>
-                                            </button>
-                                            <button
-                                                class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Product 4 -->
-                                <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0">
-                                                <img alt="Noise-Cancelling Headset"
-                                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    data-alt="Premium wireless headphones over ear"
-                                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzSW36EQkXE-rXDNhpegYeNfiQhc3l1YG7v4vwmPhu02UN9nKMBIAJ3mpQalEKqvkqxJgQUSX4XchpeAu6OsJtOyKNFt6SKUDOHcvCgBElDBUXeNjEzELMcr6EHQOyiOolZLJvI03c_SPTBDAnWDnnNvvBlmWUcnhAvLeEzOZQUyvFQQIz8cPgmUn1Qu-YtwQunDkLZrQucYRrmoy_58BChaIrP7ssZy_w4dJyQ6Y_M-2WsR9IqNebZhE5pZ5ZbtC_QetaNx1kd4gR" />
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold font-manrope text-on-background">
-                                                    Noise-Cancelling Headset</div>
-                                                <div
-                                                    class="text-[10px] font-mono text-outline uppercase tracking-wider">
-                                                    SKU: AUD-NCH-900-X</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-xs font-medium text-secondary">Audio</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm font-bold font-manrope">$329.00</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span
-                                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container">Out
-                                            of Stock</span>
-                                    </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <button
-                                                class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">edit</span>
-                                            </button>
-                                            <button
-                                                class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all">
-                                                <span class="material-symbols-outlined text-lg">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tbody id="productTableBody" class="divide-y divide-outline-variant/10 block md:table-row-group">
+                                <% if (locals.products && locals.products.length > 0) { %>
+                                    <% locals.products.forEach((product) => { %>
+                                         <tr class="hover:bg-surface-container-low/30 transition-colors group block md:table-row border-b border-outline-variant/10 md:border-b-0 py-3 md:py-0 <%= product.isDeleted ? 'opacity-65' : '' %>">
+                                             <!-- Product -->
+                                             <td class="px-4 md:px-8 py-4 md:py-5 block md:table-cell">
+                                                 <div class="flex items-center gap-4">
+                                                     <div class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                                         <% if (product.firstImage) { %>
+                                                             <img alt="<%= product.name %>"
+                                                                 class="w-full h-full object-cover"
+                                                                 src="<%= product.firstImage %>" />
+                                                         <% } else { %>
+                                                             <span class="material-symbols-outlined text-secondary text-lg">image</span>
+                                                         <% } %>
+                                                     </div>
+                                                     <div>
+                                                         <div class="text-sm font-bold font-manrope text-on-background"><%= product.name %></div>
+                                                     </div>
+                                                 </div>
+                                             </td>
+                                             <!-- Category -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Category</span>
+                                                 <span class="text-xs font-medium text-secondary"><%= product.category ? product.category.categoryName : 'Uncategorized' %></span>
+                                             </td>
+                                             <!-- Price -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Price</span>
+                                                 <span class="text-sm font-bold font-manrope">₹<%= product.basePrice %></span>
+                                             </td>
+                                             <!-- Stock Status -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Stock Status</span>
+                                                 <% if (product.status) { %>
+                                                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container text-on-tertiary-container">In Stock</span>
+                                                 <% } else { %>
+                                                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container">Out of Stock</span>
+                                                 <% } %>
+                                             </td>
+                                             <!-- Visibility -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Visibility</span>
+                                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide <%= product.isHidden ? 'bg-outline/15 text-outline' : 'bg-secondary-container/60 text-on-secondary-container' %>">
+                                                     <span class="material-symbols-outlined text-[11px]"><%= product.isHidden ? 'visibility_off' : 'visibility' %></span>
+                                                     <%= product.isHidden ? 'Hidden' : 'Visible' %>
+                                                 </span>
+                                             </td>
+                                             <!-- Status -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
+                                                 <% if (product.isDeleted) { %>
+                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container/20 text-on-error-container">Deleted</span>
+                                                 <% } else { %>
+                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/30 text-on-tertiary-container">Active</span>
+                                                 <% } %>
+                                             </td>
+                                             <!-- Actions -->
+                                             <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center text-right md:text-right">
+                                                 <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Actions</span>
+                                                 <div class="flex items-center justify-end gap-2">
+                                                     <% if (product.isDeleted) { %>
+                                                         <span class="p-2 text-outline bg-transparent rounded min-w-[36px] min-h-[36px] flex items-center justify-center cursor-not-allowed" title="Product is deleted">
+                                                             <span class="material-symbols-outlined text-base">edit</span>
+                                                         </span>
+                                                         <span class="p-2 text-outline bg-transparent rounded min-w-[36px] min-h-[36px] flex items-center justify-center cursor-not-allowed" title="Product is deleted">
+                                                             <span class="material-symbols-outlined text-base">delete</span>
+                                                         </span>
+                                                     <% } else { %>
+                                                         <a href="/admin/product-management/edit/<%= product._id %>"
+                                                             class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit Product">
+                                                             <span class="material-symbols-outlined text-lg">edit</span>
+                                                         </a>
+                                                         <button class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all min-w-[44px] min-h-[44px] flex items-center justify-center delete-product-btn"
+                                                             data-id="<%= product._id %>"
+                                                             data-name="<%= product.name %>"
+                                                             data-category="<%= product.category ? product.category.categoryName : 'Uncategorized' %>"
+                                                             data-image="<%= product.firstImage || '' %>"
+                                                             title="Delete Product">
+                                                             <span class="material-symbols-outlined text-lg">delete</span>
+                                                         </button>
+                                                     <% } %>
+                                                 </div>
+                                             </td>
+                                         </tr>
+                                     <% }); %>
+                                <% } else { %>
+                                    <tr class="block md:table-row">
+                                        <td colspan="7" class="px-8 py-12 text-center text-sm text-on-surface-variant block md:table-cell">
+                                            No products found
+                                        </td>
+                                    </tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="px-8 py-6 flex items-center justify-between border-t border-outline-variant/10">
-                        <div class="text-xs text-on-surface-variant font-medium">
-                            Showing <span class="text-on-surface font-bold">1 to 4</span> of <span
-                                class="text-on-surface font-bold">128</span> entries
+                    <div class="px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-outline-variant/10">
+                        <div class="text-[10px] sm:text-xs text-on-surface-variant font-medium text-center sm:text-left">
+                            Showing <span class="text-on-surface font-bold"><%= locals.totalProducts > 0 ? (locals.currentPage - 1) * 5 + 1 : 0 %> to <%= Math.min(locals.currentPage * 5, locals.totalProducts) %></span> of <span
+                                class="text-on-surface font-bold"><%= locals.totalProducts || 0 %></span> products
                         </div>
-                        <div class="flex items-center gap-1">
-                            <button
-                                class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low">
-                                <span class="material-symbols-outlined text-sm">chevron_left</span>
-                            </button>
-                            <button
-                                class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary text-xs font-bold shadow-sm">1</button>
-                            <button
-                                class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low text-xs font-medium">2</button>
-                                <button
-                                class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low">
-                                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                            </button> 
+                        <div class="flex flex-wrap items-center justify-center gap-1">
+                            <% if (locals.currentPage > 1) { %>
+                                <a href="/admin/product-management?page=<%= locals.currentPage - 1 %>&search=<%= locals.search || '' %>&category=<%= locals.category || '' %>&status=<%= locals.status || '' %>&sort=<%= locals.sort || 'latest' %>"
+                                    class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low">
+                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                </a>
+                            <% } else { %>
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline opacity-50 cursor-not-allowed">
+                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                </span>
+                            <% } %>
+
+                            <% for (let i = 1; i <= (locals.totalPage || 1); i++) { %>
+                                <% if (i === (locals.currentPage || 1)) { %>
+                                    <span
+                                        class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary text-xs font-bold shadow-sm">
+                                        <%= i %>
+                                    </span>
+                                <% } else { %>
+                                    <a href="/admin/product-management?page=<%= i %>&search=<%= locals.search || '' %>&category=<%= locals.category || '' %>&status=<%= locals.status || '' %>&sort=<%= locals.sort || 'latest' %>"
+                                        class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low text-xs font-medium">
+                                        <%= i %>
+                                    </a>
+                                <% } %>
+                            <% } %>
+
+                            <% if (locals.currentPage < (locals.totalPage || 1)) { %>
+                                <a href="/admin/product-management?page=<%= locals.currentPage + 1 %>&search=<%= locals.search || '' %>&category=<%= locals.category || '' %>&status=<%= locals.status || '' %>&sort=<%= locals.sort || 'latest' %>"
+                                    class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container-low">
+                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                </a>
+                            <% } else { %>
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline opacity-50 cursor-not-allowed">
+                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                </span>
+                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -438,59 +451,511 @@
         </div>
     </main>
 
-    <script>
-        // ── Dropdown Toggling & Selection Handling
-        const categoryBtn = document.getElementById('categoryBtn');
-        const categoryDropdown = document.getElementById('categoryDropdown');
-        const selectedCategoryLabel = document.getElementById('selectedCategoryLabel');
 
-        const statusBtn = document.getElementById('statusBtn');
-        const statusDropdown = document.getElementById('statusDropdown');
-        const selectedStatusLabel = document.getElementById('selectedStatusLabel');
 
-        // Toggle Category Dropdown
-        categoryBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            categoryDropdown.classList.toggle('hidden');
-            statusDropdown.classList.add('hidden'); // Close other
-        });
+    <!-- ── Product Delete Confirmation Modal ─────────────────────────────── -->
+    <div id="deleteConfirmModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden transition-opacity duration-300"
+        aria-modal="true" role="dialog">
+        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden
+                    scale-95 opacity-0 transition-all duration-300 transform" id="deleteConfirmModalBox">
 
-        // Toggle Status Dropdown
-        statusBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            statusDropdown.classList.toggle('hidden');
-            categoryDropdown.classList.add('hidden'); // Close other
-        });
-
-        // Click outside closes both
-        document.addEventListener('click', () => {
-            categoryDropdown.classList.add('hidden');
-            statusDropdown.classList.add('hidden');
-        });
-
-        // Category selection
-        categoryDropdown.querySelectorAll('.category-option').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const val = btn.dataset.value;
-                selectedCategoryLabel.textContent = val;
-                categoryDropdown.classList.add('hidden');
+            <!-- Header / Danger Indicator -->
+            <div class="relative pt-8 pb-4 px-6 flex flex-col items-center gap-4 text-center">
+                <!-- Glowing Danger Icon Outer -->
+                <div class="w-16 h-16 rounded-full bg-error-container/10 flex items-center justify-center animate-pulse">
+                    <div class="w-12 h-12 rounded-full bg-error-container/20 flex items-center justify-center text-error">
+                        <span class="material-symbols-outlined text-3xl font-bold">delete_forever</span>
+                    </div>
+                </div>
                 
-                // Add your fetch/filtering call here if needed
-                console.log('Category selected:', val);
+                <div class="space-y-1">
+                    <h3 class="text-xl font-extrabold font-manrope text-on-background tracking-tight">Remove Product?</h3>
+                    <p class="text-[10px] text-outline font-bold uppercase tracking-widest">Permanent Action</p>
+                </div>
+
+                <!-- Product Quick Card Inside Modal -->
+                <div class="w-full mt-2 p-3 bg-surface-container-low rounded-lg flex items-center gap-3 border border-outline-variant/10 text-left">
+                    <div class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0 flex items-center justify-center" id="deleteModalProductImageContainer">
+                        <img id="deleteModalProductImage" src="" alt="" class="w-full h-full object-cover hidden" />
+                        <span id="deleteModalProductPlaceholder" class="material-symbols-outlined text-secondary text-lg">image</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div id="deleteModalProductName" class="text-sm font-bold font-manrope text-on-background truncate">Product Name</div>
+                        <div id="deleteModalProductCategory" class="text-xs text-secondary truncate">Category Name</div>
+                    </div>
+                </div>
+
+                <p class="text-sm text-on-surface-variant leading-relaxed mt-2">
+                    Are you sure you want to delete this product? This will permanently remove the product and all of its associated variants, stocks, and details. This action cannot be undone.
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container-low/50 border-t border-outline-variant/10">
+                <button onclick="closeDeleteModal()" class="px-5 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider text-on-surface-variant
+                           hover:bg-surface-container-high transition-all">
+                    Cancel
+                </button>
+                <button id="deleteConfirmBtn" onclick="executeProductDeletion()" class="bg-error text-on-error px-6 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider
+                           shadow-md shadow-error/10 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-error/20 active:translate-y-0 transition-all flex items-center gap-2">
+                    <span id="deleteBtnSpinner" class="hidden animate-spin h-4 w-4 border-2 border-on-error border-t-transparent rounded-full"></span>
+                    <span id="deleteBtnText">Delete Product</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-surface-container-lowest border border-outline-variant/15 rounded-xl shadow-2xl p-4 flex items-center gap-3 max-w-sm">
+            <div id="toastIconContainer" class="w-8 h-8 rounded-full flex items-center justify-center">
+                <span id="toastIcon" class="material-symbols-outlined text-lg"></span>
+            </div>
+            <div>
+                <h4 id="toastTitle" class="text-xs font-bold font-manrope text-on-background"></h4>
+                <p id="toastMessage" class="text-[11px] text-on-surface-variant mt-0.5"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let productToDeleteId = null;
+
+        // ── Bind delete button clicks using dataset attributes
+        function bindDeleteButtons() {
+            document.querySelectorAll('.delete-product-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = btn.dataset.id;
+                    const name = btn.dataset.name;
+                    const category = btn.dataset.category;
+                    const image = btn.dataset.image;
+                    openDeleteModal(id, name, category, image);
+                });
             });
+        }
+
+        // Initialize delete binds on page load
+        bindDeleteButtons();
+
+        function openDeleteModal(productId, productName, categoryName, firstImage) {
+            productToDeleteId = productId;
+            
+            // Set text and images
+            document.getElementById('deleteModalProductName').textContent = productName;
+            document.getElementById('deleteModalProductCategory').textContent = categoryName;
+            
+            const imgEl = document.getElementById('deleteModalProductImage');
+            const placeholderEl = document.getElementById('deleteModalProductPlaceholder');
+            
+            if (firstImage && firstImage.trim() !== '') {
+                imgEl.src = firstImage;
+                imgEl.classList.remove('hidden');
+                placeholderEl.classList.add('hidden');
+            } else {
+                imgEl.src = '';
+                imgEl.classList.add('hidden');
+                placeholderEl.classList.remove('hidden');
+            }
+            
+            // Show modal
+            const modal = document.getElementById('deleteConfirmModal');
+            const modalBox = document.getElementById('deleteConfirmModalBox');
+            
+            modal.classList.remove('hidden');
+            // Force reflow
+            modal.offsetHeight;
+            
+            // Animate in
+            modalBox.classList.remove('scale-95', 'opacity-0');
+            modalBox.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteConfirmModal');
+            const modalBox = document.getElementById('deleteConfirmModalBox');
+            
+            modalBox.classList.remove('scale-100', 'opacity-100');
+            modalBox.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                productToDeleteId = null;
+                
+                // Reset button loading state
+                document.getElementById('deleteBtnSpinner').classList.add('hidden');
+                document.getElementById('deleteBtnText').textContent = 'Delete Product';
+                document.getElementById('deleteConfirmBtn').disabled = false;
+            }, 300);
+        }
+
+        // Close on backdrop click
+        document.getElementById('deleteConfirmModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('deleteConfirmModal')) closeDeleteModal();
         });
 
-        // Status selection
-        statusDropdown.querySelectorAll('.status-option').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const val = btn.dataset.value;
-                selectedStatusLabel.textContent = val;
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('deleteConfirmModal').classList.contains('hidden')) {
+                    closeDeleteModal();
+                }
+            }
+        });
+
+        // Function to trigger a toast message
+        function showToast(type, title, message) {
+            const toast = document.getElementById('toastNotification');
+            const toastIconContainer = document.getElementById('toastIconContainer');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (type === 'success') {
+                toastIconContainer.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-tertiary-container text-on-tertiary-container';
+                toastIcon.textContent = 'check_circle';
+            } else {
+                toastIconContainer.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-error-container/20 text-on-error-container';
+                toastIcon.textContent = 'error';
+            }
+            
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 4000);
+        }
+
+        async function executeProductDeletion() {
+            if (!productToDeleteId) return;
+            
+            const confirmBtn = document.getElementById('deleteConfirmBtn');
+            const spinner = document.getElementById('deleteBtnSpinner');
+            const btnText = document.getElementById('deleteBtnText');
+            
+            // Set loading state
+            confirmBtn.disabled = true;
+            spinner.classList.remove('hidden');
+            btnText.textContent = 'Deleting...';
+            
+            try {
+                const response = await fetch(`/admin/product-management/delete/${productToDeleteId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', 'Success', 'Product has been deleted successfully.');
+                    closeDeleteModal();
+                    
+                    // Reload page after a short delay to update pagination and product counts
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    showToast('error', 'Error', data.message || 'Failed to delete product.');
+                    closeDeleteModal();
+                }
+            } catch (err) {
+                console.error('Delete product error:', err);
+                showToast('error', 'Error', 'Something went wrong. Please try again.');
+                closeDeleteModal();
+            }
+        }
+
+        // ── Dropdown Toggling & Selection Handling & AJAX Fetching
+        (function() {
+            const categoryBtn = document.getElementById('categoryBtn');
+            const categoryDropdown = document.getElementById('categoryDropdown');
+            const selectedCategoryLabel = document.getElementById('selectedCategoryLabel');
+
+            const statusBtn = document.getElementById('statusBtn');
+            const statusDropdown = document.getElementById('statusDropdown');
+            const selectedStatusLabel = document.getElementById('selectedStatusLabel');
+
+            const sortBtn = document.getElementById('sortBtn');
+            const sortDropdown = document.getElementById('sortDropdown');
+
+            const searchInput = document.getElementById('searchInput');
+            const clearSearch = document.getElementById('clearSearch');
+
+            // Current state variables
+            let currentSearch = '<%= locals.search || "" %>';
+            let currentCategory = '<%= locals.category || "" %>';
+            let currentStatus = '<%= locals.status || "" %>';
+            let currentSort = '<%= locals.sort || "latest" %>';
+            let debounceTimer;
+
+            // Toggle Category Dropdown
+            categoryBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                categoryDropdown.classList.toggle('hidden');
                 statusDropdown.classList.add('hidden');
-
-                // Add your fetch/filtering call here if needed
-                console.log('Status selected:', val);
+                sortDropdown.classList.add('hidden');
             });
-        });
+
+            // Toggle Status Dropdown
+            statusBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                statusDropdown.classList.toggle('hidden');
+                categoryDropdown.classList.add('hidden');
+                sortDropdown.classList.add('hidden');
+            });
+
+            // Toggle Sort Dropdown
+            sortBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortDropdown.classList.toggle('hidden');
+                categoryDropdown.classList.add('hidden');
+                statusDropdown.classList.add('hidden');
+            });
+
+            // Click outside closes all dropdowns
+            document.addEventListener('click', () => {
+                if (categoryDropdown) categoryDropdown.classList.add('hidden');
+                if (statusDropdown) statusDropdown.classList.add('hidden');
+                if (sortDropdown) sortDropdown.classList.add('hidden');
+            });
+
+            // Update UI/Classes helper
+            function updateActiveDropdownItem(container, valAttr, activeVal) {
+                container.querySelectorAll('button').forEach(btn => {
+                    const btnVal = btn.getAttribute(valAttr);
+                    if (btnVal === activeVal) {
+                        btn.className = btn.className.replace(/text-on-surface-variant|hover:bg-surface-container/g, '').trim();
+                        btn.classList.add('bg-secondary/10', 'text-secondary', 'font-bold');
+                    } else {
+                        btn.classList.remove('bg-secondary/10', 'text-secondary', 'font-bold');
+                        if (!btn.classList.contains('text-on-surface-variant')) {
+                            btn.classList.add('text-on-surface-variant');
+                        }
+                    }
+                });
+            }
+
+            // Category selection
+            categoryDropdown.querySelectorAll('.category-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.dataset.value;
+                    selectedCategoryLabel.textContent = btn.textContent.trim();
+                    categoryDropdown.classList.add('hidden');
+                    currentCategory = val;
+                    
+                    updateActiveDropdownItem(categoryDropdown, 'data-value', val);
+                    triggerFetch();
+                });
+            });
+
+            // Status selection
+            statusDropdown.querySelectorAll('.status-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.dataset.value;
+                    selectedStatusLabel.textContent = btn.textContent.trim();
+                    statusDropdown.classList.add('hidden');
+                    currentStatus = val;
+
+                    updateActiveDropdownItem(statusDropdown, 'data-value', val);
+                    triggerFetch();
+                });
+            });
+
+            // Sort selection
+            sortDropdown.querySelectorAll('.sort-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.dataset.sort;
+                    sortDropdown.classList.add('hidden');
+                    currentSort = val;
+
+                    updateActiveDropdownItem(sortDropdown, 'data-sort', val);
+                    triggerFetch();
+                });
+            });
+
+            // Live Search Input (Debounced)
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
+                currentSearch = query;
+                
+                clearSearch.classList.toggle('hidden', !query);
+                clearSearch.classList.toggle('flex', !!query);
+                
+                debounceTimer = setTimeout(() => {
+                    triggerFetch();
+                }, 100);
+            });
+
+            clearSearch.addEventListener('click', () => {
+                searchInput.value = '';
+                clearSearch.classList.add('hidden');
+                clearSearch.classList.remove('flex');
+                currentSearch = '';
+                triggerFetch();
+            });
+
+            function triggerFetch() {
+                // Update URL parameters so page refreshes/pagination preserve filters
+                const url = new URL(window.location);
+                if (currentSearch) url.searchParams.set('search', currentSearch);
+                else url.searchParams.delete('search');
+
+                if (currentCategory) url.searchParams.set('category', currentCategory);
+                else url.searchParams.delete('category');
+
+                if (currentStatus) url.searchParams.set('status', currentStatus);
+                else url.searchParams.delete('status');
+
+                url.searchParams.set('sort', currentSort);
+                url.searchParams.set('page', '1'); // Reset to page 1 on filter/search change
+                window.history.pushState({}, '', url);
+
+                // Update pagination links as well
+                const paginationLinks = document.querySelectorAll('.flex.flex-wrap.items-center.justify-center.gap-1 a');
+                paginationLinks.forEach(link => {
+                    const linkUrl = new URL(link.href, window.location.origin);
+                    if (currentSearch) linkUrl.searchParams.set('search', currentSearch);
+                    else linkUrl.searchParams.delete('search');
+
+                    if (currentCategory) linkUrl.searchParams.set('category', currentCategory);
+                    else linkUrl.searchParams.delete('category');
+
+                    if (currentStatus) linkUrl.searchParams.set('status', currentStatus);
+                    else linkUrl.searchParams.delete('status');
+
+                    linkUrl.searchParams.set('sort', currentSort);
+                    link.href = linkUrl.pathname + linkUrl.search;
+                });
+
+                // Fetch table body content
+                fetchTable(currentSearch, currentCategory, currentStatus, currentSort);
+            }
+        })();
+
+        async function fetchTable(query, category, status, sort) {
+            try {
+                const res = await fetch(`/admin/product-management?search=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&status=${encodeURIComponent(status)}&sort=${encodeURIComponent(sort)}`, {
+                    headers: { 'x-requested-with': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                const tbody = document.getElementById('productTableBody');
+
+                if (!data.products || !data.products.length) {
+                    tbody.innerHTML = `<tr class="block md:table-row"><td colspan="7" class="px-8 py-12 text-center text-sm text-on-surface-variant block md:table-cell">No products found</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.products.map(product => {
+                    const stockBadge = product.status
+                        ? `<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container text-on-tertiary-container">In Stock</span>`
+                        : `<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container">Out of Stock</span>`;
+
+                    const visibilityBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${product.isHidden ? 'bg-outline/15 text-outline' : 'bg-secondary-container/60 text-on-secondary-container'}">
+                        <span class="material-symbols-outlined text-[11px]">${product.isHidden ? 'visibility_off' : 'visibility'}</span>
+                        ${product.isHidden ? 'Hidden' : 'Visible'}
+                    </span>`;
+
+                    const statusBadge = product.isDeleted
+                        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container/20 text-on-error-container">Deleted</span>`
+                        : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/30 text-on-tertiary-container">Active</span>`;
+
+                    const actionHtml = product.isDeleted
+                        ? `<span class="p-2 text-outline bg-transparent rounded min-w-[36px] min-h-[36px] flex items-center justify-center cursor-not-allowed" title="Product is deleted">
+                               <span class="material-symbols-outlined text-base">edit</span>
+                           </span>
+                           <span class="p-2 text-outline bg-transparent rounded min-w-[36px] min-h-[36px] flex items-center justify-center cursor-not-allowed" title="Product is deleted">
+                               <span class="material-symbols-outlined text-base">delete</span>
+                           </span>`
+                        : `<a href="/admin/product-management/edit/${product._id}"
+                               class="p-2 text-outline hover:text-primary hover:bg-surface-container rounded transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" title="Edit Product">
+                               <span class="material-symbols-outlined text-lg">edit</span>
+                           </a>
+                           <button class="p-2 text-outline hover:text-error hover:bg-error/5 rounded transition-all min-w-[44px] min-h-[44px] flex items-center justify-center delete-product-btn"
+                               data-id="${product._id}"
+                               data-name="${product.name}"
+                               data-category="${product.category ? product.category.categoryName : 'Uncategorized'}"
+                               data-image="${product.firstImage || ''}"
+                               title="Delete Product">
+                               <span class="material-symbols-outlined text-lg">delete</span>
+                           </button>`;
+
+                    const imgHtml = product.firstImage
+                        ? `<img alt="${product.name}" class="w-full h-full object-cover" src="${product.firstImage}" />`
+                        : `<span class="material-symbols-outlined text-secondary text-lg">image</span>`;
+
+                    return `
+                        <tr class="hover:bg-surface-container-low/30 transition-colors group block md:table-row border-b border-outline-variant/10 md:border-b-0 py-3 md:py-0 ${product.isDeleted ? 'opacity-65' : ''}">
+                            <!-- Product -->
+                            <td class="px-4 md:px-8 py-4 md:py-5 block md:table-cell">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded bg-surface-container overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                        ${imgHtml}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold font-manrope text-on-background">${product.name}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- Category -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Category</span>
+                                <span class="text-xs font-medium text-secondary">${product.category ? product.category.categoryName : 'Uncategorized'}</span>
+                            </td>
+                            <!-- Price -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center font-headline font-semibold text-on-surface">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Price</span>
+                                <span>₹${product.basePrice}</span>
+                            </td>
+                            <!-- Stock Status -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Stock Status</span>
+                                ${stockBadge}
+                            </td>
+                            <!-- Visibility -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Visibility</span>
+                                ${visibilityBadge}
+                            </td>
+                            <!-- Status -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
+                                ${statusBadge}
+                            </td>
+                            <!-- Actions -->
+                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center text-right md:text-right">
+                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Actions</span>
+                                <div class="flex items-center justify-end gap-2">
+                                    ${actionHtml}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Re-bind delete buttons after updating the table
+                bindDeleteButtons();
+
+                // Highlight active/showing count
+                const countEl = document.querySelector('.text-\\[10px\\].font-medium.text-on-surface-variant.uppercase.tracking-normal');
+                if (countEl) {
+                    countEl.textContent = `Showing ${data.products.length} of ${data.totalProducts} Products`;
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
+        }
     </script>
 </body>
 </html>

@@ -105,9 +105,9 @@
     <%- include('../partials/admin/layout', { activePage: 'categories' }) %>
 
         <!-- Main Content Canvas -->
-        <main class="ml-64 pt-16 min-h-screen flex flex-col">
+        <main class="ml-0 md:ml-64 pt-16 min-h-screen flex flex-col">
             <!-- Page Header Section -->
-            <section class="px-12 py-10 flex justify-between items-end">
+            <section class="px-4 sm:px-12 py-6 sm:py-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
                     <nav
                         class="flex items-center gap-2 text-[10px] uppercase tracking-[0.1em] text-outline mb-2 font-bold">
@@ -115,22 +115,22 @@
                         <span class="material-symbols-outlined text-[12px]">chevron_right</span>
                         <span class="text-secondary">Categories</span>
                     </nav>
-                    <h2 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight">Categories Overview
+                    <h2 class="text-3xl sm:text-4xl font-headline font-extrabold text-on-surface tracking-tight">Categories Overview
                     </h2>
                     <p class="text-on-surface-variant mt-1 font-body text-sm">Manage product taxonomy and collection
                         hierarchies.</p>
                 </div>
                 <button onclick="openCategoryModal(true)"
-                    class="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-primary to-secondary text-on-primary rounded-md font-label font-semibold text-sm shadow-md hover:-translate-y-0.5 transition-all">
+                    class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-br from-primary to-secondary text-on-primary rounded-md font-label font-semibold text-sm shadow-md hover:-translate-y-0.5 transition-all">
                     <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
                     Add New Category
                 </button>
             </section>
             <!-- Category Table Container -->
-            <section class="px-12 pb-20 flex-1">
+            <section class="px-4 sm:px-12 pb-12 sm:pb-20 flex-1">
                 <div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_40px_rgba(43,52,55,0.06)] overflow-hidden">
-                    <div class="px-8 py-6 flex items-center justify-between border-b border-outline-variant/15">
-                        <div class="flex items-center gap-8">
+                    <div class="px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline-variant/15">
+                        <div class="flex items-center justify-between sm:justify-start gap-4 sm:gap-8 w-full sm:w-auto">
                             <h3 class="font-headline font-bold text-on-surface">All Categories</h3>
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-secondary"></span>
@@ -139,9 +139,9 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-stretch sm:items-center gap-3 w-full sm:w-auto">
                             <!-- Static search bar -->
-                            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-56 group">
+                            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-full sm:w-56 group">
                                 <span class="material-symbols-outlined text-[16px] text-outline shrink-0">search</span>
                                 <input
                                      id="searchInput"
@@ -150,7 +150,7 @@
                                     class="bg-transparent border-0 text-xs text-on-surface placeholder:text-outline/50 outline-none focus:outline-none focus:ring-0 focus:border-0 w-full"
                                      />
                                 <button
-                                    id="clearSearch"
+                                     id="clearSearch"
                                     type="button"
                                     class="hidden shrink-0 w-4 h-4 items-center justify-center rounded-full bg-outline/20 hover:bg-outline/40 text-outline transition-colors"
                                     title="Clear search">
@@ -158,14 +158,14 @@
                                 </button>
                             </div>
                             <!-- Filter / Sort dropdown -->
-                            <div class="relative" id="sortDropdownWrapper">
+                            <div class="relative flex-1 sm:flex-none" id="sortDropdownWrapper">
                                 <button id="sortBtn"
-                                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
+                                    class="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
                                     <span class="material-symbols-outlined text-sm">filter_list</span>
                                     Filter
                                 </button>
                                 <div id="sortDropdown"
-                                    class="hidden absolute right-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
+                                    class="hidden absolute right-0 mt-1 w-full sm:w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
                                     <p class="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline">Sort by</p>
                                     <% const sortOptions = [['latest','Latest First'],['oldest','Oldest First'],['a-z','Name A → Z'],['z-a','Name Z → A']]; %>
                                     <% sortOptions.forEach(([val, label]) => { %>
@@ -180,15 +180,15 @@
                                 </div>
                             </div>
                             <button
-                                class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
+                                class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
                                 <span class="material-symbols-outlined text-sm">download</span>
                                 Export
                             </button>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
+                        <table class="w-full text-left border-collapse block md:table">
+                            <thead class="hidden md:table-header-group">
                                 <tr class="bg-surface-container-low/50">
                                     <th
                                         class="px-8 py-4 text-[11px] font-label font-bold uppercase tracking-widest text-on-surface-variant">
@@ -210,12 +210,12 @@
                                         Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant/10" id="categoryTableBody">
+                            <tbody class="divide-y divide-outline-variant/10 block md:table-row-group" id="categoryTableBody">
                                      <% if (locals.categories && locals.categories.length > 0) { %>
                                     <% locals.categories.forEach((category)=> { %>
-                                        <tr class="hover:bg-surface-container-low/30 transition-colors group <%= category.status === false ? 'opacity-60' : '' %>">
+                                        <tr class="hover:bg-surface-container-low/30 transition-colors group block md:table-row border-b border-outline-variant/10 md:border-b-0 py-3 md:py-0 <%= category.status === false ? 'opacity-60' : '' %>">
                                             <!-- Category Name -->
-                                            <td class="px-8 py-5">
+                                            <td class="px-4 md:px-8 py-4 md:py-5 block md:table-cell">
                                                 <div class="flex items-center gap-4">
                                                     <div
                                                         class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center overflow-hidden">
@@ -241,7 +241,8 @@
                                                 </div>
                                             </td>
                                             <!-- Slug -->
-                                            <td class="px-8 py-5">
+                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Slug</span>
                                                 <% if (category.slug) { %>
                                                     <code
                                                         class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium"><%= category.slug %></code>
@@ -250,12 +251,16 @@
                                                         <% } %>
                                             </td>
                                             <!-- Total Products -->
-                                            <td class="px-8 py-5 font-headline font-semibold text-on-surface">
-                                                <%= (typeof category.totalProducts !=='undefined' &&
-                                                    category.totalProducts !==null) ? category.totalProducts : '-' %>
+                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center font-headline font-semibold text-on-surface">
+                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Total Products</span>
+                                                <span>
+                                                    <%= (typeof category.totalProducts !=='undefined' &&
+                                                        category.totalProducts !==null) ? category.totalProducts : '-' %>
+                                                </span>
                                             </td>
                                             <!-- Visibility -->
-                                            <td class="px-8 py-5">
+                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Visibility</span>
                                                 <% if (category.status === false) { %>
                                                     <span class="text-xs text-on-surface-variant/50">—</span>
                                                 <% } else { %>
@@ -268,7 +273,8 @@
                                                 <% } %>
                                             </td>
                                             <!-- Status -->
-                                            <td class="px-8 py-5">
+                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
                                                 <% if (category.status === true) { %>
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
                                                 <% } else { %>
@@ -279,32 +285,33 @@
                                                 <% } %>
                                             </td>
                                             <!-- Actions -->
-                                            <td class="px-8 py-5 text-right">
+                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center text-right md:text-right">
+                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Actions</span>
                                                 <div class="flex items-center justify-end gap-1">
                                                     <% if (category.status === false) { %>
                                                         <!-- Edit disabled -->
                                                         <button
-                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed"
+                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
                                                             title="Cannot edit an inactive category"
                                                             disabled>
                                                             <span class="material-symbols-outlined text-lg">edit</span>
                                                         </button>
                                                         <!-- Delete disabled -->
                                                         <button
-                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed"
+                                                            class="p-2 text-outline/30 rounded-md cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
                                                             title="Category is already inactive"
                                                             disabled>
                                                             <span class="material-symbols-outlined text-lg">delete</span>
                                                         </button>
                                                     <% } else { %>
                                                         <button
-                                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all"
+                                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
                                                             title="Edit"
                                                             onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>', '<%= (category.description || '').replace(/'/g, "\\'") %>', '<%= category.image || '' %>', '<%= category.isHidden ? 'true' : 'false' %>')">
                                                             <span class="material-symbols-outlined text-lg">edit</span>
                                                         </button>
                                                         <button
-                                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all"
+                                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
                                                             title="Deactivate"
                                                             onclick="openDeleteModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>')">
                                                             <span class="material-symbols-outlined text-lg">delete</span>
@@ -315,9 +322,9 @@
                                         </tr>
                                         <% }); %>
                                             <% } else { %>
-                                                <tr>
-                                                    <td colspan="5"
-                                                        class="px-8 py-12 text-center text-sm text-on-surface-variant">
+                                                <tr class="block md:table-row">
+                                                    <td colspan="6"
+                                                        class="px-8 py-12 text-center text-sm text-on-surface-variant block md:table-cell">
                                                         No categories found
                                                     </td>
                                                 </tr>
@@ -326,12 +333,12 @@
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="px-8 py-6 border-t border-outline-variant/15 flex items-center justify-between">
-                        <p class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">
+                    <div class="px-4 sm:px-8 py-4 sm:py-6 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p class="text-[10px] sm:text-xs font-label text-on-surface-variant uppercase tracking-tighter text-center sm:text-left">
                             Showing <%= locals.categories?.length ?? 0 %> of <%= locals.totalCategories ?? 0 %>
                                     categories
                         </p>
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center justify-center gap-2">
                             <% if (locals.currentPage > 1) { %>
                                 <a href="/admin/category-management?page=<%= locals.currentPage - 1 %>"
                                     class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md hover:bg-surface-container transition-colors">
@@ -381,11 +388,11 @@
 
     <!-- Create Category Modal -->
     <div id="createCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
-        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
 
             <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
                 <h2 class="text-lg font-bold font-manrope text-on-surface">New Category</h2>
                 <button onclick="closeCategoryModal()" class="text-outline hover:text-on-surface transition-colors">
                     <span class="material-symbols-outlined">close</span>
@@ -398,7 +405,7 @@
             </div>
 
             <!-- Modal Form -->
-            <form id="createCategoryForm" action="/admin/category-management/create" method="POST" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4">
+            <form id="createCategoryForm" action="/admin/category-management/create" method="POST" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
@@ -420,7 +427,7 @@
                             <img id="createImagePreview" class="w-full h-full object-cover hidden" />
                         </div>
                         <input type="file" id="categoryImageInput" name="image" accept="image/*"
-                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1" />
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
                     </div>
                 </div>
 
@@ -441,13 +448,13 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
                     <button type="button" onclick="closeCategoryModal()"
-                        class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
                         Cancel
                     </button>
                     <button type="submit"
-                        class="bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all">
+                        class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
                         Create Category
                     </button>
                 </div>
@@ -458,11 +465,11 @@
 
     <!-- Edit Category Modal -->
     <div id="editCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
-        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
 
             <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
                 <h2 class="text-lg font-bold font-manrope text-on-surface">Edit Category</h2>
                 <button onclick="closeEditModal()" class="text-outline hover:text-on-surface transition-colors">
                     <span class="material-symbols-outlined">close</span>
@@ -475,7 +482,7 @@
             </div>
 
             <!-- Modal Form -->
-            <form id="editCategoryForm" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4">
+            <form id="editCategoryForm" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
                 <input type="hidden" id="editCategoryId" name="id" />
 
                 <div class="flex flex-col gap-1.5">
@@ -505,7 +512,7 @@
                             </button>
                         </div>
                         <input type="file" id="editCategoryImageInput" name="image" accept="image/*"
-                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1" />
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
                     </div>
                 </div>
 
@@ -523,13 +530,13 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
                     <button type="button" onclick="closeEditModal()"
-                        class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
                         Cancel
                     </button>
                     <button type="submit" id="editCategorySubmitBtn"
-                        class="bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all">
+                        class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
                         Save Changes
                     </button>
                 </div>
@@ -539,11 +546,11 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
-        <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-sm overflow-hidden flex flex-col justify-between sm:justify-start">
 
             <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-lg bg-error-container/20 flex items-center justify-center">
                         <span class="material-symbols-outlined text-error text-lg">delete_forever</span>
@@ -556,7 +563,7 @@
             </div>
 
             <!-- Body -->
-            <div class="px-6 py-6">
+            <div class="px-6 py-6 overflow-y-auto flex-1 sm:flex-initial">
                 <p class="text-sm text-on-surface-variant leading-relaxed">
                     You are about to deactivate
                     <span id="deleteCategoryName" class="font-bold text-on-surface"></span>.
@@ -569,13 +576,13 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 mt-6">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/10 sm:border-t-0 mt-auto">
                     <button type="button" onclick="closeDeleteModal()"
-                        class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
                         Cancel
                     </button>
                     <button id="deleteCategoryConfirmBtn"
-                        class="flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold bg-error text-on-error hover:-translate-y-0.5 shadow-sm transition-all">
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold bg-error text-on-error hover:-translate-y-0.5 shadow-sm transition-all text-center">
                         <span class="material-symbols-outlined text-sm">delete_forever</span>
                         Delete
                     </button>

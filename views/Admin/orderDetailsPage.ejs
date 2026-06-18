@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Details - Luxe Obsidian</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Manrope & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#d4d4d7",
+              "secondary-fixed": "#cae6fd",
+              "on-primary-fixed": "#3e3f42",
+              "on-surface-variant": "#586064",
+              "on-secondary-container": "#3a5568",
+              "on-tertiary-fixed-variant": "#526072",
+              "tertiary-fixed-dim": "#cddbf0",
+              "on-secondary": "#f5f9ff",
+              "secondary-fixed-dim": "#bcd8ef",
+              "primary-container": "#e2e2e5",
+              "inverse-on-surface": "#9b9d9e",
+              "error-dim": "#4e0309",
+              "surface-container": "#eaeff1",
+              "surface-tint": "#5d5e61",
+              "secondary-dim": "#3b5669",
+              "on-primary-container": "#505254",
+              "surface-container-high": "#e3e9ec",
+              "tertiary-fixed": "#dbe9ff",
+              "on-primary-fixed-variant": "#5a5c5e",
+              "outline-variant": "#abb3b7",
+              "tertiary-dim": "#465465",
+              "on-background": "#2b3437",
+              "inverse-surface": "#0c0f10",
+              "surface-variant": "#dbe4e7",
+              "on-secondary-fixed-variant": "#445f72",
+              "on-tertiary-container": "#485668",
+              "on-surface": "#2b3437",
+              "surface-dim": "#d1dce0",
+              "primary-fixed": "#e2e2e5",
+              "secondary-container": "#cae6fd",
+              "surface": "#f8f9fa",
+              "on-tertiary": "#f7f9ff",
+              "on-error-container": "#752121",
+              "error-container": "#fe8983",
+              "on-tertiary-fixed": "#364455",
+              "tertiary": "#526072",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#737c7f",
+              "secondary": "#476275",
+              "surface-container-low": "#f1f4f6",
+              "primary-dim": "#515255",
+              "on-error": "#fff7f6",
+              "tertiary-container": "#dbe9ff",
+              "inverse-primary": "#f9f9fc",
+              "surface-bright": "#f8f9fa",
+              "on-primary": "#f7f7fa",
+              "primary": "#5d5e61",
+              "surface-container-highest": "#dbe4e7",
+              "on-secondary-fixed": "#274254",
+              "error": "#9f403d",
+              "background": "#f8f9fa"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fa;
+        color: #2b3437;
+      }
+      h1, h2, h3, .font-headline {
+        font-family: 'Manrope', sans-serif;
+      }
+      .glass-header {
+        background: rgba(234, 239, 241, 0.8);
+        backdrop-filter: blur(20px);
+      }
+      .cta-gradient {
+        background: linear-gradient(135deg, #5d5e61 0%, #476275 100%);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<main class="min-h-screen py-12">
+<div class="px-8 pb-12 max-w-[1600px] mx-auto w-full">
+<!-- Page Header Section -->
+<div class="p-8 pb-0">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span id="order-status-badge" class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider">Processing</span>
+<span class="text-on-surface-variant text-xs font-medium tracking-tight">Placed on Oct 24, 2023</span>
+</div>
+<h2 class="text-4xl font-extrabold tracking-tighter text-on-surface">Order # ORD-7352</h2>
+</div>
+<div class="flex gap-3 items-center">
+<div class="relative flex items-center">
+<input type="text" id="estimate-date-input" placeholder="Estimate Date" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" class="px-5 py-2.5 pr-10 rounded-md border border-outline-variant/15 bg-white text-on-surface text-xs font-semibold hover:bg-surface-container-low transition-all outline-none focus:ring-1 focus:ring-secondary/20 w-44" />
+<button onclick="saveEstimateDate()" class="absolute right-3 text-outline hover:text-secondary transition-colors flex items-center justify-center p-0.5" title="Save Estimate Date">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+<button class="px-5 py-2.5 rounded-md border border-outline-variant/15 text-on-surface text-xs font-semibold hover:bg-surface-container-low transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">print</span> Print Invoice
+                    </button>
+<div class="relative inline-block text-left" id="status-dropdown-container">
+<button onclick="toggleStatusDropdown(event)" class="px-5 py-2.5 rounded-md cta-gradient text-on-primary text-xs font-semibold shadow-lg shadow-primary/10 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        Update Status <span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+<div id="status-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden border border-outline-variant/10">
+<div class="py-1" role="none">
+<button onclick="updateOrderStatus('Pending')" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-outline">schedule</span> Pending
+                            </button>
+<button onclick="updateOrderStatus('Processing')" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary">package_2</span> Processing
+                            </button>
+<button onclick="updateOrderStatus('Shipped')" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-tertiary">local_shipping</span> Shipped
+                            </button>
+<button onclick="updateOrderStatus('Delivered')" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified</span> Delivered
+                            </button>
+<button onclick="updateOrderStatus('Cancelled')" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-error hover:bg-error/5 transition-colors flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-error">cancel</span> Cancelled
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Grid Layout -->
+<div class="grid grid-cols-12 gap-8 items-start">
+<!-- Left Column: Items & Timeline (60%) -->
+<div class="col-span-12 lg:col-span-8 space-y-8 pb-12">
+<!-- Order Items Card -->
+<section class="bg-surface-container-low rounded-xl p-1 overflow-hidden">
+<div class="bg-surface-container-lowest rounded-[10px] p-6 shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-6">Order Items</h3>
+<div class="space-y-6">
+<!-- Item 1 -->
+<div class="flex items-center gap-6 group">
+<div class="w-24 h-24 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Luxe Ultra-Wide Monitor display" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSzuxBX9sutDxXH814p1vEdVcNV7akZd1VapGMsyHpe2q9APk1sndp_FUiWPPE8rDxZyPz_8IPZDtijP5dgvik4L-dBDymkBGCnXxGg4NHTfzcWW0A176inRLcNwBBuo1739TFfPqN7cbBoffM2aV6qWulW6tm63UZI0_0LmJe1_GSU_0tobESJA7eZlxrVTBCHebDkDeAsCanAVigQThM_yViSbN7zvSZyRvx1PXUFeJu86In3kdaWorlBCy_DeaxYSIEJi79YkFy"/>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-bold text-lg text-on-surface">Luxe Ultra-Wide Monitor</h4>
+<p class="text-xs text-on-surface-variant mt-1">Matte Black / 34-inch / 144Hz</p>
+<div class="mt-2 flex items-center gap-4">
+<span class="text-xs font-bold text-secondary">Qty: 01</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant/30"></span>
+<span class="text-xs font-semibold text-on-surface-variant">SKU: LXI-MNTR-001</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-lg">$899.00</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center gap-6 group">
+<div class="w-24 h-24 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Mechanical RGB Keyboard close up" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ11_XJ_PmvPPW7lYnT8DFOK2QiNbBnAnnSyP4VoBsa_37haC8XxCGc58bbrdZcJQyczhhp9hJssTciEJXYYTlYl9N6by2S93oDWZLEksIu4TSm5zryjgQ8SgW6Ckkx74EdglmOM12Fbng1Zre5NXzHke_MqSO7RIoBn4P9fPYEh7sUj7L6RCpZbPaJQmQlQKVWgSLJGxY8eOmFDkFs6VzNq_R7WFZJ9NNwRRy79pwoJAPTDVobyG9zusaOFZlun-oMy9gmtAmTbWh"/>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-bold text-lg text-on-surface">Mechanical RGB Keyboard</h4>
+<p class="text-xs text-on-surface-variant mt-1">Aluminium Shell / Brown Switches</p>
+<div class="mt-2 flex items-center gap-4">
+<span class="text-xs font-bold text-secondary">Qty: 02</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant/30"></span>
+<span class="text-xs font-semibold text-on-surface-variant">SKU: LXI-KEY-RGB</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-lg">$358.00</p>
+<p class="text-[10px] text-on-surface-variant font-medium">$179.00 each</p>
+</div>
+</div>
+</div>
+<!-- Summary Tray -->
+<div class="mt-10 pt-8 border-t border-outline-variant/10">
+<div class="max-w-xs ml-auto space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="font-semibold">$1,257.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Shipping (Express)</span>
+<span class="font-semibold text-secondary">FREE</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Tax (VAT 8%)</span>
+<span class="font-semibold">$100.56</span>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+<span class="font-headline font-bold text-lg uppercase tracking-tight">Total</span>
+<span class="font-headline font-extrabold text-2xl text-on-surface">$1,357.56</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Order Timeline Section -->
+<section class="bg-surface-container rounded-xl p-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-8">Order Journey</h3>
+<div class="relative space-y-8">
+<!-- Timeline Line -->
+<div class="absolute left-[15px] top-2 bottom-2 w-px bg-outline-variant/20"></div>
+<!-- Step 1 (Completed) -->
+<div class="flex gap-6 relative">
+<div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center z-10 shadow-lg shadow-secondary/20">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Order Confirmed</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">Payment received and order verified by our system.</p>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest mt-2 block">Oct 24, 10:45 AM</span>
+</div>
+</div>
+<!-- Step 2 (Active) -->
+<div class="flex gap-6 relative">
+<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-lg">package_2</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Processing at Warehouse</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">Your items are being picked and carefully packaged.</p>
+<span class="text-[10px] font-bold text-primary uppercase tracking-widest mt-2 block">Oct 25, 08:30 AM (Current)</span>
+</div>
+</div>
+<!-- Step 3 (Pending) -->
+<div class="flex gap-6 relative opacity-50">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-lg">local_shipping</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Shipped</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">Tracking details will be provided once dispatched.</p>
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest mt-2 block">Estimated Oct 27</span>
+</div>
+</div>
+<!-- Step 4 (Pending) -->
+<div class="flex gap-6 relative opacity-30">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-lg">verified</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Delivered</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">The order has been signed for and delivered.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Metadata (40%) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Customer Profile Card -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-outline mb-6">Customer Profile</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Julian Vance Profile Portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuvdgR5OXFpsG4KdRL4OzQHiBcyXhhA0AJuEJOzc8l4se_j5asViEj2Zl1TOJSKLrLGsSz0Cf9Q8WHhOZyT-UeXtmGbqXUnbq9Ce4TlHtCHnL3Kk6EgH6kscaYwqF2_uPjbWoeGyI4xCZjbFnHuD8Ru1-aUIv4IVoPBxyctusWcIui0FJS-walRJDv6N1kYae3mLL9LXxVaa4vH7it1PQ5Vud9y9I5_EyU4hxDBRk0nyKrlV7kl6a0OgB9pAmp5cW27ubdNxMG5GEc"/>
+</div>
+<div>
+<h4 class="font-headline font-bold text-on-surface">Julian Vance</h4>
+<p class="text-xs text-on-surface-variant">julian.v@luxe-archive.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/10">
+<div>
+<p class="text-[10px] text-outline uppercase font-semibold mb-1">Total Orders</p>
+<p class="font-bold text-sm">24 Orders</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-semibold mb-1">Customer Since</p>
+<p class="font-bold text-sm">Jan 2021</p>
+</div>
+</div>
+<button class="w-full mt-4 text-xs font-bold text-secondary text-center hover:underline">View History</button>
+</div>
+<!-- Shipping Address Card -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">Shipping Address</h3>
+<button class="material-symbols-outlined text-outline hover:text-on-surface text-lg">edit</button>
+</div>
+<div class="text-sm leading-relaxed text-on-surface">
+<p class="font-bold">Julian Vance</p>
+<p>1280 North Fair Oaks Ave</p>
+<p>Apt 402, Building C</p>
+<p>Palo Alto, CA 94303</p>
+<p class="mt-2 text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">call</span> +1 (650) 555-0198
+                            </p>
+</div>
+</div>
+<!-- Payment Information Card -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-outline mb-4">Payment Method</h3>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-7 bg-on-surface rounded flex items-center justify-center">
+<span class="text-[10px] text-white font-black italic tracking-tighter">VISA</span>
+</div>
+<div>
+<p class="text-xs font-bold">Visa Ending in 8842</p>
+<p class="text-[10px] text-on-surface-variant">Expires 09/26</p>
+</div>
+</div>
+<span class="text-[10px] font-bold px-2 py-1 bg-tertiary-container text-on-tertiary-container rounded">PAID</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/10">
+<div class="flex justify-between items-center text-[10px] font-bold text-outline">
+<span>TRANSACTION ID</span>
+<span class="text-on-surface">TXN-902-113-X</span>
+</div>
+</div>
+</div>
+<!-- Dangerous Actions -->
+<div class="pt-4">
+<button class="w-full group flex items-center justify-center gap-2 py-3 rounded-md border border-error/20 text-error text-xs font-bold hover:bg-error/5 transition-all">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">cancel</span>
+                            Cancel Entire Order
+                        </button>
+<p class="text-[10px] text-on-surface-variant text-center mt-3 px-4">Cancelling this order will trigger a full refund to the original payment method.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+function saveEstimateDate() {
+    const dateInput = document.getElementById('estimate-date-input');
+    const selectedDate = dateInput.value;
+    if (!selectedDate) {
+        alert('Please select a date first.');
+        return;
+    }
+    
+    // Extract Order ID dynamically from the h2 element
+    const orderHeader = document.querySelector('h2.text-4xl').textContent;
+    const orderId = orderHeader.replace('Order #', '').trim();
+    
+    // Perform POST request
+    fetch(`/orders/${orderId}/update-estimate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ estimateDate: selectedDate })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Estimate date saved successfully!');
+        } else {
+            alert('Failed to save estimate date.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the estimate date.');
+    });
+}
+
+function toggleStatusDropdown(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('status-dropdown-menu');
+    menu.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+window.addEventListener('click', function(e) {
+    const container = document.getElementById('status-dropdown-container');
+    const menu = document.getElementById('status-dropdown-menu');
+    if (container && !container.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+
+function updateOrderStatus(status) {
+    // Hide dropdown
+    document.getElementById('status-dropdown-menu').classList.add('hidden');
+    
+    // Get Order ID
+    const orderHeader = document.querySelector('h2.text-4xl').textContent;
+    const orderId = orderHeader.replace('Order #', '').trim();
+    
+    // Perform POST request
+    fetch(`/orders/${orderId}/update-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert(`Order status updated to ${status} successfully!`);
+            // Update badge on screen
+            const badge = document.getElementById('order-status-badge');
+            if (badge) {
+                badge.textContent = status;
+                // Adjust colors based on status
+                let baseClass = "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ";
+                if (status === 'Pending') {
+                    badge.className = baseClass + "bg-amber-100 text-amber-800";
+                } else if (status === 'Processing') {
+                    badge.className = baseClass + "bg-secondary-container text-on-secondary-container";
+                } else if (status === 'Shipped') {
+                    badge.className = baseClass + "bg-purple-100 text-purple-800";
+                } else if (status === 'Delivered') {
+                    badge.className = baseClass + "bg-green-100 text-green-800";
+                } else if (status === 'Cancelled') {
+                    badge.className = baseClass + "bg-red-100 text-red-800";
+                }
+            }
+        } else {
+            alert('Failed to update order status.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the status.');
+    });
+}
+</script>
+</body></html>

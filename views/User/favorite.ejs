@@ -1,17 +1,851 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favorites - LUXE TECH</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-    <link rel="stylesheet" href="/User/css/main-global.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Wishlist – Luxe Tech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/User/css/main-global.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #eef0f4;
+      color: #111;
+      font-size: 13px
+    }
+
+
+
+    /* ── PAGE ── */
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 36px 32px 80px
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px
+    }
+
+    .header-desc {
+      font-size: 12px;
+      color: #666;
+      max-width: 340px;
+      line-height: 1.65
+    }
+
+    .items-count {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #999;
+      white-space: nowrap;
+      margin-top: 6px;
+    }
+
+    /* ── FEATURED CARD ── */
+    .featured {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      min-height: 180px;
+      margin-bottom: 20px;
+    }
+
+    .feat-img {
+      width: 210px;
+      flex-shrink: 0;
+      background: #b8c8d8;
+      position: relative;
+    }
+
+    .badge-instock {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    .feat-body {
+      flex: 1;
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .feat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .feat-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px
+    }
+
+    .feat-desc {
+      font-size: 11.5px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      max-width: 270px
+    }
+
+    .feat-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 18px
+    }
+
+    .icon-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      font-size: 15px;
+      padding: 0;
+      line-height: 1
+    }
+
+    .icon-del:hover {
+      color: #ef4444
+    }
+
+    .btn-add {
+      background: #7c3408;
+      color: #fff;
+      border: none;
+      padding: 11px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn-add:hover {
+      background: #5c2408
+    }
+
+    /* ── PINK DIVIDER ── */
+    .divider {
+      width: 34px;
+      height: 3px;
+      background: linear-gradient(90deg, #f43f5e, #ec4899);
+      border-radius: 2px;
+      margin: 8px auto 20px;
+    }
+
+    /* ── MINI GRID ── */
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      min-height: 150px;
+      transition: box-shadow 0.2s;
+    }
+
+    .mini-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09)
+    }
+
+    .mini-img {
+      width: 150px;
+      flex-shrink: 0
+    }
+
+    .mi1 {
+      background: #ddd
+    }
+
+    .mi2 {
+      background: #b8c4cc
+    }
+
+    .mi3 {
+      background: #d8d2c4
+    }
+
+    .mi4 {
+      background: #1a1a1a
+    }
+
+    .mini-body {
+      flex: 1;
+      padding: 12px 14px
+    }
+
+    .mini-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2px
+    }
+
+    .mini-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.01em
+    }
+
+    .mini-sub {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 10px
+    }
+
+    .mini-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .mini-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111
+    }
+
+    .btn-buy {
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 5px 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .btn-buy:hover {
+      background: #333
+    }
+
+    /* ── SUMMARY ── */
+    .summary {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .summary-box {
+      width: 260px
+    }
+
+    .sum-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .sum-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa
+    }
+
+    .sum-total {
+      font-size: 24px;
+      font-weight: 800;
+      color: #111
+    }
+
+    .btn-move {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 3px;
+      margin-bottom: 11px;
+      transition: background 0.2s;
+    }
+
+    .btn-move:hover {
+      background: #333
+    }
+
+    .btn-share {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+      cursor: pointer;
+      padding: 3px;
+      transition: color 0.2s;
+    }
+
+    .btn-share:hover {
+      color: #111
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px) {
+      .page {
+        padding: 24px 16px 60px
+      }
+
+      .mini-grid {
+        grid-template-columns: 1fr
+      }
+
+      .featured {
+        flex-direction: column
+      }
+
+      .feat-img {
+        width: 100%;
+        height: 200px
+      }
+
+      .summary {
+        justify-content: center
+      }
+
+      .summary-box {
+        width: 100%
+      }
+
+      .header h1 {
+        font-size: 20px
+      }
+    }
+
+    @media(max-width:640px) {
+      nav {
+        padding: 0 16px
+      }
+
+      .nav-links {
+        display: none
+      }
+
+      .search-box {
+        display: none
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 8px
+      }
+
+      .feat-img {
+        height: 160px
+      }
+
+      .mini-img {
+        width: 110px
+      }
+
+      .feat-name {
+        font-size: 15px
+      }
+
+      .feat-price {
+        font-size: 17px
+      }
+
+      .sum-total {
+        font-size: 20px
+      }
+    }
+
+    /* ── CUSTOM MODAL OVERLAY & CONTAINER ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+    }
+
+    .modal-container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      padding: 24px;
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .modal-container {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modal-icon {
+      color: #ea580c;
+      font-size: 24px;
+    }
+
+    .modal-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+    }
+
+    .modal-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #4b5563;
+      margin: 0 0 24px 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #ffffff;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+  </style>
 </head>
+
 <body>
-    <%- include('../partials/user/main-header', { user }) %>
-    <div class="container" style="padding: 5rem 2rem; text-align: center;">
-        <h1>Your Favorites</h1>
-        <p>No favorites yet!</p>
+
+  <%- include('../partials/user/main-header', { user }) %>
+
+    <!-- PAGE -->
+    <div class="page">
+
+      <!-- HEADER -->
+      <div class="header">
+        <div>
+          <h1>Your Wishlist&nbsp; Collection</h1>
+          <p class="header-desc">Refine your setup with the precision engineering you've saved. These pieces represent
+            the pinnacle of our technical achievement.</p>
+        </div>
+        <div class="items-count"><%= wishlistItems.length %> <%= wishlistItems.length === 1 ? 'Item' : 'Items' %> Saved</div>
+      </div>
+
+      <% if (wishlistItems.length === 0) { %>
+        <!-- Empty State -->
+        <div style="background: #fff; border: 1px dashed #ccc; border-radius: 6px; padding: 60px 20px; text-align: center; margin: 40px 0;">
+          <span class="material-symbols-outlined" style="font-size: 48px; color: #aaa; margin-bottom: 16px;">favorite</span>
+          <h2 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 8px;">Your Wishlist is Empty</h2>
+          <p style="font-size: 12px; color: #666; margin-bottom: 24px;">Explore our catalog and save your favorite gear for later.</p>
+          <a href="/shop" class="btn-buy" style="text-decoration: none; padding: 10px 24px; font-size: 11px; display: inline-block;">Go to Shop</a>
+        </div>
+      <% } else { %>
+        <%
+          let subtotal = 0;
+          let hasInvalidItems = false;
+          for (let i = 0; i < wishlistItems.length; i++) {
+              if (!wishlistItems[i].isUnavailable && !wishlistItems[i].isStockout) {
+                  subtotal += wishlistItems[i].displayPrice;
+              } else {
+                  hasInvalidItems = true;
+              }
+          }
+          const firstItem = wishlistItems[0];
+        %>
+
+        <!-- FEATURED CARD (First Item) -->
+        <div class="featured">
+          <div class="feat-img" style="display: flex; align-items: center; justify-content: center; background: #b8c8d8; overflow: hidden; position: relative;">
+            <% if (firstItem.firstImage) { %>
+              <img src="<%= firstItem.firstImage %>" alt="<%= firstItem.name %>" style="width: 100%; height: 100%; object-fit: cover;" />
+            <% } %>
+            <% if (firstItem.isUnavailable) { %>
+              <span class="badge-instock" style="background: #ef4444; border: 1px solid #fca5a5;">Unavailable</span>
+            <% } else if (firstItem.isStockout) { %>
+              <span class="badge-instock" style="background: #ea580c; border: 1px solid #fdba74;">Stockout</span>
+            <% } else if (firstItem.isLowStock) { %>
+              <span class="badge-instock" style="background: #f59e0b; border: 1px solid #fcd34d;">Low Stock</span>
+            <% } else { %>
+              <span class="badge-instock" style="background: #22c55e; border: 1px solid #86efac;">In Stock</span>
+            <% } %>
+          </div>
+          <div class="feat-body">
+            <div>
+              <div class="feat-top">
+                <div class="feat-name" <%= firstItem.isUnavailable ? 'style="color: #94a3b8; text-decoration: line-through;"' : '' %>><%= firstItem.name %></div>
+                <button onclick="removeFromFavorite('<%= firstItem.productId %>', '<%= firstItem.variantId || '' %>')" class="icon-del" title="Remove">&#128465;</button>
+              </div>
+              <div class="feat-desc"><%= firstItem.description %></div>
+              <% if (firstItem.isUnavailable) { %>
+                <div class="feat-price" style="color: #ef4444; font-size: 15px;">Product Unavailable</div>
+              <% } else { %>
+                <div class="feat-price">₹<%= firstItem.displayPrice %></div>
+                <% if (firstItem.isLowStock) { %>
+                  <p style="color: #d97706; font-size: 11px; font-weight: 600; margin-top: 4px;">Only <%= firstItem.stock %> units remaining! Order soon.</p>
+                <% } %>
+              <% } %>
+            </div>
+            <% if (firstItem.isUnavailable) { %>
+              <button class="btn-add" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Unavailable</button>
+            <% } else if (firstItem.isStockout) { %>
+              <button class="btn-add" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Stockout</button>
+            <% } else { %>
+              <button class="btn-add" onclick="window.location.href='/product-details?id=<%= firstItem.productId %><%= firstItem.variantId ? '&variantId=' + firstItem.variantId : '' %>'">&#10041; View Details</button>
+            <% } %>
+          </div>
+        </div>
+
+        <% if (wishlistItems.length > 1) { %>
+          <!-- DIVIDER -->
+          <div class="divider"></div>
+
+          <!-- MINI GRID (Remaining Items) -->
+          <div class="mini-grid">
+            <% for (let i = 1; i < wishlistItems.length; i++) { %>
+              <% const item = wishlistItems[i]; %>
+              <div class="mini-card">
+                <div class="mini-img" style="display: flex; align-items: center; justify-content: center; background: #ddd; overflow: hidden; width: 150px; flex-shrink: 0; position: relative;">
+                  <% if (item.firstImage) { %>
+                    <img src="<%= item.firstImage %>" alt="<%= item.name %>" style="width: 100%; height: 100%; object-fit: cover;" />
+                  <% } %>
+                  <% if (item.isUnavailable) { %>
+                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 2px;">Unavailable</span>
+                  <% } else if (item.isStockout) { %>
+                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #ea580c; color: #fff; padding: 2px 6px; border-radius: 2px;">Stockout</span>
+                  <% } else if (item.isLowStock) { %>
+                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #f59e0b; color: #fff; padding: 2px 6px; border-radius: 2px;">Low Stock</span>
+                  <% } else { %>
+                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #22c55e; color: #fff; padding: 2px 6px; border-radius: 2px;">In Stock</span>
+                  <% } %>
+                </div>
+                <div class="mini-body" style="display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div class="mini-top-row">
+                      <div class="mini-name" <%= item.isUnavailable ? 'style="color: #94a3b8; text-decoration: line-through;"' : '' %>><%= item.name %></div>
+                      <button onclick="removeFromFavorite('<%= item.productId %>', '<%= item.variantId || '' %>')" class="icon-del">&#128465;</button>
+                    </div>
+                    <div class="mini-sub">Luxe Tech Saved Item</div>
+                  </div>
+                  <div class="mini-foot">
+                    <% if (item.isUnavailable) { %>
+                      <span class="mini-price" style="color: #ef4444; font-size: 11px;">Unavailable</span>
+                      <button class="btn-buy" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Unavailable</button>
+                    <% } else if (item.isStockout) { %>
+                      <span class="mini-price">₹<%= item.displayPrice %></span>
+                      <button class="btn-buy" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Stockout</button>
+                    <% } else { %>
+                      <div style="display: flex; flex-direction: column;">
+                        <span class="mini-price">₹<%= item.displayPrice %></span>
+                        <% if (item.isLowStock) { %>
+                          <p style="color: #d97706; font-size: 9px; font-weight: 600; margin-top: 2px; margin-bottom: 0;">Only <%= item.stock %> left!</p>
+                        <% } %>
+                      </div>
+                      <button onclick="window.location.href='/product-details?id=<%= item.productId %><%= item.variantId ? '&variantId=' + item.variantId : '' %>'" class="btn-buy">View Details</button>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div><!-- /mini-grid -->
+        <% } %>
+
+        <!-- DIVIDER -->
+        <div class="divider"></div>
+
+        <!-- SUMMARY -->
+        <div class="summary">
+          <div class="summary-box">
+            <div class="sum-row">
+              <span class="sum-label">Wishlist Subtotal</span>
+              <span class="sum-total">₹<%= subtotal %></span>
+            </div>
+            <% if (hasInvalidItems) { %>
+              <button class="btn-move" id="move-all" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Add to Cart</button>
+              <p style="color: #ef4444; font-size: 10px; margin-top: 8px; text-align: center; font-weight: 600;">
+                Please remove unavailable/stockout items to proceed.
+              </p>
+            <% } else { %>
+              <button class="btn-move" id="move-all" onclick="addAllToCart()">Add to Cart</button>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+    </div><!-- /page -->
+
+    <!-- CUSTOM REMOVE MODAL -->
+    <div id="delete-modal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="material-symbols-outlined modal-icon">warning</span>
+          <h3 class="modal-title">Remove Item?</h3>
+        </div>
+        <p class="modal-message">Are you sure you want to remove this precision gear from your wishlist collection?</p>
+        <div class="modal-actions">
+          <button id="modal-cancel-btn" class="modal-btn btn-secondary">Cancel</button>
+          <button id="modal-confirm-btn" class="modal-btn btn-danger">Remove</button>
+        </div>
+      </div>
     </div>
+
+    <!-- CUSTOM ALERT/ERROR MODAL -->
+    <div id="alert-modal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header" style="justify-content: center; flex-direction: column; text-align: center; gap: 8px; margin-bottom: 16px;">
+          <span class="material-symbols-outlined modal-icon" style="color: #ea580c; font-size: 40px; margin-bottom: 4px;">warning</span>
+          <h3 class="modal-title" id="alert-modal-title" style="font-size: 18px;">Attention</h3>
+        </div>
+        <p class="modal-message" id="alert-modal-message" style="text-align: center; font-size: 13px; margin-bottom: 20px;">Something went wrong.</p>
+        <div class="modal-actions" style="justify-content: center;">
+          <button id="alert-close-btn" class="modal-btn btn-secondary" style="background: #111827; color: #fff; width: 100%; border-radius: 6px; padding: 12px 24px;">Got it</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    let productToDelete = null;
+    let variantToDelete = null;
+
+    function removeFromFavorite(productId, variantId) {
+        productToDelete = productId;
+        variantToDelete = variantId || null;
+        const modal = document.getElementById('delete-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            productToDelete = null;
+            variantToDelete = null;
+        }, 300);
+    }
+
+    // Custom Alert Modal Functions
+    function showAlert(message, title = "Attention") {
+        document.getElementById('alert-modal-title').innerText = title;
+        document.getElementById('alert-modal-message').innerText = message;
+        const modal = document.getElementById('alert-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
+
+    function closeAlertModal() {
+        const modal = document.getElementById('alert-modal');
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    document.getElementById('alert-close-btn').addEventListener('click', closeAlertModal);
+    document.getElementById('alert-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAlertModal();
+        }
+    });
+
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeDeleteModal);
+
+    document.getElementById('modal-confirm-btn').addEventListener('click', async function() {
+        if (!productToDelete) return;
+        try {
+            const response = await fetch('/wishlist/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    productId: productToDelete,
+                    variantId: variantToDelete
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                window.location.reload();
+            } else {
+                showAlert(data.message || 'Failed to remove from favorites.', 'Error');
+            }
+        } catch (err) {
+            console.error('Error removing from favorites:', err);
+            showAlert('An error occurred. Please try again.', 'Error');
+        } finally {
+            closeDeleteModal();
+        }
+    });
+
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+    async function addAllToCart() {
+        const moveBtn = document.getElementById('move-all');
+        const originalText = moveBtn.textContent;
+        moveBtn.disabled = true;
+        moveBtn.textContent = 'Adding to Cart...';
+
+        try {
+            const response = await fetch('/wishlist/add-all-to-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = '/cart';
+            } else {
+                showAlert(data.message || 'Failed to add items to cart.', 'Attention');
+                moveBtn.disabled = false;
+                moveBtn.textContent = originalText;
+            }
+        } catch (err) {
+            console.error('Error adding all to cart:', err);
+            showAlert('An error occurred. Please try again.', 'Error');
+            moveBtn.disabled = false;
+            moveBtn.textContent = originalText;
+        }
+    }
+    </script>
+
 </body>
+
 </html>

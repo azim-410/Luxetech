@@ -8,10 +8,11 @@ import passport from 'passport';
 import { initPassport } from './config/passport.js';
 import authRoutes from './routes/auth.js'
 import profileRoutes from './routes/profile.js'
+import productRoutes from './routes/productRouter.js'
 import adminRoutes from './routes/AdminRouter.js'
 import connectDB from './config/db.js';
 import nocache from 'nocache';
-
+import methodOverride from 'method-override';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,8 +86,11 @@ app.use((req, res, next) => {
 
 app.use(nocache());
 
+app.use(methodOverride('_method'));
+
 app.use('/', authRoutes);
 app.use('/', profileRoutes);
+app.use('/', productRoutes);
 
 // Admin routes get ONLY the admin session — user session never touches these
 app.use('/admin/', adminSession, adminRoutes);

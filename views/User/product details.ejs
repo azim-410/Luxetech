@@ -100,8 +100,10 @@
                 initialImages = variants[0].images;
                 }
                 %>
+
                 <!-- Product Hero Section -->
                 <section class="max-w-screen-2xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-36">
+
                     <!-- Asymmetric Gallery -->
                     <div id="gallery-container" class="lg:col-span-7 grid grid-cols-6 gap-4">
                         <div id="main-img-container"
@@ -159,7 +161,7 @@
                             <span class="text-on-surface-variant text-sm font-medium">5.0 (24 Reviews)</span>
                         </div>
                         <div class="space-y-6 mb-10">
-                            <div class="flex items-baseline gap-4">
+                            <div class="flex items-center gap-4">
                                 <% if (product.discountedPrice && product.discountedPrice> 0) { %>
                                     <span id="product-price" data-base-discounted="<%= product.discountedPrice %>"
                                         class="text-4xl font-headline font-extrabold text-on-surface">
@@ -176,52 +178,107 @@
                                             ₹<%= product.basePrice + (variants.length> 0 ? variants[0].priceAdd : 0) %>
                                         </span>
                                         <% } %>
+
+                                            <!-- Stock status badge -->
+                                            <div id="variant-stock-status" class="flex items-center">
+                                                <span id="stock-badge"
+                                                    class="px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider"></span>
+                                            </div>
                             </div>
+                            <!-- Stock count text under price -->
+                            <p id="stock-count-text" class="text-xs font-semibold tracking-wide mt-1"></p>
+
                             <p class="text-on-surface-variant leading-relaxed text-lg max-w-md">
                                 <%= product.description %>
                             </p>
                         </div>
                         <div class="space-y-6">
+
+
                             <!-- Redesigned Actions -->
                             <div class="flex flex-col gap-3">
                                 <!-- Add to Cart Button -->
-                                <button
-                                    class="w-full py-5 bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202] transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3">
-                                    <span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to
-                                    Cart
+                                <button id="add-to-cart-btn" onclick="addToCart('<%= product._id %>')"
+                                    <%=locals.isBlocked ? 'disabled' : '' %>
+                                    class="w-full py-5 <%= locals.isBlocked
+                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                        : 'bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202]' %> transition-all
+                                        duration-300 font-label font-bold uppercase tracking-widest text-sm flex
+                                        items-center justify-center gap-3">
+                                        <span
+                                            class="material-symbols-outlined <%= locals.isBlocked ? 'text-slate-400' : 'text-[#E65F00]' %>">shopping_cart</span>
+                                        Add to Cart
                                 </button>
                                 <!-- Buy Now Button -->
-                                <button
-                                    class="w-full py-5 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3">
-                                    Buy Now
+                                <button id="buy-now-btn" <%=locals.isBlocked ? 'disabled' : '' %>
+                                    class="w-full py-5 <%= locals.isBlocked
+                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                                        : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %>
+                                        transition-all duration-300 font-label font-bold uppercase tracking-widest
+                                        text-sm flex items-center justify-center gap-3">
+                                        Buy Now
                                 </button>
                             </div>
                             <!-- Options & Add to Wishlist -->
-                            <div class="flex items-center gap-3">
-                                <!-- Variant Selection -->
-                                <% if (variants && variants.length> 0) { %>
-                                    <div class="relative flex-grow h-12">
-                                        <select id="variant-select" onchange="updateVariantGallery(this)"
-                                            class="w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] cursor-pointer focus:outline-none">
-                                            <% for (let i=0; i < variants.length; i++) { %>
-                                                <% const v=variants[i]; %>
-                                                    <option value="<%= v._id %>" data-price-add="<%= v.priceAdd %>"
-                                                        data-images="<%= v.images ? v.images.join(',') : '' %>">
-                                                        <%= v.groupName %>: <%= v.option %>
-                                                                <%= v.priceAdd> 0 ? '(+₹' + v.priceAdd + ')' : '' %>
-                                                    </option>
+                            <div class="flex items-start gap-3">
+                                <% 
+                                    // 1. Group the variants by their groupName (like "Color", "Panel")
+                                    // We create an empty object to hold the grouped lists of variants
+                                    const variantGroups = {};
+                                    if (variants && variants.length > 0) {
+                                        for (let i = 0; i < variants.length; i++) {
+                                            const v = variants[i];
+                                            // If this groupName doesn't exist in our object yet, create an empty array for it
+                                            if (!variantGroups[v.groupName]) {
+                                                variantGroups[v.groupName] = [];
+                                            }
+                                            // Add the variant to its respective group array
+                                            variantGroups[v.groupName].push(v);
+                                        }
+                                    }
+                                    // Get the list of all group names (e.g. ["Color", "Panel"])
+                                    const groupNames = Object.keys(variantGroups);
+                                %>
+
+                                <% if (groupNames.length > 0) { %>
+                                    <!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
+                                    <input type="hidden" id="variant-select" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
+
+                                    <!-- Render separate dropdowns stacked vertically in a flex-grow container -->
+                                    <div class="flex flex-col gap-3 flex-grow">
+                                        <% for (let i = 0; i < groupNames.length; i++) { %>
+                                            <% const groupName = groupNames[i]; %>
+                                            <div class="relative h-12 w-full">
+                                                <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
+                                                        data-group-name="<%= groupName %>"
+                                                        onchange="handleVariantChange(this)"
+                                                        <%= locals.isBlocked ? 'disabled' : '' %>>
+                                                    
+                                                    <% const groupVariants = variantGroups[groupName]; %>
+                                                    <% for (let j = 0; j < groupVariants.length; j++) { %>
+                                                        <% const v = groupVariants[j]; %>
+                                                        <option value="<%= v._id %>" 
+                                                                data-price-add="<%= v.priceAdd %>"
+                                                                data-images="<%= v.images ? v.images.join(',') : '' %>"
+                                                                data-stock="<%= v.stock %>"
+                                                                <%= (typeof selectedVariantId !== 'undefined' && selectedVariantId && selectedVariantId.toString() === v._id.toString()) ? 'selected' : '' %>>
+                                                            <%= v.groupName %>: <%= v.option %> <%= v.priceAdd > 0 ? '(+₹' + v.priceAdd + ')' : '' %>
+                                                        </option>
                                                     <% } %>
-                                        </select>
-                                        <span
-                                            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-[#0D1B2A]">expand_more</span>
+                                                </select>
+                                                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-[#0D1B2A]">expand_more</span>
+                                            </div>
+                                        <% } %>
                                     </div>
-                                    <% } %>
-                                        <!-- Add to Wishlist Button -->
-                                        <button
-                                            class="flex-grow h-12 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
-                                            Add to Wishlist
-                                        </button>
+                                <% } %>
+
+                                <!-- Add to Wishlist Button -->
+                                <button id="wishlist-btn" onclick="addToFavorite('<%= product._id %>')" <%= locals.isBlocked ? 'disabled' : '' %>
+                                    class="flex-grow h-12 <%= locals.isBlocked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %> transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
+                                    Add to Wishlist
+                                </button>
                             </div>
+
                             <div class="flex items-center gap-2 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-sm">local_shipping</span>
                                 <p class="text-xs font-medium">Complimentary delivery included</p>
@@ -324,7 +381,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <!-- Review Feed -->
                         <div class="lg:w-2/3 space-y-12">
                             <!-- Review 1 -->
@@ -493,8 +550,11 @@
             </p>
         </footer>
         <script>
+            const product = <%- locals.product ? JSON.stringify(product) : 'null' %>;
+
             function updateVariantGallery(selectElement) {
                 const selectedOption = selectElement.options[selectElement.selectedIndex];
+                if (!selectedOption) return;
                 const imagesAttr = selectedOption.getAttribute('data-images') || '';
                 const images = imagesAttr ? imagesAttr.split(',') : [];
                 const priceAdd = parseFloat(selectedOption.getAttribute('data-price-add') || '0');
@@ -502,6 +562,10 @@
                 // 1. Update Price dynamically
                 const priceEl = document.getElementById('product-price');
                 const basePriceEl = document.getElementById('product-base-price');
+
+                if (!product || product.isDeleted) {
+                    return { success: false, message: 'This product is currently unavailable.' };
+                }
 
                 if (priceEl) {
                     const baseDiscounted = parseFloat(priceEl.getAttribute('data-base-discounted'));
@@ -554,6 +618,141 @@
                     if (placeholder) placeholder.style.display = 'flex';
                     thumbnailsWrapper.innerHTML = '';
                 }
+
+                // 3. Update Stock Status dynamically
+                const stockBadge = document.getElementById('stock-badge');
+                const stockText = document.getElementById('stock-count-text');
+                const addToCartBtn = document.getElementById('add-to-cart-btn');
+                const buyNowBtn = document.getElementById('buy-now-btn');
+
+                if (stockBadge && stockText) {
+                    const stockAttr = selectedOption.getAttribute('data-stock');
+                    const stock = stockAttr !== null ? parseInt(stockAttr) : 0;
+
+                    if (stock <= 0) {
+                        stockBadge.textContent = 'Out of Stock';
+                        stockBadge.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100';
+                        stockText.textContent = 'This variant is currently sold out and unavailable.';
+                        stockText.className = 'text-xs font-semibold tracking-wide mt-1 text-red-600';
+                        
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.innerHTML = '<span class="material-symbols-outlined text-slate-400">hourglass_empty</span> Out of Stock';
+                            addToCartBtn.className = 'w-full py-5 bg-slate-100 text-slate-400 cursor-not-allowed transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                        if (buyNowBtn) {
+                            buyNowBtn.disabled = true;
+                            buyNowBtn.className = 'w-full py-5 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-255 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                    } else if (stock <= 5) {
+                        stockBadge.textContent = 'Low Stock';
+                        stockBadge.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100';
+                        stockText.textContent = `Only ${stock} units remaining! Order soon.`;
+                        stockText.className = 'text-xs font-semibold tracking-wide mt-1 text-amber-600';
+                        
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.innerHTML = '<span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to Cart';
+                            addToCartBtn.className = 'w-full py-5 bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202] transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                        if (buyNowBtn) {
+                            buyNowBtn.disabled = false;
+                            buyNowBtn.className = 'w-full py-5 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                    } else {
+                        stockBadge.textContent = 'In Stock';
+                        stockBadge.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100';
+                        stockText.textContent = ''; // No need for text message since product is fully in stock
+                        stockText.className = 'text-xs font-semibold tracking-wide mt-1 hidden';
+                        
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.innerHTML = '<span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to Cart';
+                            addToCartBtn.className = 'w-full py-5 bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202] transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                        if (buyNowBtn) {
+                            buyNowBtn.disabled = false;
+                            buyNowBtn.className = 'w-full py-5 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                        }
+                    }
+                }
+            }
+
+            function resetVariantDisplay() {
+                // 1. Revert Price to base product price
+                const priceEl = document.getElementById('product-price');
+                const basePriceEl = document.getElementById('product-base-price');
+
+                if (priceEl) {
+                    const baseDiscounted = parseFloat(priceEl.getAttribute('data-base-discounted'));
+                    const baseOriginal = parseFloat(priceEl.getAttribute('data-base-original'));
+
+                    if (!isNaN(baseDiscounted)) {
+                        priceEl.textContent = '₹' + baseDiscounted;
+                    } else if (!isNaN(baseOriginal)) {
+                        priceEl.textContent = '₹' + baseOriginal;
+                    }
+                }
+
+                if (basePriceEl) {
+                    const baseOriginal = parseFloat(basePriceEl.getAttribute('data-base-original'));
+                    if (!isNaN(baseOriginal)) {
+                        basePriceEl.textContent = '₹' + baseOriginal;
+                    }
+                }
+
+                // 2. Disable buttons and show "Select Variant" message
+                const stockBadge = document.getElementById('stock-badge');
+                const stockText = document.getElementById('stock-count-text');
+                const addToCartBtn = document.getElementById('add-to-cart-btn');
+                const buyNowBtn = document.getElementById('buy-now-btn');
+
+                if (stockBadge && stockText) {
+                    stockBadge.textContent = 'Select Variant';
+                    stockBadge.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200';
+                    stockText.textContent = 'Please select a variant to check availability and add to cart.';
+                    stockText.className = 'text-xs font-semibold tracking-wide mt-1 text-slate-500';
+                }
+
+                if (addToCartBtn) {
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.innerHTML = '<span class="material-symbols-outlined text-slate-400">hourglass_empty</span> Select Variant';
+                    addToCartBtn.className = 'w-full py-5 bg-slate-100 text-slate-400 cursor-not-allowed transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                }
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = true;
+                    buyNowBtn.className = 'w-full py-5 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                }
+            }
+
+            // This function runs whenever the user changes a select option in one of the variant dropdowns
+            function handleVariantChange(selectElement) {
+                // 1. Get the value of the option the user clicked (this is the selected variant ID)
+                var selectedValue = selectElement.value;
+                
+                // 2. Get the hidden input that stores the active variant ID
+                var hiddenInput = document.getElementById('variant-select');
+                
+                // 3. If a valid option is selected (not placeholder or empty)
+                if (selectedValue) {
+                    // Update the hidden input value so the form knows which variant is selected
+                    if (hiddenInput) {
+                        hiddenInput.value = selectedValue;
+                    }
+
+                    // 4. Since only one variant can be purchased at a time, reset all other dropdowns
+                    var allSelects = document.querySelectorAll('.variant-group-select');
+                    for (var i = 0; i < allSelects.length; i++) {
+                        var select = allSelects[i];
+                        // If it is a different select element than the one clicked, reset it to its first option (index 0)
+                        if (select !== selectElement) {
+                            select.selectedIndex = 0;
+                        }
+                    }
+
+                    // 5. Update the page's product gallery, price, and stock indicators to match the selected variant
+                    updateVariantGallery(selectElement);
+                }
             }
 
             // Image Zoom Functionality
@@ -578,7 +777,214 @@
                     mainImg.style.transformOrigin = 'center center';
                 });
             }
+
+            // This block of code runs when the webpage has finished loading completely
+            window.addEventListener('DOMContentLoaded', function () {
+                var hiddenInput = document.getElementById('variant-select');
+                var selectedVal = '';
+                if (hiddenInput) {
+                    selectedVal = hiddenInput.value;
+                }
+                
+                var activeSelect = null;
+                
+                // 1. If there is a pre-selected variant (e.g. redirected with a variant selected)
+                if (selectedVal) {
+                    var allSelects = document.querySelectorAll('.variant-group-select');
+                    // Look through all dropdowns to find which one contains the pre-selected variant value
+                    for (var i = 0; i < allSelects.length; i++) {
+                        var select = allSelects[i];
+                        for (var j = 0; j < select.options.length; j++) {
+                            if (select.options[j].value === selectedVal) {
+                                select.value = selectedVal;
+                                activeSelect = select;
+                                break;
+                            }
+                        }
+                        if (activeSelect) {
+                            break;
+                        }
+                    }
+                }
+                
+                // 2. Fallback: If no variant is pre-selected, default to the first option of the first select group
+                if (!activeSelect) {
+                    var firstSelect = document.querySelector('.variant-group-select');
+                    if (firstSelect) {
+                        if (firstSelect.options.length > 0) {
+                            firstSelect.selectedIndex = 0; // Select the first actual option
+                            if (hiddenInput) {
+                                hiddenInput.value = firstSelect.value;
+                            }
+                            activeSelect = firstSelect;
+                        }
+                    }
+                }
+                
+                // 3. If we have variant selects, update the gallery/price display with the active select
+                var hasVariantSelects = document.querySelectorAll('.variant-group-select').length > 0;
+                if (hasVariantSelects) {
+                    if (activeSelect) {
+                        updateVariantGallery(activeSelect);
+                    } else {
+                        resetVariantDisplay();
+                    }
+                }
+
+                // Bind custom alert modal events
+                const alertCloseBtn = document.getElementById('alert-close-btn');
+                if (alertCloseBtn) {
+                    alertCloseBtn.addEventListener('click', () => {
+                        <% if (locals.isBlocked) { %>
+                            window.location.href = '/shop';
+                        <% } else { %>
+                            closeAlertModal();
+                        <% } %>
+                    });
+                }
+                const alertModal = document.getElementById('alert-modal');
+                if (alertModal) {
+                    const alertBackdrop = alertModal.querySelector('.absolute');
+                    if (alertBackdrop) {
+                        alertBackdrop.addEventListener('click', () => {
+                            <% if (locals.isBlocked) { %>
+                                window.location.href = '/shop';
+                            <% } else { %>
+                                closeAlertModal();
+                            <% } %>
+                        });
+                    }
+                }
+
+                <% if (locals.isBlocked) { %>
+                    // If product is blocked, show unavailable modal on load
+                    showAlert("This product is currently unavailable. This item has been temporarily removed from our store.", "Product Unavailable");
+                    if (alertCloseBtn) {
+                        alertCloseBtn.innerText = "Browse Products";
+                    }
+                <% } %>
+            });
+
+            // Function to show custom alert modal
+            const showAlert = (message, title = "Unavailable") => {
+                const modal = document.getElementById('alert-modal');
+                if (modal) {
+                    document.getElementById('alert-modal-message').innerText = message;
+                    modal.querySelector('h3').innerText = title;
+
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        modal.querySelector('.relative').classList.remove('scale-95');
+                    }, 10);
+                }
+            };
+
+            const closeAlertModal = () => {
+                const modal = document.getElementById('alert-modal');
+                if (modal) {
+                    modal.classList.add('opacity-0');
+                    modal.querySelector('.relative').classList.add('scale-95');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                    }, 300);
+                }
+            };
+
+            async function addToFavorite(productId) {
+                const btn = document.getElementById('wishlist-btn');
+                const variantSelect = document.getElementById('variant-select');
+                const variantId = variantSelect ? variantSelect.value : null;
+
+                try {
+                    const response = await fetch('/wishlist/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId: productId, variantId: variantId })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (btn) {
+                            btn.innerHTML = '❤️ Added to Wishlist';
+                            btn.style.backgroundColor = '#0D1B2A';
+                            btn.style.color = '#FFFFFF';
+                            btn.style.borderColor = '#0D1B2A';
+                            btn.disabled = true;
+                        }
+                    } else {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                        } else {
+                            showAlert(data.message || 'Failed to add to wishlist.', 'Status Notice');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error adding to favorites:', err);
+                    showAlert('An error occurred. Please try again.', 'Error');
+                }
+            }
+
+            async function addToCart(productId) {
+                const btn = document.getElementById('add-to-cart-btn');
+                const variantSelect = document.getElementById('variant-select');
+                const variantId = variantSelect ? variantSelect.value : null;
+
+                try {
+                    const response = await fetch('/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productId: productId, variantId: variantId, quantity: 1 })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        if (btn) {
+                            btn.innerHTML = '🛒 Added to Cart';
+                            btn.style.backgroundColor = '#E65F00';
+                            btn.style.color = '#FFFFFF';
+                            setTimeout(() => {
+                                btn.innerHTML = '<span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to Cart';
+                                btn.style.backgroundColor = '#3C1B04';
+                                btn.style.color = '#E65F00';
+                            }, 2000);
+                        }
+                    } else {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                        } else {
+                            showAlert(data.message || 'Failed to add to cart.', 'Status Notice');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error adding to cart:', err);
+                    showAlert('An error occurred. Please try again.', 'Error');
+                }
+            }
         </script>
+
+        <!-- Beautiful Tailwind Alert/Error Modal -->
+        <div id="alert-modal"
+            class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-[#0D1B2A]/40 backdrop-blur-sm transition-opacity duration-300"></div>
+            <!-- Modal Card -->
+            <div
+                class="relative bg-white rounded-2xl max-w-sm w-full mx-4 p-8 shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4">
+                        <span class="material-symbols-outlined text-3xl">warning</span>
+                    </div>
+                    <h3 class="text-lg font-bold font-headline text-[#0D1B2A] mb-2">Unavailable</h3>
+                    <p id="alert-modal-message" class="text-slate-600 text-sm leading-relaxed mb-6"></p>
+                    <button id="alert-close-btn"
+                        class="w-full py-3 bg-[#0D1B2A] hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-colors">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        </div>
 </body>
 
 </html>

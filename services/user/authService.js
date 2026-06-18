@@ -16,6 +16,14 @@ const registerUser = async (data) => {
         err.field = 'general';
         throw err;
     }
+    const existUser = await User.findOne({name})
+    console.log("registerUser",existUser)
+
+    if(existUser){
+         const err = new Error("name already taken by other user");
+        err.field = 'name';
+        throw err;
+    }
     if (!terms) {
         const err = new Error("You must agree to the Terms and Conditions");
         err.field = 'terms';

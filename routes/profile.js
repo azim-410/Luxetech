@@ -25,8 +25,6 @@ const router = express.Router();
 // ─── prifile Routes ────────────────────────────────────────────── 
 
 router.get('/profile', isAuthenticated, checkIfBlocked, getProfile);
-router.get('/favorite', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/favorite'));
-router.get('/cart', isAuthenticated, checkIfBlocked, (req, res) => res.render('User/cart'));
 
 router.post('/profile/update', isAuthenticated, checkIfBlocked, upload.single('avatar'), updateProfile);
 router.get('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  showOtpPage);

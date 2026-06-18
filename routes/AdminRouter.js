@@ -52,6 +52,7 @@ router.post('/user-management/create', isAdminAuthenticated, createUser);
 
 router.get('/product-management', isAdminAuthenticated, getProductList)
 router.get('/category-management', isAdminAuthenticated, getCategoryList)
+router.get('/order-management', isAdminAuthenticated, (req, res) => res.render('Admin/orderManagmentPage'))
 router.post('/category-management/create', isAdminAuthenticated, upload.single('image'), createCategory)
 router.patch('/category-management/edit/:id', isAdminAuthenticated, upload.single('image'), editCategory)
 router.post('/category-management/delete-image/:id', isAdminAuthenticated, deleteCategoryImage)

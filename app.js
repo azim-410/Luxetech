@@ -13,6 +13,8 @@ import adminRoutes from './routes/AdminRouter.js'
 import connectDB from './config/db.js';
 import nocache from 'nocache';
 import methodOverride from 'method-override';
+import Cart from './model/cart.js';
+import Wishlist from './model/wishlist.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,8 +81,55 @@ app.use((req, res, next) => {
     passport.session()(req, res, next);
 });
 
-app.use((req, res, next) => {
-    res.locals.user = req.user || req.session?.user || null;
+// Global Middleware: This function runs on every single web page request.
+// It fetches the number of items in the user's Cart and Wishlist to show them in the top header bar.
+app.use(async (req, res, next) => {
+    // 1. Get the logged-in user's information from the session or passport authentication
+    let user = null;
+    if (req.user) {
+        user = req.user;
+    } else if (req.session && req.session.user) {
+        user = req.session.user;
+    }
+
+    // 2. Share the user data with all EJS templates globally so we don't have to pass it manually in every controller
+    res.locals.user = user;
+
+    // 3. Set the default counts to 0. If the user is a guest (not logged in), they will see 0.
+    res.locals.cartCount = 0;
+    res.locals.wishlistCount = 0;
+
+    // 4. Get the logged-in user's ID
+    let userId = null;
+    if (req.user && req.user._id) {
+        userId = req.user._id;
+    } else if (req.session && req.session.user && req.session.user.id) {
+        userId = req.session.user.id;
+    }
+
+    // 5. If the user is logged in, fetch their cart and wishlist count from the database
+    if (userId) {
+        try {
+            // Fetch the user's Cart from MongoDB
+            const userCart = await Cart.findOne({ userId: userId });
+            if (userCart && userCart.items) {
+                // Count how many unique products are in the cart array
+                res.locals.cartCount = userCart.items.length;
+            }
+
+            // Fetch the user's Wishlist from MongoDB
+            const userWishlist = await Wishlist.findOne({ userId: userId });
+            if (userWishlist && userWishlist.products) {
+                // Count how many active unique products are in the wishlist products array
+                res.locals.wishlistCount = userWishlist.products.filter(p => p.isActive !== false).length;
+            }
+        } catch (error) {
+            // Print an error in the terminal if something goes wrong with the database query
+            console.error("Error fetching header counts:", error);
+        }
+    }
+
+    // 6. Move to the next middleware or route handler
     next();
 });
 

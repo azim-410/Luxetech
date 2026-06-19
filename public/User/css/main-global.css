@@ -97,7 +97,7 @@ nav a:hover {
     color: var(--text-main);
 }
 
-.icons-group span {
+.icons-group .material-symbols-outlined {
     font-size: 1.25rem;
     cursor: pointer;
 }

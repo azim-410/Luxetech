@@ -128,6 +128,30 @@ const editAddressService = async (addressId, addressData) => {
 
     const errors = validateAddressData({ fullName, streetAddress, city, zipCode, state, country, phoneNumber });
 
+    const existing = await AddressModel.findById(addressId);
+    if (!existing) {
+        const error = new Error('Address not found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    // Check if no changes were made compared to the older address in MongoDB
+    const inputDefault = isDefault === 'true' || isDefault === 'on' || isDefault === true;
+    const isSame = 
+        (existing.fullName || '').trim() === (fullName || '').trim() &&
+        (existing.streetAddress || '').trim() === (streetAddress || '').trim() &&
+        (existing.city || '').trim() === (city || '').trim() &&
+        (existing.zipCode || '').trim() === (zipCode || '').trim() &&
+        (existing.state || '').trim() === (state || '').trim() &&
+        (existing.country || '').trim() === (country || '').trim() &&
+        (existing.phoneNumber || '').trim() === (phoneNumber || '').trim() &&
+        (existing.type || 'home') === (type || 'home') &&
+        (existing.isDefault || false) === inputDefault;
+
+    if (isSame) {
+        errors.global = 'No changes made. Please modify at least one field to save updates.';
+    }
+
     if (Object.keys(errors).length > 0) {
         const error = new Error('Validation failed');
         error.statusCode = 400;
@@ -136,11 +160,8 @@ const editAddressService = async (addressId, addressData) => {
     }
 
     // If marking as default, clear others first
-    if (isDefault === 'true' || isDefault === 'on') {
-        const existing = await AddressModel.findById(addressId);
-        if (existing) {
-            await AddressModel.updateMany({ userId: existing.userId }, { isDefault: false });
-        }
+    if (inputDefault) {
+        await AddressModel.updateMany({ userId: existing.userId }, { isDefault: false });
     }
 
     const updated = await AddressModel.findByIdAndUpdate(
@@ -154,7 +175,7 @@ const editAddressService = async (addressId, addressData) => {
             country:       country.trim(),
             phoneNumber:   phoneNumber.trim(),
             type:          type || 'home',
-            isDefault:     isDefault === 'true' || isDefault === 'on'
+            isDefault:     inputDefault
         },
         { new: true }
     );

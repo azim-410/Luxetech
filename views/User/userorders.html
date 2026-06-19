@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Recent Orders | Luxe Tech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-container": "#f1f5f9",
+              "on-surface-variant": "#64748b",
+              "on-secondary-fixed": "#021f29",
+              "on-error": "#ffffff",
+              "tertiary-fixed-dim": "#ffb692",
+              "on-tertiary-fixed-variant": "#7a3000",
+              "surface-container-low": "#f8fafc",
+              "surface-container": "#f1f5f9",
+              "tertiary-fixed": "#ffdbcb",
+              "on-tertiary-fixed": "#341100",
+              "tertiary": "#000000",
+              "on-primary": "#ffffff",
+              "error-container": "#fee2e2",
+              "primary-fixed": "#d9e2ff",
+              "secondary-fixed-dim": "#afcbd8",
+              "on-secondary-fixed-variant": "#304a55",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e2e8f0",
+              "secondary-fixed": "#cbe7f5",
+              "on-primary-container": "#000000",
+              "primary": "#000000",
+              "primary-fixed-dim": "#b0c6ff",
+              "on-tertiary-container": "#dc5d00",
+              "on-tertiary": "#ffffff",
+              "surface-variant": "#f1f5f9",
+              "surface-tint": "#000000",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#991b1b",
+              "on-primary-fixed": "#000000",
+              "secondary": "#475569",
+              "surface-dim": "#e2e8f0",
+              "on-primary-fixed-variant": "#000000",
+              "outline": "#94a3b8",
+              "on-surface": "#000000",
+              "error": "#b91c1c",
+              "tertiary-container": "#000000",
+              "on-secondary-container": "#1e293b",
+              "primary-container": "#000000",
+              "surface-bright": "#ffffff",
+              "background": "#ffffff",
+              "inverse-surface": "#000000",
+              "outline-variant": "#cbd5e1",
+              "inverse-primary": "#ffffff",
+              "surface-container-highest": "#cbd5e1",
+              "surface": "#ffffff",
+              "on-background": "#000000",
+              "inverse-on-surface": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body">
+<!-- TopNavBar -->
+
+<main class="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-8 text-[11px] text-on-surface-variant font-label tracking-widest uppercase">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Account</a>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary font-bold">Orders</span>
+</nav>
+<header class="mb-12">
+<h1 class="text-4xl font-bold font-headline tracking-tight mb-3">Recent Orders</h1>
+<p class="text-on-surface-variant max-w-2xl text-base">Track your engineering marvels, manage returns, and re-experience precision.</p>
+</header>
+<!-- Orders Grid -->
+<div class="space-y-12">
+<!-- Order Card 1: In Transit -->
+<div class="bg-white border border-outline-variant/50">
+<div class="p-5 bg-surface-container-low border-b border-outline-variant/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="flex flex-wrap gap-x-10 gap-y-2">
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Order ID</p>
+<p class="font-headline font-bold text-base">#LX-88342</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Date Placed</p>
+<p class="text-sm">Oct 24, 2023</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Total Amount</p>
+<p class="text-sm font-semibold">$1,429.00</p>
+</div>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-black text-white font-bold text-[10px] uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                        In Transit
+                    </div>
+</div>
+<div class="p-8">
+<div class="flex flex-col lg:flex-row gap-10 items-center">
+<div class="flex -space-x-2">
+<div class="w-28 h-28 bg-white border border-outline-variant/30 p-4 flex items-center justify-center relative z-10">
+<img alt="Luxe-X Pro" class="w-full h-full object-contain" data-alt="High-end black wireless over-ear headphones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBny-EtQFhKv6yRfBY9lM18fZiQJqsA9qHnBqypzfsSIwvF4WbxbaJccHLd-NKx-OmKsjMD17OAL97RUBg7UY3cRQB6hLEzDhaahmSUaZpsRCsU5oWzXLg3B4seBOv8vDo3kkMLJ2KJiCzlrsW10AIda0Bv344kJZ6RAoCDSI-LJKHNaJyg0hLCOQaCYV_Mv-0XnMXNWeOeXwRtlniftMY9FCJcHAa4vpXSHrXG8haLrZmWb2qxeuBq3djT_LV_UlEQnemSDRIH6Gw"/>
+</div>
+<div class="w-28 h-28 bg-white border border-outline-variant/30 p-4 flex items-center justify-center relative z-0">
+<img alt="Matrix RGB" class="w-full h-full object-contain" data-alt="Professional RGB mechanical keyboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUd8k_AeDZhW8OW720mh4-IQKBlatCuntosC6RcCcAFoU5N-4Oe2G_07ZmMfUi9x0mLbw8dmsMSIZ-zSpGssx4pwyTwiRGjjrgum9dfdlWwQ7plfIy-FvbEyRYffvUsN9t3415Gb28mIt3VFWaDLMXUMj9QgxqY3hxmmfAakliPtmRptTvASQYpvheR8JNPIePffhBpjV_C0s4gc_GslckGcd5Qeqew7BVa96xUumRXefrQCMSNBCa6pKgzJv_cBHMVj23fUU2pwA"/>
+</div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline font-bold text-lg mb-1">Luxe-X Pro Wireless Headset &amp; Matrix RGB Mechanical Keyboard</h3>
+<p class="text-on-surface-variant text-sm">2 items in this shipment • Ships from Central Hub</p>
+<div class="mt-4 flex flex-wrap gap-4">
+<button class="text-[11px] font-bold uppercase tracking-widest border-b border-black pb-0.5 hover:text-black/60 hover:border-black/60 transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="description">description</span>
+                                Order Receipt
+                            </button>
+</div>
+</div>
+<div class="flex flex-wrap gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-3 bg-black text-white font-bold text-[11px] uppercase tracking-widest hover:bg-black/80 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="local_shipping">local_shipping</span>
+                                Track Order
+                            </button>
+<button class="flex-1 lg:flex-none px-6 py-3 border border-black text-black font-bold text-[11px] uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Order Card 2: Delivered -->
+<div class="bg-white border border-outline-variant/50">
+<div class="p-5 bg-surface-container-low border-b border-outline-variant/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="flex flex-wrap gap-x-10 gap-y-2">
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Order ID</p>
+<p class="font-headline font-bold text-base">#LX-87110</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Date Placed</p>
+<p class="text-sm">Sep 12, 2023</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1">Total Amount</p>
+<p class="text-sm font-semibold">$899.00</p>
+</div>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 text-slate-600 font-bold text-[10px] uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                        Delivered
+                    </div>
+</div>
+<div class="p-8">
+<div class="flex flex-col lg:flex-row gap-10 items-center">
+<div class="w-28 h-28 bg-white border border-outline-variant/30 p-4 flex items-center justify-center shrink-0">
+<img alt="LuxeTab Pro" class="w-full h-full object-contain" data-alt="Sleek modern tablet computer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNSPRgfMWsdQwLvhN6qf1phnZg-W8tSB4HR7MdIXX0VEXtSpEs8ADqI9zqiNMexZr4syhy2LOZNKXwv0h2lm3OOSJ_0DG6X0sG-0zLIQPFIqjeHOzQ7GRuyxwBjbw7Et5PoiDvkfItkr4ey6gMoS9Ig6V7M06IQ84_9w0QKWFNM1d5RQr_sEvMAtGoaj80xr4k5Q-TteYsyxmEyGmQoyzUK93cKXEr7bsWXkcESXfRI6HL0g_qLfc05Eqa6Z19uqMZCYAyaPL-A7s"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline font-bold text-lg mb-1">LuxeTab Pro 12.9" (M2 Chip)</h3>
+<p class="text-on-surface-variant text-sm">Space Gray, 512GB Storage • Delivered Oct 1, 2023</p>
+<div class="mt-4 flex flex-wrap gap-4">
+<button class="text-[11px] font-bold uppercase tracking-widest border-b border-black pb-0.5 hover:text-black/60 hover:border-black/60 transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="description">description</span>
+                                Order Receipt
+                            </button>
+</div>
+</div>
+<div class="flex flex-wrap gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-3 bg-black text-white font-bold text-[11px] uppercase tracking-widest hover:bg-black/80 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+                                Buy Again
+                            </button>
+<button class="flex-1 lg:flex-none px-6 py-3 border border-black text-black font-bold text-[11px] uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                                Return Item
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-16 flex justify-center">
+<button class="px-12 py-4 border border-black text-black font-headline font-bold text-[11px] uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                Load Older Orders
+            </button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-outline-variant/30 bg-white">
+<div class="flex flex-col md:flex-row justify-between items-center px-10 py-12 max-w-7xl mx-auto gap-8">
+<div>
+<div class="text-lg font-bold text-black font-headline mb-2">Luxe Tech</div>
+<p class="font-inter text-xs text-black/50 tracking-tight">© 2024 Luxe Tech Precision Electronics. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-inter text-xs font-semibold text-black/60 hover:text-black transition-all" href="#">Privacy Policy</a>
+<a class="font-inter text-xs font-semibold text-black/60 hover:text-black transition-all" href="#">Terms of Service</a>
+<a class="font-inter text-xs font-semibold text-black/60 hover:text-black transition-all" href="#">Shipping Info</a>
+<a class="font-inter text-xs font-semibold text-black/60 hover:text-black transition-all" href="#">Returns</a>
+</div>
+</div>
+</footer>
+</body></html>

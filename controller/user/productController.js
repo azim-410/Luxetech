@@ -3,7 +3,8 @@ import {
     getProductDetailsService,
     addToWishlistService,
     getWishlistService,
-    removeFromWishlistService
+    removeFromWishlistService,
+    getProductDetailsPageDataService
 } from '../../services/user/productService.js';
 import {
     addToCartService,
@@ -40,26 +41,19 @@ const getShop = async (req, res) => {
 const getProductDetails = async (req, res) => {
     try {
         const productId = req.query.id || req.query.productId;
-
-        console.log("productId", productId);
-
         if (!productId) {
             return res.redirect('/shop');
         }
 
-        const { product, variants } = await getProductDetailsService(productId);
-        console.log("product", product);
+        const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
+        const queryVariantId = req.query.variantId || null;
 
-        // If product is fully deleted or not found, redirect to shop
-        if (!product || product.isDeleted) {
+        const data = await getProductDetailsPageDataService(productId, userId, queryVariantId);
+        if (!data) {
             return res.redirect('/shop');
         }
 
-        // If product is blocked/hidden by admin, show the page with an unavailable notice
-        const isBlocked = product.isHidden === true;
-
-        const selectedVariantId = req.query.variantId || null;
-        res.render('User/product details', { product, variants, selectedVariantId, isBlocked });
+        res.render('User/product details', data);
     } catch (error) {
         console.error('getProductDetails error:', error);
         res.status(500).send('Internal Server Error');

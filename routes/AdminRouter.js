@@ -33,6 +33,8 @@ import {
     deleteCategoryImage,
     toggleCategoryVisibility
 } from '../controller/admin/categoryManagementController.js';
+import { getOrderList, getOrderDetails, updateOrderEstimateDate, updateOrderStatus, updateOrderPaymentStatus } from '../controller/admin/admincheckourController.js';
+
 
 const router = express.Router()
 
@@ -52,7 +54,6 @@ router.post('/user-management/create', isAdminAuthenticated, createUser);
 
 router.get('/product-management', isAdminAuthenticated, getProductList)
 router.get('/category-management', isAdminAuthenticated, getCategoryList)
-router.get('/order-management', isAdminAuthenticated, (req, res) => res.render('Admin/orderManagmentPage'))
 router.post('/category-management/create', isAdminAuthenticated, upload.single('image'), createCategory)
 router.patch('/category-management/edit/:id', isAdminAuthenticated, upload.single('image'), editCategory)
 router.post('/category-management/delete-image/:id', isAdminAuthenticated, deleteCategoryImage)
@@ -81,4 +82,12 @@ router.post('/product-management/edit/:id', isAdminAuthenticated, (req, res, nex
     });
 }, updateProduct);
 router.delete('/product-management/delete/:id', isAdminAuthenticated, deleteProduct);
+
+
+router.get('/order-management', isAdminAuthenticated, getOrderList)
+router.get('/order-management/details/:id', isAdminAuthenticated, getOrderDetails)
+router.post('/order-management/details/:id/update-estimate', isAdminAuthenticated, updateOrderEstimateDate)
+router.post('/order-management/details/:id/update-status', isAdminAuthenticated, updateOrderStatus)
+router.post('/order-management/details/:id/update-payment-status', isAdminAuthenticated, updateOrderPaymentStatus)
+
 export default router  

@@ -24,19 +24,18 @@ const getProductsForListing = async (queryObject) => {
         }
 
         // Fetch categories to return to view
-        const categories = await categoryModel.find({ isHidden: false, status: true });
+        const categories = await categoryModel.find({ isHidden: { $ne: true }, status: true });
 
         // Build Sorting Map exactly like in categoryManagementService and productManagementService
         const sortMap = {
-            'featured': { createdAt: -1 },
             'newest': { createdAt: -1 },
             'price-asc': { basePrice: 1 },
             'price-desc': { basePrice: -1 }
         };
-        const sortOption = sortMap[selectedSort] || sortMap['featured'];
+        const sortOption = sortMap[selectedSort] || {};
 
         // Build database query
-        const query = { isDeleted: false, isHidden: false };
+        const query = { isDeleted: { $ne: true }, isHidden: { $ne: true } };
         if (selectedCategories.length > 0) {
             query.category = { $in: selectedCategories };
         }
@@ -307,10 +306,62 @@ const removeFromWishlistService = async (userId, productId, variantId) => {
     }
 };
 
+const getProductDetailsPageDataService = async (productId, userId, queryVariantId) => {
+    try {
+        const product = await productModel.findById(productId).populate('category');
+        if (!product || product.isDeleted) {
+            return null;
+        }
+
+        const variants = await variantModel.find({ productId: productId, status: true });
+        const isBlocked = product.isHidden === true;
+
+        let wishlistItems = [];
+        if (userId) {
+            try {
+                wishlistItems = await getWishlistService(userId);
+            } catch (err) {
+                console.error("Error fetching wishlist in product details service:", err);
+            }
+        }
+
+        const selectedVariantId = queryVariantId || null;
+
+        // Pre-calculate variables to clean up EJS template logic
+        let initialImages = [];
+        if (variants && variants.length > 0 && variants[0].images && variants[0].images.length > 0) {
+            initialImages = variants[0].images;
+        } else if (product.images && product.images.length > 0) {
+            initialImages = product.images;
+        }
+
+        const firstVariantPriceAdd = (variants.length > 0) ? variants[0].priceAdd : 0;
+        const initialPrice = (product.discountedPrice && product.discountedPrice > 0 ? product.discountedPrice : product.basePrice) + firstVariantPriceAdd;
+        const initialBasePrice = product.basePrice + firstVariantPriceAdd;
+        const hasDiscount = !!(product.discountedPrice && product.discountedPrice > 0);
+
+        return {
+            product,
+            variants,
+            selectedVariantId,
+            isBlocked,
+            wishlistItems,
+            initialImages,
+            initialPrice,
+            initialBasePrice,
+            hasDiscount
+        };
+    } catch (error) {
+        console.error('getProductDetailsPageDataService error:', error);
+        throw error;
+    }
+};
+
 export {
     getProductsForListing,
     getProductDetailsService,
     addToWishlistService,
     getWishlistService,
-    removeFromWishlistService
+    removeFromWishlistService,
+    getProductDetailsPageDataService
 };

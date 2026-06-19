@@ -13,6 +13,15 @@ import {
     addAllFromWishlistToCart
 } from '../controller/user/productController.js';
 
+
+import {
+    getCheckout,
+    editAddress,
+    addAddress,
+    placeOrder,
+    getOrderConfirmation
+} from '../controller/user/checkoutController.js';
+
 const router = express.Router();
 
 // Product Listing Page
@@ -35,5 +44,14 @@ router.get('/favorite', isAuthenticated, checkIfBlocked, getWishlist);
 router.post('/wishlist/add', isAuthenticated, checkIfBlocked, addToWishlist);
 router.post('/wishlist/remove', isAuthenticated, checkIfBlocked, removeFromWishlist);
 router.post('/wishlist/add-all-to-cart', isAuthenticated, checkIfBlocked, addAllFromWishlistToCart);
+
+// Checkout Page
+router.get('/checkout', isAuthenticated, checkIfBlocked, getCheckout);
+router.post('/checkout/address/add', isAuthenticated, checkIfBlocked, addAddress);
+router.post('/checkout/address/edit/:addressId', isAuthenticated, checkIfBlocked, editAddress);
+router.post('/checkout/place-order', isAuthenticated, checkIfBlocked, placeOrder);
+router.get('/order/success', isAuthenticated, checkIfBlocked, getOrderConfirmation);
+router.post('/order/success', isAuthenticated, checkIfBlocked, getOrderConfirmation);
+
 
 export default router;

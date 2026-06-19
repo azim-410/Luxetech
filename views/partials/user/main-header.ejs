@@ -72,13 +72,55 @@
 
     .icons-group {
         display: flex;
-        gap: 1rem;
+        gap: 1.25rem;
         color: var(--text-main);
+        align-items: center;
     }
 
-    .icons-group span {
-        font-size: 1.25rem;
+    .icons-group .material-symbols-outlined {
+        font-size: 1.35rem;
         cursor: pointer;
+    }
+
+    .icon-container {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        padding: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .icon-container:hover {
+        opacity: 0.8;
+    }
+
+    .count-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #ef4444; /* Vibrant notification red */
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9999px;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #fff; /* Sleek, thin border */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        line-height: 1;
+        transition: transform 0.2s ease;
+        font-family: inherit;
+    }
+
+    .icon-container:hover .count-badge {
+        transform: scale(1.1);
     }
 
     .hamburger-btn {
@@ -181,10 +223,21 @@
              <a href="/login"><button class="auth-btn">login</button></a>
       <%  } %>
         <div class="icons-group">
-            <a href="/favorite"><span class="material-symbols-outlined" id="icon-favorite">favorite</span></a>
-            <a href="/cart"><span class="material-symbols-outlined" id="icon-cart">shopping_cart</span></a>
-            <a href
-            ="/profile"><span class="material-symbols-outlined" id="icon-user">person</span></a>  
+            <a href="/favorite" class="icon-container">
+                <span class="material-symbols-outlined" id="icon-favorite">favorite</span>
+                <% if (locals.wishlistCount > 0) { %>
+                    <span class="count-badge"><%= locals.wishlistCount %></span>
+                <% } %>
+            </a>
+            <a href="/cart" class="icon-container">
+                <span class="material-symbols-outlined" id="icon-cart">shopping_cart</span>
+                <% if (locals.cartCount > 0) { %>
+                    <span class="count-badge"><%= locals.cartCount %></span>
+                <% } %>
+            </a>
+            <a href="/profile" class="icon-container">
+                <span class="material-symbols-outlined" id="icon-user">person</span>
+            </a>  
         </div>
         <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
             <span></span>

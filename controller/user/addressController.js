@@ -49,15 +49,15 @@ const editAddress = async (req, res) => {
         return res.redirect('/address');
     } catch (error) {
         console.error('editAddressControllerError: ' + error);
-        
+
         if (error.statusCode === 400 && error.errors) {
             const userId = req.session?.user?.id || req.user?._id;
-            const user   = req.session?.user || req.user;
+            const user = req.session?.user || req.user;
             const address = await getAddressesService(userId);
             return res.render('User/address.ejs', {
                 address,
                 user,
-                editErrors:   error.errors,
+                editErrors: error.errors,
                 editFormData: req.body,
                 editAddressId: req.params.addressId
             });
@@ -66,13 +66,13 @@ const editAddress = async (req, res) => {
     }
 }
 
-const deleteAddress = async (req,res) => {
+const deleteAddress = async (req, res) => {
     try {
-      const { addressId } = req.params;
-      await deleteAddressServices(addressId);
-      return res.redirect('/address');  
+        const { addressId } = req.params;
+        await deleteAddressServices(addressId);
+        return res.redirect('/address');
     } catch (error) {
-        console.log("address delete controller Error:"+error)
+        console.log("address delete controller Error:" + error)
         return res.redirect('/address');
     }
 }

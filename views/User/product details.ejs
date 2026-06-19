@@ -95,11 +95,7 @@
 <body class="bg-surface font-body text-on-surface antialiased">
     <%- include('../partials/user/main-header', { user: locals.user || null }) %>
         <main class="pt-36 pb-0">
-            <% let initialImages=[]; if (variants && variants.length> 0 && variants[0].images &&
-                variants[0].images.length > 0) {
-                initialImages = variants[0].images;
-                }
-                %>
+
 
                 <!-- Product Hero Section -->
                 <section class="max-w-screen-2xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-36">
@@ -162,22 +158,21 @@
                         </div>
                         <div class="space-y-6 mb-10">
                             <div class="flex items-center gap-4">
-                                <% if (product.discountedPrice && product.discountedPrice> 0) { %>
+                                <% if (hasDiscount) { %>
                                     <span id="product-price" data-base-discounted="<%= product.discountedPrice %>"
                                         class="text-4xl font-headline font-extrabold text-on-surface">
-                                        ₹<%= product.discountedPrice + (variants.length> 0 ? variants[0].priceAdd : 0)
-                                            %>
+                                        ₹<%= initialPrice %>
                                     </span>
                                     <span id="product-base-price" data-base-original="<%= product.basePrice %>"
                                         class="text-on-surface-variant line-through text-xl">
-                                        ₹<%= product.basePrice + (variants.length> 0 ? variants[0].priceAdd : 0) %>
+                                        ₹<%= initialBasePrice %>
                                     </span>
-                                    <% } else { %>
-                                        <span id="product-price" data-base-original="<%= product.basePrice %>"
-                                            class="text-4xl font-headline font-extrabold text-on-surface">
-                                            ₹<%= product.basePrice + (variants.length> 0 ? variants[0].priceAdd : 0) %>
-                                        </span>
-                                        <% } %>
+                                <% } else { %>
+                                    <span id="product-price" data-base-original="<%= product.basePrice %>"
+                                        class="text-4xl font-headline font-extrabold text-on-surface">
+                                        ₹<%= initialPrice %>
+                                    </span>
+                                <% } %>
 
                                             <!-- Stock status badge -->
                                             <div id="variant-stock-status" class="flex items-center">
@@ -210,71 +205,48 @@
                                         Add to Cart
                                 </button>
                                 <!-- Buy Now Button -->
-                                <button id="buy-now-btn" <%=locals.isBlocked ? 'disabled' : '' %>
+                                <a id="buy-now-btn" href="#" onclick="buyNow(event, '<%= product._id %>')"
                                     class="w-full py-5 <%= locals.isBlocked
-                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 pointer-events-none'
                                         : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %>
                                         transition-all duration-300 font-label font-bold uppercase tracking-widest
                                         text-sm flex items-center justify-center gap-3">
                                         Buy Now
-                                </button>
+                                </a>
                             </div>
                             <!-- Options & Add to Wishlist -->
-                            <div class="flex items-start gap-3">
-                                <% 
-                                    // 1. Group the variants by their groupName (like "Color", "Panel")
-                                    // We create an empty object to hold the grouped lists of variants
-                                    const variantGroups = {};
-                                    if (variants && variants.length > 0) {
-                                        for (let i = 0; i < variants.length; i++) {
-                                            const v = variants[i];
-                                            // If this groupName doesn't exist in our object yet, create an empty array for it
-                                            if (!variantGroups[v.groupName]) {
-                                                variantGroups[v.groupName] = [];
-                                            }
-                                            // Add the variant to its respective group array
-                                            variantGroups[v.groupName].push(v);
-                                        }
-                                    }
-                                    // Get the list of all group names (e.g. ["Color", "Panel"])
-                                    const groupNames = Object.keys(variantGroups);
-                                %>
-
-                                <% if (groupNames.length > 0) { %>
+                            <div class="flex items-start gap-3 w-full">
+                                <% if (variants && variants.length > 0) { %>
                                     <!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
                                     <input type="hidden" id="variant-select" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
 
-                                    <!-- Render separate dropdowns stacked vertically in a flex-grow container -->
+                                    <!-- Render a single dropdown containing all variants -->
                                     <div class="flex flex-col gap-3 flex-grow">
-                                        <% for (let i = 0; i < groupNames.length; i++) { %>
-                                            <% const groupName = groupNames[i]; %>
-                                            <div class="relative h-12 w-full">
-                                                <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
-                                                        data-group-name="<%= groupName %>"
-                                                        onchange="handleVariantChange(this)"
-                                                        <%= locals.isBlocked ? 'disabled' : '' %>>
-                                                    
-                                                    <% const groupVariants = variantGroups[groupName]; %>
-                                                    <% for (let j = 0; j < groupVariants.length; j++) { %>
-                                                        <% const v = groupVariants[j]; %>
-                                                        <option value="<%= v._id %>" 
-                                                                data-price-add="<%= v.priceAdd %>"
-                                                                data-images="<%= v.images ? v.images.join(',') : '' %>"
-                                                                data-stock="<%= v.stock %>"
-                                                                <%= (typeof selectedVariantId !== 'undefined' && selectedVariantId && selectedVariantId.toString() === v._id.toString()) ? 'selected' : '' %>>
-                                                            <%= v.groupName %>: <%= v.option %> <%= v.priceAdd > 0 ? '(+₹' + v.priceAdd + ')' : '' %>
-                                                        </option>
-                                                    <% } %>
-                                                </select>
-                                                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-[#0D1B2A]">expand_more</span>
-                                            </div>
-                                        <% } %>
+                                        <div class="relative h-12 w-full">
+                                            <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
+                                                    data-group-name="Variant"
+                                                    onchange="handleVariantChange(this)"
+                                                    <%= locals.isBlocked ? 'disabled' : '' %>>
+                                                
+                                                <% for (let j = 0; j < variants.length; j++) { %>
+                                                    <% const v = variants[j]; %>
+                                                    <option value="<%= v._id %>" 
+                                                            data-price-add="<%= v.priceAdd %>"
+                                                            data-images="<%= v.images ? v.images.join(',') : '' %>"
+                                                            data-stock="<%= v.stock %>"
+                                                            <%= (typeof selectedVariantId !== 'undefined' && selectedVariantId && selectedVariantId.toString() === v._id.toString()) ? 'selected' : '' %>>
+                                                        <%= v.groupName %>: <%= v.option %> <%= v.priceAdd > 0 ? '(+₹' + v.priceAdd + ')' : '' %>
+                                                    </option>
+                                                <% } %>
+                                            </select>
+                                            <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-[#0D1B2A]">expand_more</span>
+                                        </div>
                                     </div>
                                 <% } %>
 
                                 <!-- Add to Wishlist Button -->
                                 <button id="wishlist-btn" onclick="addToFavorite('<%= product._id %>')" <%= locals.isBlocked ? 'disabled' : '' %>
-                                    class="flex-grow h-12 <%= locals.isBlocked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %> transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
+                                    class="flex-grow h-12 max-w-[180px] <%= locals.isBlocked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %> transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
                                     Add to Wishlist
                                 </button>
                             </div>
@@ -551,6 +523,36 @@
         </footer>
         <script>
             const product = <%- locals.product ? JSON.stringify(product) : 'null' %>;
+            const userWishlistItems = <%- locals.wishlistItems ? JSON.stringify(wishlistItems) : '[]' %>;
+
+            function updateWishlistButton(productId, variantId) {
+                const btn = document.getElementById('wishlist-btn');
+                if (!btn) return;
+                
+                const isBlocked = <%= locals.isBlocked ? 'true' : 'false' %>;
+                if (isBlocked) {
+                    btn.disabled = true;
+                    btn.className = "flex-grow h-12 max-w-[180px] bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center";
+                    btn.innerHTML = "Add to Wishlist";
+                    return;
+                }
+
+                const isInWishlist = userWishlistItems.some(item => {
+                    const pIdMatch = item.productId && item.productId.toString() === productId.toString();
+                    const vIdMatch = (!variantId && !item.variantId) || (item.variantId && variantId && item.variantId.toString() === variantId.toString());
+                    return pIdMatch && vIdMatch;
+                });
+
+                if (isInWishlist) {
+                    btn.innerHTML = '❤️ Already in Wishlist';
+                    btn.disabled = true;
+                    btn.className = "flex-grow h-12 max-w-[180px] bg-[#0D1B2A] text-white border-2 border-[#0D1B2A] transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-default";
+                } else {
+                    btn.innerHTML = 'Add to Wishlist';
+                    btn.disabled = false;
+                    btn.className = "flex-grow h-12 max-w-[180px] bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-pointer";
+                }
+            }
 
             function updateVariantGallery(selectElement) {
                 const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -676,6 +678,9 @@
                         }
                     }
                 }
+                if (product) {
+                    updateWishlistButton(product._id, selectElement.value);
+                }
             }
 
             function resetVariantDisplay() {
@@ -722,6 +727,9 @@
                 if (buyNowBtn) {
                     buyNowBtn.disabled = true;
                     buyNowBtn.className = 'w-full py-5 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3';
+                }
+                if (product) {
+                    updateWishlistButton(product._id, null);
                 }
             }
 
@@ -829,6 +837,10 @@
                     } else {
                         resetVariantDisplay();
                     }
+                } else {
+                    if (product) {
+                        updateWishlistButton(product._id, null);
+                    }
                 }
 
                 // Bind custom alert modal events
@@ -909,11 +921,10 @@
                     if (data.success) {
                         if (btn) {
                             btn.innerHTML = '❤️ Added to Wishlist';
-                            btn.style.backgroundColor = '#0D1B2A';
-                            btn.style.color = '#FFFFFF';
-                            btn.style.borderColor = '#0D1B2A';
                             btn.disabled = true;
+                            btn.className = "flex-grow h-12 max-w-[180px] bg-[#0D1B2A] text-white border-2 border-[#0D1B2A] transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-default";
                         }
+                        userWishlistItems.push({ productId: productId, variantId: variantId });
                     } else {
                         if (response.status === 401) {
                             window.location.href = '/login';
@@ -961,6 +972,13 @@
                     console.error('Error adding to cart:', err);
                     showAlert('An error occurred. Please try again.', 'Error');
                 }
+            }
+
+            function buyNow(event, productId) {
+                if (event) event.preventDefault();
+                const variantSelect = document.getElementById('variant-select');
+                const variantId = variantSelect ? variantSelect.value : '';
+                window.location.href = `/checkout?productId=${productId}&variantId=${variantId}&qty=1`;
             }
         </script>
 

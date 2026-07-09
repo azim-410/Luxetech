@@ -31,8 +31,10 @@
             outline-color: #1A1C1E !important;
         }
     </style>
-    <!-- Google Fonts: Manrope -->
+    <!-- Google Fonts: Manrope & Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <script>
         tailwind.config = {
@@ -95,23 +97,23 @@
 </head>
 
 <body class="font-sans antialiased bg-[#F1F5F9]">
-    <!-- Top Header -->
-    <header class="bg-white border-b border-luxe-border sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-4">
-            <a href="/admin/product-management"
-                class="w-8 h-8 rounded-full bg-[#F1F5F9] hover:bg-luxe-border flex items-center justify-center text-luxe-obsidian transition-colors"
-                title="Back to Products">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </a>
-            <h1 class="text-lg font-bold text-luxe-obsidian">Add New Product</h1>
-        </div>
-    </header>
+    <%- include('../partials/admin/layout', { activePage: 'products' }) %>
 
-    <div class="min-h-screen bg-[#F1F5F9]">
-        <!-- BEGIN: Main Content Area -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <!-- Main Content Canvas -->
+    <main class="ml-0 md:ml-64 pt-16 min-h-screen flex flex-col">
+        <!-- Inner page container matching Luxe Tech styling -->
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-12 py-6 sm:py-8 flex-1">
+            <!-- Breadcrumbs / Top Back bar -->
+            <div class="flex items-center gap-4 mb-6">
+                <a href="/admin/product-management"
+                    class="w-8 h-8 rounded-full bg-white hover:bg-luxe-border flex items-center justify-center text-luxe-obsidian border border-luxe-border transition-colors"
+                    title="Back to Products">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <h1 class="text-lg font-bold text-luxe-obsidian">Add New Product</h1>
+            </div>
             <!-- Error Banner Container (for both server-side and client-side validations) -->
             <div id="errorBannerContainer" class="max-w-7xl mx-auto px-6 mb-4 <%= locals.errorMessage ? '' : 'hidden' %>">
                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-luxe text-sm font-medium" id="errorBannerText">
@@ -310,9 +312,8 @@
                     </aside>
                 </div>
             </form>
-        </main>
-        <!-- END: Main Content Area -->
-    </div>
+        </div>
+    </main>
    
     <!-- Modal Overlay -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>

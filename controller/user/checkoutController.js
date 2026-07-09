@@ -1,5 +1,6 @@
 import {
     getCheckoutPageDataService,
+    getCheckoutAddressDataService,
     placeOrderService,
     getOrderConfirmationService
 } from '../../services/user/checkoutService.js';
@@ -37,7 +38,8 @@ const getCheckout = async (req, res) => {
             editAddressId: null,
             addErrors: null,
             addFormData: null,
-            activeTab: 'saved'
+            activeTab: 'saved',
+            checkoutError: null
         });
 
     } catch (error) {
@@ -83,7 +85,8 @@ const editAddress = async (req, res) => {
                     editAddressId: req.params.addressId,
                     addErrors: null,
                     addFormData: null,
-                    activeTab: 'saved'
+                    activeTab: 'saved',
+                    checkoutError: null
                 });
             } catch (renderError) {
                 console.error("Error rendering checkout page on validation failure", renderError);
@@ -131,7 +134,8 @@ const addAddress = async (req, res) => {
                     editAddressId: null,
                     addErrors: error.errors,
                     addFormData: req.body,
-                    activeTab: 'new'
+                    activeTab: 'new',
+                    checkoutError: null
                 });
             } catch (renderError) {
                 console.error("Error rendering checkout page on add validation failure", renderError);
@@ -155,15 +159,26 @@ const placeOrder = async (req, res) => {
         return res.redirect(`/order/success?orderId=${order.orderId}`);
     } catch (error) {
         console.error("placeOrder Error:", error);
-        // Product availability or stock errors — re-render cart with inline error
+        // Validation errors (blocked product / out of stock) — re-render checkout page with error
         if (error.message) {
             try {
                 const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
-                const cartData = await getCartService(userId);
-                return res.render('User/cart', {
-                    cart: cartData,
+                // Fetch addresses and raw cart separately to AVOID re-triggering
+                // the blocking validation inside getCheckoutCartDataService
+                const { addresses, defaultAddress } = await getCheckoutAddressDataService(userId);
+                const cart = await getCartService(userId);
+                return res.render('User/cheackoutPage.ejs', {
+                    addresses,
+                    defaultAddress,
+                    cart,
                     user: req.session.user || req.user || null,
-                    cartError: error.message
+                    errors: null,
+                    formData: null,
+                    editAddressId: null,
+                    addErrors: null,
+                    addFormData: null,
+                    activeTab: 'saved',
+                    checkoutError: error.message
                 });
             } catch (renderErr) {
                 console.error('placeOrder render fallback error:', renderErr);

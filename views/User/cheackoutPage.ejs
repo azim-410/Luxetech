@@ -112,6 +112,33 @@
             <p class="text-on-surface-variant font-body">Review your order and shipping details to complete the
                 purchase.</p>
         </div>
+
+        <!-- Order Validation Error Banner -->
+        <% if (locals.checkoutError) { %>
+        <div class="mb-10 bg-white border border-red-100 rounded-2xl p-6 shadow-md shadow-red-500/5 relative overflow-hidden text-left">
+            <!-- Top premium colored accent bar -->
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-error"></div>
+            
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-error flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">block</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 mb-2 flex-wrap">
+                        <h4 class="text-lg font-bold font-headline text-primary">Order Placement Blocked</h4>
+                        <span class="bg-red-50 text-error text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border border-red-100">
+                            Action Required
+                        </span>
+                    </div>
+                    <p class="text-sm text-on-surface-variant leading-relaxed mb-4"><%= locals.checkoutError %></p>
+                    <a href="/cart" class="inline-flex items-center gap-2 bg-error hover:bg-red-700 text-white px-5 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-error/20">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span> Return to Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
             <!-- Left Column: Form Sections -->
             <div class="lg:col-span-7 space-y-16">
@@ -479,11 +506,19 @@
                         <!-- CTA -->
                         <div class="mt-10">
                             <form id="place-order-form" action="/checkout/place-order" method="POST">
-                                <button type="submit"
-                                    class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-sm font-headline font-extrabold uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
-                                    <span>Complete Purchase</span>
-                                    <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
-                                </button>
+                                <% if (locals.checkoutError) { %>
+                                    <button type="button" disabled
+                                        class="w-full bg-slate-200 text-slate-400 cursor-not-allowed py-5 rounded-sm font-headline font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                                        <span>Purchase Blocked</span>
+                                        <span class="material-symbols-outlined text-sm">block</span>
+                                    </button>
+                                <% } else { %>
+                                    <button type="submit"
+                                        class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-sm font-headline font-extrabold uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
+                                        <span>Complete Purchase</span>
+                                        <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+                                    </button>
+                                <% } %>
                             </form>
                             <p
                                 class="text-center text-[10px] text-on-surface-variant uppercase tracking-widest mt-6 font-medium">

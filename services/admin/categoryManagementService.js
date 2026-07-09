@@ -27,27 +27,51 @@ const getCategoryService = async (page, limit, search = '',sort = 'latest') => {
 };
 
 const createCategoryService = async (categoryName, description, status, image, isHidden) => {
-    if (!categoryName || categoryName.trim() === '') throw new Error('Category Name is required');
-    if (categoryName.trim().length < 3) throw new Error('Category Name must be at least 3 characters');
+    const errors = {};
 
-    const nameRegex = /^[A-Za-z0-9\s]+$/;
-    if (!nameRegex.test(categoryName.trim())) {
-        throw new Error('Category Name must contain only alphanumeric characters and spaces');
+    if (!categoryName || categoryName.trim() === '') {
+        errors.categoryName = 'Category Name is required';
+    } else {
+        const trimmedName = categoryName.trim();
+        if (trimmedName.length < 3) {
+            errors.categoryName = 'Category Name must be at least 3 characters';
+        } else if (trimmedName.length > 30) {
+            errors.categoryName = 'Category Name cannot exceed 30 characters';
+        } else {
+            const nameRegex = /^[A-Za-z0-9\s]+$/;
+            if (!nameRegex.test(trimmedName)) {
+                errors.categoryName = 'Category Name must contain only alphanumeric characters and spaces';
+            } else {
+                // Duplicate check only among active categories
+                const existingName = await categoryModel.findOne({
+                    categoryName: { $regex: new RegExp(`^${trimmedName}$`, 'i') },
+                    status: true
+                });
+                if (existingName) {
+                    errors.categoryName = 'Category name already exists';
+                } else {
+                    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                    const existingSlug = await categoryModel.findOne({ slug, status: true });
+                    if (existingSlug) {
+                        errors.categoryName = 'Category slug already exists';
+                    }
+                }
+            }
+        }
     }
 
-    // Duplicate check only among active categories
-    const existingName = await categoryModel.findOne({
-        categoryName: { $regex: new RegExp(`^${categoryName.trim()}$`, 'i') },
-        status: true
-    });
-    if (existingName) throw new Error('Category name already exists');
 
-    const slug = categoryName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    const existingSlug = await categoryModel.findOne({ slug, status: true });
-    if (existingSlug) throw new Error('Category slug already exists');
+    if (Object.keys(errors).length > 0) {
+        const validationError = new Error('Validation Failed');
+        validationError.errors = errors;
+        throw validationError;
+    }
+
+    const trimmedName = categoryName.trim();
+    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
     const newCategory = new categoryModel({
-        categoryName: categoryName.trim(),
+        categoryName: trimmedName,
         description: description ? description.trim() : '',
         status: status === 'true' || status === true,
         isHidden: isHidden === 'true' || isHidden === true,
@@ -60,30 +84,53 @@ const createCategoryService = async (categoryName, description, status, image, i
 };
 
 const editCategoryServices = async (id, categoryName, description, image, isHidden) => {
-    if (!categoryName || categoryName.trim() === '') throw new Error('Category Name is required');
-    if (categoryName.trim().length < 3) throw new Error('Category Name must be at least 3 characters');
+    const errors = {};
 
-    const nameRegex = /^[A-Za-z0-9\s]+$/;
-    if (!nameRegex.test(categoryName.trim())) {
-        throw new Error('Category Name must contain only alphanumeric characters and spaces');
+    if (!categoryName || categoryName.trim() === '') {
+        errors.categoryName = 'Category Name is required';
+    } else {
+        const trimmedName = categoryName.trim();
+        if (trimmedName.length < 3) {
+            errors.categoryName = 'Category Name must be at least 3 characters';
+        } else if (trimmedName.length > 30) {
+            errors.categoryName = 'Category Name cannot exceed 30 characters';
+        } else {
+            const nameRegex = /^[A-Za-z0-9\s]+$/;
+            if (!nameRegex.test(trimmedName)) {
+                errors.categoryName = 'Category Name must contain only alphanumeric characters and spaces';
+            } else {
+                // Duplicate check only among active categories, excluding self
+                const existingName = await categoryModel.findOne({
+                    categoryName: { $regex: new RegExp(`^${trimmedName}$`, 'i') },
+                    status: true,
+                    _id: { $ne: id }
+                });
+                if (existingName) {
+                    errors.categoryName = 'Category name already exists';
+                } else {
+                    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                    // Duplicate slug check only among active categories, excluding self
+                    const existingSlug = await categoryModel.findOne({ slug, status: true, _id: { $ne: id } });
+                    if (existingSlug) {
+                        errors.categoryName = 'Category slug already exists';
+                    }
+                }
+            }
+        }
     }
 
-    // Duplicate check only among active categories, excluding self
-    const existingName = await categoryModel.findOne({
-        categoryName: { $regex: new RegExp(`^${categoryName.trim()}$`, 'i') },
-        status: true,
-        _id: { $ne: id }
-    });
-    if (existingName) throw new Error('Category name already exists');
 
-    const slug = categoryName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    if (Object.keys(errors).length > 0) {
+        const validationError = new Error('Validation Failed');
+        validationError.errors = errors;
+        throw validationError;
+    }
 
-    // Duplicate slug check only among active categories, excluding self
-    const existingSlug = await categoryModel.findOne({ slug, status: true, _id: { $ne: id } });
-    if (existingSlug) throw new Error('Category slug already exists');
+    const trimmedName = categoryName.trim();
+    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
     const updateData = {
-        categoryName: categoryName.trim(),
+        categoryName: trimmedName,
         description: description ? description.trim() : '',
         slug,
         isHidden: isHidden === 'true' || isHidden === true

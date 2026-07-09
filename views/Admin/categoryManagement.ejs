@@ -98,6 +98,15 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
+        .border-error {
+            border-color: rgb(239, 68, 68) !important;
+        }
+
+        .focus\:ring-error:focus {
+            --tw-ring-color: rgb(239, 68, 68) !important;
+            border-color: rgb(239, 68, 68) !important;
+        }
     </style>
 </head>
 
@@ -107,7 +116,8 @@
         <!-- Main Content Canvas -->
         <main class="ml-0 md:ml-64 pt-16 min-h-screen flex flex-col">
             <!-- Page Header Section -->
-            <section class="px-4 sm:px-12 py-6 sm:py-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+            <section
+                class="px-4 sm:px-12 py-6 sm:py-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
                     <nav
                         class="flex items-center gap-2 text-[10px] uppercase tracking-[0.1em] text-outline mb-2 font-bold">
@@ -115,7 +125,8 @@
                         <span class="material-symbols-outlined text-[12px]">chevron_right</span>
                         <span class="text-secondary">Categories</span>
                     </nav>
-                    <h2 class="text-3xl sm:text-4xl font-headline font-extrabold text-on-surface tracking-tight">Categories Overview
+                    <h2 class="text-3xl sm:text-4xl font-headline font-extrabold text-on-surface tracking-tight">
+                        Categories Overview
                     </h2>
                     <p class="text-on-surface-variant mt-1 font-body text-sm">Manage product taxonomy and collection
                         hierarchies.</p>
@@ -128,8 +139,10 @@
             </section>
             <!-- Category Table Container -->
             <section class="px-4 sm:px-12 pb-12 sm:pb-20 flex-1">
-                <div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_40px_rgba(43,52,55,0.06)] overflow-hidden">
-                    <div class="px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline-variant/15">
+                <div
+                    class="bg-surface-container-lowest rounded-xl shadow-[0_2px_40px_rgba(43,52,55,0.06)] overflow-hidden">
+                    <div
+                        class="px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline-variant/15">
                         <div class="flex items-center justify-between sm:justify-start gap-4 sm:gap-8 w-full sm:w-auto">
                             <h3 class="font-headline font-bold text-on-surface">All Categories</h3>
                             <div class="flex items-center gap-2">
@@ -141,17 +154,12 @@
                         </div>
                         <div class="flex flex-wrap items-stretch sm:items-center gap-3 w-full sm:w-auto">
                             <!-- Static search bar -->
-                            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-full sm:w-56 group">
+                            <div
+                                class="flex items-center gap-2 px-3 py-2 bg-surface-container border border-outline-variant/20 rounded-full w-full sm:w-56 group">
                                 <span class="material-symbols-outlined text-[16px] text-outline shrink-0">search</span>
-                                <input
-                                     id="searchInput"
-                                    type="text"
-                                    placeholder="Search categories…"
-                                    class="bg-transparent border-0 text-xs text-on-surface placeholder:text-outline/50 outline-none focus:outline-none focus:ring-0 focus:border-0 w-full"
-                                     />
-                                <button
-                                     id="clearSearch"
-                                    type="button"
+                                <input id="searchInput" type="text" placeholder="Search categories…"
+                                    class="bg-transparent border-0 text-xs text-on-surface placeholder:text-outline/50 outline-none focus:outline-none focus:ring-0 focus:border-0 w-full" />
+                                <button id="clearSearch" type="button"
                                     class="hidden shrink-0 w-4 h-4 items-center justify-center rounded-full bg-outline/20 hover:bg-outline/40 text-outline transition-colors"
                                     title="Clear search">
                                     <span class="material-symbols-outlined text-[11px] leading-none">close</span>
@@ -166,17 +174,19 @@
                                 </button>
                                 <div id="sortDropdown"
                                     class="hidden absolute right-0 mt-1 w-full sm:w-44 bg-surface-container-lowest border border-outline-variant/15 rounded-lg shadow-lg overflow-hidden z-20">
-                                    <p class="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline">Sort by</p>
-                                    <% const sortOptions = [['latest','Latest First'],['oldest','Oldest First'],['a-z','Name A → Z'],['z-a','Name Z → A']]; %>
-                                    <% sortOptions.forEach(([val, label]) => { %>
-                                        <button
-                                            class="sort-option w-full text-left px-4 py-2.5 text-xs font-medium transition-colors
+                                    <p
+                                        class="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-outline">
+                                        Sort by</p>
+                                    <% const sortOptions=[['latest','Latest First'],['oldest','Oldest First'],['a-z','Name A → Z'],['z-a','Name Z → A']]; %>
+                                        <% sortOptions.forEach(([val, label])=> { %>
+                                            <button
+                                                class="sort-option w-full text-left px-4 py-2.5 text-xs font-medium transition-colors
                                                    <%= (locals.sort || 'latest') === val ? 'bg-secondary/10 text-secondary font-bold' : 'text-on-surface-variant hover:bg-surface-container' %>"
-                                            data-sort="<%= val %>">
-                                            <%= label %>
-                                        </button>
-                                    <% }); %>
-                                    <div class="h-2"></div>
+                                                data-sort="<%= val %>">
+                                                <%= label %>
+                                            </button>
+                                            <% }); %>
+                                                <div class="h-2"></div>
                                 </div>
                             </div>
                             <button
@@ -210,10 +220,12 @@
                                         Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant/10 block md:table-row-group" id="categoryTableBody">
-                                     <% if (locals.categories && locals.categories.length > 0) { %>
+                            <tbody class="divide-y divide-outline-variant/10 block md:table-row-group"
+                                id="categoryTableBody">
+                                <% if (locals.categories && locals.categories.length> 0) { %>
                                     <% locals.categories.forEach((category)=> { %>
-                                        <tr class="hover:bg-surface-container-low/30 transition-colors group block md:table-row border-b border-outline-variant/10 md:border-b-0 py-3 md:py-0 <%= category.status === false ? 'opacity-60' : '' %>">
+                                        <tr
+                                            class="hover:bg-surface-container-low/30 transition-colors group block md:table-row border-b border-outline-variant/10 md:border-b-0 py-3 md:py-0 <%= category.status === false ? 'opacity-60' : '' %>">
                                             <!-- Category Name -->
                                             <td class="px-4 md:px-8 py-4 md:py-5 block md:table-cell">
                                                 <div class="flex items-center gap-4">
@@ -241,8 +253,10 @@
                                                 </div>
                                             </td>
                                             <!-- Slug -->
-                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
-                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Slug</span>
+                                            <td
+                                                class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span
+                                                    class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Slug</span>
                                                 <% if (category.slug) { %>
                                                     <code
                                                         class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium"><%= category.slug %></code>
@@ -251,72 +265,90 @@
                                                         <% } %>
                                             </td>
                                             <!-- Total Products -->
-                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center font-headline font-semibold text-on-surface">
-                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Total Products</span>
+                                            <td
+                                                class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center font-headline font-semibold text-on-surface">
+                                                <span
+                                                    class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Total
+                                                    Products</span>
                                                 <span>
                                                     <%= (typeof category.totalProducts !=='undefined' &&
-                                                        category.totalProducts !==null) ? category.totalProducts : '-' %>
+                                                        category.totalProducts !==null) ? category.totalProducts : '-'
+                                                        %>
                                                 </span>
                                             </td>
                                             <!-- Visibility -->
-                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
-                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Visibility</span>
-                                                <% if (category.status === false) { %>
+                                            <td
+                                                class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span
+                                                    class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Visibility</span>
+                                                <% if (category.status===false) { %>
                                                     <span class="text-xs text-on-surface-variant/50">—</span>
-                                                <% } else { %>
-                                                    <span
-                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide
+                                                    <% } else { %>
+                                                        <span
+                                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide
                                                                <%= category.isHidden ? 'bg-outline/15 text-outline' : 'bg-secondary-container/60 text-on-secondary-container' %>">
-                                                        <span class="material-symbols-outlined text-[11px]"><%= category.isHidden ? 'visibility_off' : 'visibility' %></span>
-                                                        <%= category.isHidden ? 'Hidden' : 'Visible' %>
-                                                    </span>
-                                                <% } %>
+                                                            <span class="material-symbols-outlined text-[11px]">
+                                                                <%= category.isHidden ? 'visibility_off' : 'visibility'
+                                                                    %>
+                                                            </span>
+                                                            <%= category.isHidden ? 'Hidden' : 'Visible' %>
+                                                        </span>
+                                                        <% } %>
                                             </td>
                                             <!-- Status -->
-                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
-                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
-                                                <% if (category.status === true) { %>
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
-                                                <% } else { %>
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
-                                                        <span class="material-symbols-outlined text-[11px]">block</span>
-                                                        Inactive
-                                                    </span>
-                                                <% } %>
+                                            <td
+                                                class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center">
+                                                <span
+                                                    class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
+                                                <% if (category.status===true) { %>
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>
+                                                    <% } else { %>
+                                                        <span
+                                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
+                                                            <span
+                                                                class="material-symbols-outlined text-[11px]">block</span>
+                                                            Inactive
+                                                        </span>
+                                                        <% } %>
                                             </td>
                                             <!-- Actions -->
-                                            <td class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center text-right md:text-right">
-                                                <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Actions</span>
+                                            <td
+                                                class="px-4 md:px-8 py-3 md:py-5 flex md:table-cell justify-between md:justify-start items-center text-right md:text-right">
+                                                <span
+                                                    class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Actions</span>
                                                 <div class="flex items-center justify-end gap-1">
-                                                    <% if (category.status === false) { %>
+                                                    <% if (category.status===false) { %>
                                                         <!-- Edit disabled -->
                                                         <button
                                                             class="p-2 text-outline/30 rounded-md cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
-                                                            title="Cannot edit an inactive category"
-                                                            disabled>
+                                                            title="Cannot edit an inactive category" disabled>
                                                             <span class="material-symbols-outlined text-lg">edit</span>
                                                         </button>
                                                         <!-- Delete disabled -->
                                                         <button
                                                             class="p-2 text-outline/30 rounded-md cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
-                                                            title="Category is already inactive"
-                                                            disabled>
-                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                            title="Category is already inactive" disabled>
+                                                            <span
+                                                                class="material-symbols-outlined text-lg">delete</span>
                                                         </button>
-                                                    <% } else { %>
-                                                        <button
-                                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
-                                                            title="Edit"
-                                                            onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>', '<%= (category.description || '').replace(/'/g, "\\'") %>', '<%= category.image || '' %>', '<%= category.isHidden ? 'true' : 'false' %>')">
-                                                            <span class="material-symbols-outlined text-lg">edit</span>
-                                                        </button>
-                                                        <button
-                                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
-                                                            title="Deactivate"
-                                                            onclick="openDeleteModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, "\\'") %>')">
-                                                            <span class="material-symbols-outlined text-lg">delete</span>
-                                                        </button>
-                                                    <% } %>
+                                                        <% } else { %>
+                                                            <button
+                                                                class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                                                title="Edit"
+                                                                onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, '\\\'') %>', '<%= (category.description || '').replace(/'/g, '\\\'') %>', '<%= category.image || '' %>', '<%= category.isHidden ? 'true' : 'false' %>')">
+                                                                            <span
+                                                                                class="material-symbols-outlined text-lg">edit</span>
+                                                            </button>
+                                                            <button
+                                                                class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                                                title="Deactivate"
+                                                                onclick="openDeleteModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, '\\\'') %>')">
+                                                                  
+                                                                <span
+                                                                    class="material-symbols-outlined text-lg">delete</span>
+                                                            </button>
+                                                            <% } %>
                                                 </div>
                                             </td>
                                         </tr>
@@ -333,661 +365,914 @@
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="px-4 sm:px-8 py-4 sm:py-6 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p class="text-[10px] sm:text-xs font-label text-on-surface-variant uppercase tracking-tighter text-center sm:text-left">
+                    <div
+                        class="px-4 sm:px-8 py-4 sm:py-6 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p
+                            class="text-[10px] sm:text-xs font-label text-on-surface-variant uppercase tracking-tighter text-center sm:text-left">
                             Showing <%= locals.categories?.length ?? 0 %> of <%= locals.totalCategories ?? 0 %>
                                     categories
                         </p>
                         <div class="flex flex-wrap items-center justify-center gap-2">
-                            <% if (locals.currentPage > 1) { %>
+                            <% if (locals.currentPage> 1) { %>
                                 <a href="/admin/category-management?page=<%= locals.currentPage - 1 %>"
                                     class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md hover:bg-surface-container transition-colors">
                                     <span class="material-symbols-outlined text-sm">chevron_left</span>
                                     Previous
                                 </a>
-                            <% } else { %>
-                                <span
-                                    class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">
-                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
-                                    Previous
-                                </span>
-                            <% } %>
-
-                            <% for (let i = 1; i <= (locals.totalPage || 1); i++) { %>
-                                <% if (i === (locals.currentPage || 1)) { %>
-                                    <span
-                                        class="w-8 h-8 rounded border border-outline-variant/15 flex items-center justify-center bg-secondary text-on-secondary font-bold text-xs">
-                                        <%= i %>
-                                    </span>
                                 <% } else { %>
-                                    <a href="/admin/category-management?page=<%= i %>"
-                                        class="w-8 h-8 rounded border border-outline-variant/15 flex items-center justify-center text-xs text-on-surface-variant hover:bg-surface-container-low transition-colors">
-                                        <%= i %>
-                                    </a>
-                                <% } %>
-                            <% } %>
+                                    <span
+                                        class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">
+                                        <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                        Previous
+                                    </span>
+                                    <% } %>
 
-                            <% if (locals.currentPage < (locals.totalPage || 1)) { %>
-                                <a href="/admin/category-management?page=<%= locals.currentPage + 1 %>"
-                                    class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md hover:bg-surface-container transition-colors">
-                                    Next
-                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
-                                </a>
-                            <% } else { %>
-                                <span
-                                    class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">
-                                    Next
-                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
-                                </span>
-                            <% } %>
+                                        <% for (let i=1; i <=(locals.totalPage || 1); i++) { %>
+                                            <% if (i===(locals.currentPage || 1)) { %>
+                                                <span
+                                                    class="w-8 h-8 rounded border border-outline-variant/15 flex items-center justify-center bg-secondary text-on-secondary font-bold text-xs">
+                                                    <%= i %>
+                                                </span>
+                                                <% } else { %>
+                                                    <a href="/admin/category-management?page=<%= i %>"
+                                                        class="w-8 h-8 rounded border border-outline-variant/15 flex items-center justify-center text-xs text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                                                        <%= i %>
+                                                    </a>
+                                                    <% } %>
+                                                        <% } %>
+
+                                                            <% if (locals.currentPage < (locals.totalPage || 1)) { %>
+                                                                <a href="/admin/category-management?page=<%= locals.currentPage + 1 %>"
+                                                                    class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md hover:bg-surface-container transition-colors">
+                                                                    Next
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm">chevron_right</span>
+                                                                </a>
+                                                                <% } else { %>
+                                                                    <span
+                                                                        class="flex items-center gap-1 px-4 py-2 border border-outline-variant/15 text-xs font-bold uppercase tracking-widest text-on-surface rounded-md opacity-50 cursor-not-allowed">
+                                                                        Next
+                                                                        <span
+                                                                            class="material-symbols-outlined text-sm">chevron_right</span>
+                                                                    </span>
+                                                                    <% } %>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-    <!-- Create Category Modal -->
-    <div id="createCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
-        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
+        <!-- Create Category Modal -->
+        <div id="createCategoryModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+            <div
+                class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
 
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
-                <h2 class="text-lg font-bold font-manrope text-on-surface">New Category</h2>
-                <button onclick="closeCategoryModal()" class="text-outline hover:text-on-surface transition-colors">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-
-            <!-- Error Message Container -->
-            <div id="categoryErrorContainer" class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg <%= (typeof createError !== 'undefined' && createError) ? '' : 'hidden' %>">
-                <span id="categoryErrorMessage"><%= (typeof createError !== 'undefined' && createError) ? createError : '' %></span>
-            </div>
-
-            <!-- Modal Form -->
-            <form id="createCategoryForm" action="/admin/category-management/create" method="POST" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
-                    <input type="text" id="categoryNameInput" name="categoryName" placeholder="e.g. Smartphones" required
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
-                </div>
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Description</label>
-                    <textarea id="categoryDescriptionInput" name="description" placeholder="Provide category details..." rows="3"
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
-                </div>
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Image</label>
-                    <div class="flex items-center gap-3">
-                        <div id="createImagePreviewContainer" class="w-12 h-12 rounded bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/20 shrink-0">
-                            <span id="createImagePlaceholder" class="material-symbols-outlined text-outline">image</span>
-                            <img id="createImagePreview" class="w-full h-full object-cover hidden" />
-                        </div>
-                        <input type="file" id="categoryImageInput" name="image" accept="image/*"
-                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
-                    </div>
-                </div>
-
-                <!-- status is always active on create -->
-                <input type="hidden" name="status" value="true" />
-
-                <!-- Visibility -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Visibility</label>
-                    <div class="relative">
-                        <select id="categoryVisibilityInput" name="isHidden"
-                            class="w-full appearance-none bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10 cursor-pointer">
-                            <option value="false">Visible — shown to customers</option>
-                            <option value="true">Hidden — not shown to customers</option>
-                        </select>
-                        <span class="material-symbols-outlined text-outline absolute right-3 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">expand_more</span>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
-                    <button type="button" onclick="closeCategoryModal()"
-                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
-                        Create Category
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
+                    <h2 class="text-lg font-bold font-manrope text-on-surface">New Category</h2>
+                    <button onclick="closeCategoryModal()" class="text-outline hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
 
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Category Modal -->
-    <div id="editCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
-        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
-
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
-                <h2 class="text-lg font-bold font-manrope text-on-surface">Edit Category</h2>
-                <button onclick="closeEditModal()" class="text-outline hover:text-on-surface transition-colors">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-
-            <!-- Error Message Container -->
-            <div id="editCategoryErrorContainer" class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
-                <span id="editCategoryErrorMessage"></span>
-            </div>
-
-            <!-- Modal Form -->
-            <form id="editCategoryForm" enctype="multipart/form-data" class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
-                <input type="hidden" id="editCategoryId" name="id" />
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
-                    <input type="text" id="editCategoryNameInput" name="categoryName" placeholder="e.g. Smartphones" required
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                <!-- Error Message Container -->
+                <div id="categoryErrorContainer"
+                    class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg <%= (typeof createError !== 'undefined' && createError) ? '' : 'hidden' %>">
+                    <span id="categoryErrorMessage">
+                        <%= (typeof createError !=='undefined' && createError) ? createError : '' %>
+                    </span>
                 </div>
 
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Description</label>
-                    <textarea id="editCategoryDescriptionInput" name="description" placeholder="Provide category details..." rows="3"
-                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
-                </div>
+                <!-- Modal Form -->
+                <form id="createCategoryForm" action="/admin/category-management/create" method="POST"
+                    enctype="multipart/form-data"
+                    class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
 
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Image</label>
-                    <div class="flex items-center gap-3">
-                        <div class="relative group shrink-0">
-                            <div id="editImagePreviewContainer" class="w-12 h-12 rounded bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/20">
-                                <span id="editImagePlaceholder" class="material-symbols-outlined text-outline">image</span>
-                                <img id="editImagePreview" class="w-full h-full object-cover hidden" />
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
+                        <input type="text" id="categoryNameInput" name="categoryName" placeholder="e.g. Smartphones"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="createNameError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label
+                            class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Description</label>
+                        <textarea id="categoryDescriptionInput" name="description"
+                            placeholder="Provide category details..." rows="3"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
+                        <p id="createDescError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category
+                            Image</label>
+                        <div class="flex items-center gap-3">
+                            <div id="createImagePreviewContainer"
+                                class="w-12 h-12 rounded bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/20 shrink-0">
+                                <span id="createImagePlaceholder"
+                                    class="material-symbols-outlined text-outline">image</span>
+                                <img id="createImagePreview" class="w-full h-full object-cover hidden" />
                             </div>
-                            <!-- Delete overlay button, shown on hover if image exists -->
-                            <button type="button" id="deleteImageOverlayBtn" title="Delete Image"
-                                class="absolute inset-0 bg-black/60 flex items-center justify-center text-error opacity-0 group-hover:opacity-100 transition-opacity rounded hidden">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                            </button>
+                            <input type="file" id="categoryImageInput" name="image" accept="image/*"
+                                class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
                         </div>
-                        <input type="file" id="editCategoryImageInput" name="image" accept="image/*"
-                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
+                        <p id="createImageError" class="text-error text-xs hidden mt-1"></p>
                     </div>
-                </div>
 
-                <!-- Visibility -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Visibility</label>
-                    <div class="relative">
-                        <select id="editCategoryVisibilityInput" name="isHidden"
-                            class="w-full appearance-none bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10 cursor-pointer">
-                            <option value="false">Visible &mdash; shown to customers</option>
-                            <option value="true">Hidden &mdash; not shown to customers</option>
-                        </select>
-                        <span class="material-symbols-outlined text-outline absolute right-3 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">expand_more</span>
+                    <!-- status is always active on create -->
+                    <input type="hidden" name="status" value="true" />
+
+                    <!-- Visibility -->
+                    <div class="flex flex-col gap-1.5">
+                        <label
+                            class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Visibility</label>
+                        <div class="relative">
+                            <select id="categoryVisibilityInput" name="isHidden"
+                                class="w-full appearance-none bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10 cursor-pointer">
+                                <option value="false">Visible — shown to customers</option>
+                                <option value="true">Hidden — not shown to customers</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined text-outline absolute right-3 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">expand_more</span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
-                    <button type="button" onclick="closeEditModal()"
-                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
-                        Cancel
-                    </button>
-                    <button type="submit" id="editCategorySubmitBtn"
-                        class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteCategoryModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
-        <div class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-sm overflow-hidden flex flex-col justify-between sm:justify-start">
-
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-error-container/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-error text-lg">delete_forever</span>
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
+                        <button type="button" onclick="closeCategoryModal()"
+                            class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
+                            Create Category
+                        </button>
                     </div>
-                    <h2 class="text-lg font-bold font-manrope text-on-surface">Delete Category</h2>
-                </div>
-                <button onclick="closeDeleteModal()" class="text-outline hover:text-on-surface transition-colors">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
 
-            <!-- Body -->
-            <div class="px-6 py-6 overflow-y-auto flex-1 sm:flex-initial">
-                <p class="text-sm text-on-surface-variant leading-relaxed">
-                    You are about to deactivate
-                    <span id="deleteCategoryName" class="font-bold text-on-surface"></span>.
-                    It will be removed from the list and its status set to <span class="text-error font-semibold">inactive</span>.
-                </p>
-
-                <!-- Inline error -->
-                <div id="deleteCategoryErrorContainer" class="mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
-                    <span id="deleteCategoryErrorMessage"></span>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/10 sm:border-t-0 mt-auto">
-                    <button type="button" onclick="closeDeleteModal()"
-                        class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
-                        Cancel
-                    </button>
-                    <button id="deleteCategoryConfirmBtn"
-                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold bg-error text-on-error hover:-translate-y-0.5 shadow-sm transition-all text-center">
-                        <span class="material-symbols-outlined text-sm">delete_forever</span>
-                        Delete
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <script>
-        const categoryModal = document.getElementById('createCategoryModal');
-        const categoryForm = document.getElementById('createCategoryForm');
-        const categoryErrorContainer = document.getElementById('categoryErrorContainer');
-        const categoryErrorMessage = document.getElementById('categoryErrorMessage');
+        <!-- Edit Category Modal -->
+        <div id="editCategoryModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+            <div
+                class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md overflow-hidden flex flex-col justify-between sm:justify-start">
 
-        function openCategoryModal(isNew = false) {
-            if (isNew) {
-                categoryForm.reset();
-                categoryErrorContainer.classList.add('hidden');
-                categoryErrorMessage.textContent = '';
-                if (window.location.search.includes('createError')) {
-                    window.history.replaceState({}, document.title, window.location.pathname);
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
+                    <h2 class="text-lg font-bold font-manrope text-on-surface">Edit Category</h2>
+                    <button onclick="closeEditModal()" class="text-outline hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Error Message Container -->
+                <div id="editCategoryErrorContainer"
+                    class="mx-6 mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
+                    <span id="editCategoryErrorMessage"></span>
+                </div>
+
+                <!-- Modal Form -->
+                <form id="editCategoryForm" enctype="multipart/form-data"
+                    class="px-6 py-6 flex flex-col gap-4 overflow-y-auto flex-1 sm:flex-initial">
+                    <input type="hidden" id="editCategoryId" name="id" />
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category Name</label>
+                        <input type="text" id="editCategoryNameInput" name="categoryName" placeholder="e.g. Smartphones"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="editNameError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label
+                            class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Description</label>
+                        <textarea id="editCategoryDescriptionInput" name="description"
+                            placeholder="Provide category details..." rows="3"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all resize-none"></textarea>
+                        <p id="editDescError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Category
+                            Image</label>
+                        <div class="flex items-center gap-3">
+                            <div class="relative group shrink-0">
+                                <div id="editImagePreviewContainer"
+                                    class="w-12 h-12 rounded bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/20">
+                                    <span id="editImagePlaceholder"
+                                        class="material-symbols-outlined text-outline">image</span>
+                                    <img id="editImagePreview" class="w-full h-full object-cover hidden" />
+                                </div>
+                                <!-- Delete overlay button, shown on hover if image exists -->
+                                <button type="button" id="deleteImageOverlayBtn" title="Delete Image"
+                                    class="absolute inset-0 bg-black/60 flex items-center justify-center text-error opacity-0 group-hover:opacity-100 transition-opacity rounded hidden">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                            <input type="file" id="editCategoryImageInput" name="image" accept="image/*"
+                                class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
+                        </div>
+                        <p id="editImageError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <!-- Visibility -->
+                    <div class="flex flex-col gap-1.5">
+                        <label
+                            class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Visibility</label>
+                        <div class="relative">
+                            <select id="editCategoryVisibilityInput" name="isHidden"
+                                class="w-full appearance-none bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all pr-10 cursor-pointer">
+                                <option value="false">Visible &mdash; shown to customers</option>
+                                <option value="true">Hidden &mdash; not shown to customers</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined text-outline absolute right-3 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 mt-auto">
+                        <button type="button" onclick="closeEditModal()"
+                            class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
+                            Cancel
+                        </button>
+                        <button type="submit" id="editCategorySubmitBtn"
+                            class="w-full sm:w-auto bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all text-center">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteCategoryModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden p-0 sm:p-4">
+            <div
+                class="bg-surface-container-lowest rounded-none sm:rounded-xl shadow-2xl w-full h-full sm:h-auto sm:max-w-sm overflow-hidden flex flex-col justify-between sm:justify-start">
+
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-error-container/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-error text-lg">delete_forever</span>
+                        </div>
+                        <h2 class="text-lg font-bold font-manrope text-on-surface">Delete Category</h2>
+                    </div>
+                    <button onclick="closeDeleteModal()" class="text-outline hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="px-6 py-6 overflow-y-auto flex-1 sm:flex-initial">
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        You are about to deactivate
+                        <span id="deleteCategoryName" class="font-bold text-on-surface"></span>.
+                        It will be removed from the list and its status set to <span
+                            class="text-error font-semibold">inactive</span>.
+                    </p>
+
+                    <!-- Inline error -->
+                    <div id="deleteCategoryErrorContainer"
+                        class="mt-4 px-4 py-3 bg-error-container/20 text-on-error-container text-sm rounded-lg hidden">
+                        <span id="deleteCategoryErrorMessage"></span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div
+                        class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/10 sm:border-t-0 mt-auto">
+                        <button type="button" onclick="closeDeleteModal()"
+                            class="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all text-center">
+                            Cancel
+                        </button>
+                        <button id="deleteCategoryConfirmBtn"
+                            class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-md text-sm font-semibold bg-error text-on-error hover:-translate-y-0.5 shadow-sm transition-all text-center">
+                            <span class="material-symbols-outlined text-sm">delete_forever</span>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const categoryModal = document.getElementById('createCategoryModal');
+            const categoryForm = document.getElementById('createCategoryForm');
+            const categoryErrorContainer = document.getElementById('categoryErrorContainer');
+            const categoryErrorMessage = document.getElementById('categoryErrorMessage');
+
+            // Helpers for Field-Level Validation
+            function clearFieldError(inputEl, errorEl) {
+                if (inputEl) {
+                    inputEl.classList.remove('border-error', 'focus:ring-error');
                 }
+                if (errorEl) {
+                    errorEl.textContent = '';
+                    errorEl.classList.add('hidden');
+                }
+            }
+
+            function showFieldError(inputEl, errorEl, msg) {
+                if (inputEl) {
+                    inputEl.classList.add('border-error', 'focus:ring-error');
+                }
+                if (errorEl) {
+                    errorEl.textContent = msg;
+                    errorEl.classList.remove('hidden');
+                }
+            }
+
+            function validateCategoryName(name) {
+                if (!name || name.trim() === '') {
+                    return 'Category Name is required';
+                }
+                if (name.trim().length < 3) {
+                    return 'Category Name must be at least 3 characters';
+                }
+                if (name.trim().length > 30) {
+                    return 'Category Name cannot exceed 30 characters';
+                }
+                const nameRegex = /^[A-Za-z0-9\s]+$/;
+                if (!nameRegex.test(name.trim())) {
+                    return 'Category Name must contain only alphanumeric characters and spaces';
+                }
+                return null;
+            }
+
+            function validateDescription(desc) {
+                return null;
+            }
+
+            function validateImageFile(file) {
+                if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        return 'Only image files are allowed';
+                    }
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        return 'Image size must be less than 5MB';
+                    }
+                }
+                return null;
+            }
+
+            // Live validation listeners for Create
+            document.getElementById('categoryNameInput').addEventListener('input', function() {
+                const err = validateCategoryName(this.value);
+                if (err) showFieldError(this, document.getElementById('createNameError'), err);
+                else clearFieldError(this, document.getElementById('createNameError'));
+            });
+
+            document.getElementById('categoryDescriptionInput').addEventListener('input', function() {
+                const err = validateDescription(this.value);
+                if (err) showFieldError(this, document.getElementById('createDescError'), err);
+                else clearFieldError(this, document.getElementById('createDescError'));
+            });
+
+            document.getElementById('categoryImageInput').addEventListener('change', function() {
+                const err = validateImageFile(this.files[0]);
+                if (err) showFieldError(this, document.getElementById('createImageError'), err);
+                else clearFieldError(this, document.getElementById('createImageError'));
+            });
+
+            function openCategoryModal(isNew = false) {
+                if (isNew) {
+                    categoryForm.reset();
+                    categoryErrorContainer.classList.add('hidden');
+                    categoryErrorMessage.textContent = '';
+                    if (window.location.search.includes('createError')) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    const previewImg = document.getElementById('createImagePreview');
+                    const placeholder = document.getElementById('createImagePlaceholder');
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+
+                    // Clear field-level errors
+                    clearFieldError(document.getElementById('categoryNameInput'), document.getElementById('createNameError'));
+                    clearFieldError(document.getElementById('categoryDescriptionInput'), document.getElementById('createDescError'));
+                    clearFieldError(document.getElementById('categoryImageInput'), document.getElementById('createImageError'));
+                }
+                categoryModal.classList.remove('hidden');
+            }
+
+            function closeCategoryModal() {
+                categoryModal.classList.add('hidden');
+                // reset file input & preview
+                document.getElementById('categoryImageInput').value = '';
                 const previewImg = document.getElementById('createImagePreview');
                 const placeholder = document.getElementById('createImagePlaceholder');
                 previewImg.src = '';
                 previewImg.classList.add('hidden');
                 placeholder.classList.remove('hidden');
             }
-            categoryModal.classList.remove('hidden');
-        }
 
-        function closeCategoryModal() {
-            categoryModal.classList.add('hidden');
-            // reset file input & preview
-            document.getElementById('categoryImageInput').value = '';
-            const previewImg = document.getElementById('createImagePreview');
-            const placeholder = document.getElementById('createImagePlaceholder');
-            previewImg.src = '';
-            previewImg.classList.add('hidden');
-            placeholder.classList.remove('hidden');
-        }
+            // close on backdrop click
+            categoryModal.addEventListener('click', (e) => {
+                if (e.target === categoryModal) closeCategoryModal();
+            });
 
-        // close on backdrop click
-        categoryModal.addEventListener('click', (e) => {
-            if (e.target === categoryModal) closeCategoryModal();
-        });
+            // Add Create File input change preview listener
+            document.getElementById('categoryImageInput').addEventListener('change', function (e) {
+                const previewImg = document.getElementById('createImagePreview');
+                const placeholder = document.getElementById('createImagePlaceholder');
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        previewImg.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+            });
 
-        // Add Create File input change preview listener
-        document.getElementById('categoryImageInput').addEventListener('change', function(e) {
-            const previewImg = document.getElementById('createImagePreview');
-            const placeholder = document.getElementById('createImagePlaceholder');
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewImg.src = '';
-                previewImg.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-            }
-        });
-
-        // client-side validation
-        categoryForm.addEventListener('submit', (e) => {
-            const name = document.getElementById('categoryNameInput').value.trim();
-
-            if (name.length < 3) {
+            // AJAX Create submission
+            categoryForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                showCategoryError('Category Name must be at least 3 characters long');
-                return;
-            }
 
-            // Only letters, numbers and spaces allowed
-            const nameRegex = /^[A-Za-z0-9\s]+$/;
-            if (!nameRegex.test(name)) {
-                e.preventDefault();
-                showCategoryError('Category Name must contain only alphanumeric characters and spaces');
-                return;
-            }
-        });
+                // Clear general error
+                categoryErrorContainer.classList.add('hidden');
+                categoryErrorMessage.textContent = '';
 
-        function showCategoryError(msg) {
-            categoryErrorMessage.textContent = msg;
-            categoryErrorContainer.classList.remove('hidden');
-        }
+                // Elements
+                const nameEl = document.getElementById('categoryNameInput');
+                const descEl = document.getElementById('categoryDescriptionInput');
+                const imageEl = document.getElementById('categoryImageInput');
+                const nameErrEl = document.getElementById('createNameError');
+                const descErrEl = document.getElementById('createDescError');
+                const imageErrEl = document.getElementById('createImageError');
+
+                const name = nameEl.value;
+                const desc = descEl.value;
+                const image = imageEl.files[0];
+
+                const nameErrText = validateCategoryName(name);
+                const descErrText = validateDescription(desc);
+                const imageErrText = validateImageFile(image);
+
+                let hasError = false;
+                if (nameErrText) {
+                    showFieldError(nameEl, nameErrEl, nameErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(nameEl, nameErrEl);
+                }
+
+                if (descErrText) {
+                    showFieldError(descEl, descErrEl, descErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(descEl, descErrEl);
+                }
+
+                if (imageErrText) {
+                    showFieldError(imageEl, imageErrEl, imageErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(imageEl, imageErrEl);
+                }
+
+                if (hasError) return;
+
+                const submitBtn = categoryForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating…';
+
+                try {
+                    const formData = new FormData(categoryForm);
+                    const res = await fetch('/admin/category-management/create', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        closeCategoryModal();
+                        window.location.reload();
+                    } else {
+                        if (data.errors) {
+                            // Show all errors from backend
+                            if (data.errors.categoryName) {
+                                showFieldError(nameEl, nameErrEl, data.errors.categoryName);
+                            }
+                            if (data.errors.description) {
+                                showFieldError(descEl, descErrEl, data.errors.description);
+                            }
+                            if (data.errors.image) {
+                                showFieldError(imageEl, imageErrEl, data.errors.image);
+                            }
+                            if (data.errors.general) {
+                                categoryErrorMessage.textContent = data.errors.general;
+                                categoryErrorContainer.classList.remove('hidden');
+                            }
+                        } else {
+                            categoryErrorMessage.textContent = data.message || 'Failed to create category';
+                            categoryErrorContainer.classList.remove('hidden');
+                        }
+                    }
+                } catch (err) {
+                    categoryErrorMessage.textContent = 'Network error. Please try again.';
+                    categoryErrorContainer.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Category';
+                }
+            });
 
         <% if (typeof createError !== 'undefined' && createError) { %>
-            openCategoryModal(false);
+                openCategoryModal(false);
         <% } %>
 
         // ── Edit Modal ────────────────────────────────────────────────
-        const editModal             = document.getElementById('editCategoryModal');
-        const editForm              = document.getElementById('editCategoryForm');
-        const editErrorContainer    = document.getElementById('editCategoryErrorContainer');
-        const editErrorMessage      = document.getElementById('editCategoryErrorMessage');
-        const editIdInput           = document.getElementById('editCategoryId');
-        const editNameInput         = document.getElementById('editCategoryNameInput');
-        const editDescriptionInput  = document.getElementById('editCategoryDescriptionInput');
-        const editSubmitBtn         = document.getElementById('editCategorySubmitBtn');
+        const editModal = document.getElementById('editCategoryModal');
+            const editForm = document.getElementById('editCategoryForm');
+            const editErrorContainer = document.getElementById('editCategoryErrorContainer');
+            const editErrorMessage = document.getElementById('editCategoryErrorMessage');
+            const editIdInput = document.getElementById('editCategoryId');
+            const editNameInput = document.getElementById('editCategoryNameInput');
+            const editDescriptionInput = document.getElementById('editCategoryDescriptionInput');
+            const editSubmitBtn = document.getElementById('editCategorySubmitBtn');
 
-        // holds the values as they were when the modal opened
-        let _originals = { name: '', description: '', isHidden: 'false' };
+            // holds the values as they were when the modal opened
+            let _originals = { name: '', description: '', isHidden: 'false' };
 
-        function openEditModal(id, name, description, imageUrl, isHidden) {
-            // pre-fill
-            editIdInput.value           = id;
-            editNameInput.value         = name;
-            editDescriptionInput.value  = description;
+            // Live validation listeners for Edit
+            document.getElementById('editCategoryNameInput').addEventListener('input', function() {
+                const err = validateCategoryName(this.value);
+                if (err) showFieldError(this, document.getElementById('editNameError'), err);
+                else clearFieldError(this, document.getElementById('editNameError'));
+            });
 
-            // Pre-fill visibility dropdown
-            const visibilitySelect = document.getElementById('editCategoryVisibilityInput');
-            visibilitySelect.value = (isHidden === 'true') ? 'true' : 'false';
+            document.getElementById('editCategoryDescriptionInput').addEventListener('input', function() {
+                const err = validateDescription(this.value);
+                if (err) showFieldError(this, document.getElementById('editDescError'), err);
+                else clearFieldError(this, document.getElementById('editDescError'));
+            });
 
-            // Reset image file input
-            const fileInput = document.getElementById('editCategoryImageInput');
-            fileInput.value = '';
+            document.getElementById('editCategoryImageInput').addEventListener('change', function() {
+                const err = validateImageFile(this.files[0]);
+                if (err) showFieldError(this, document.getElementById('editImageError'), err);
+                else clearFieldError(this, document.getElementById('editImageError'));
+            });
 
-            // Handle preview
-            const previewImg = document.getElementById('editImagePreview');
-            const placeholder = document.getElementById('editImagePlaceholder');
-            const deleteImageBtn = document.getElementById('deleteImageOverlayBtn');
-            if (imageUrl && imageUrl.trim() !== '') {
-                previewImg.src = imageUrl;
-                previewImg.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                deleteImageBtn.classList.remove('hidden');
-            } else {
-                previewImg.src = '';
-                previewImg.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                deleteImageBtn.classList.add('hidden');
-            }
+            function openEditModal(id, name, description, imageUrl, isHidden) {
+                // pre-fill
+                editIdInput.value = id;
+                editNameInput.value = name;
+                editDescriptionInput.value = description;
 
-            // snapshot originals for change-detection
-            _originals = { name: name.trim(), description: (description || '').trim(), isHidden: (isHidden === 'true') ? 'true' : 'false' };
+                // Pre-fill visibility dropdown
+                const visibilitySelect = document.getElementById('editCategoryVisibilityInput');
+                visibilitySelect.value = (isHidden === 'true') ? 'true' : 'false';
 
-            // reset error state
-            editErrorContainer.classList.add('hidden');
-            editErrorMessage.textContent = '';
+                // Reset image file input
+                const fileInput = document.getElementById('editCategoryImageInput');
+                fileInput.value = '';
 
-            editModal.classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            editModal.classList.add('hidden');
-        }
-
-        // close on backdrop click
-        editModal.addEventListener('click', (e) => {
-            if (e.target === editModal) closeEditModal();
-        });
-
-        // Add file input change preview listener
-        document.getElementById('editCategoryImageInput').addEventListener('change', function(e) {
-            const previewImg = document.getElementById('editImagePreview');
-            const placeholder = document.getElementById('editImagePlaceholder');
-            const deleteImageBtn = document.getElementById('deleteImageOverlayBtn');
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
+                // Handle preview
+                const previewImg = document.getElementById('editImagePreview');
+                const placeholder = document.getElementById('editImagePlaceholder');
+                const deleteImageBtn = document.getElementById('deleteImageOverlayBtn');
+                if (imageUrl && imageUrl.trim() !== '') {
+                    previewImg.src = imageUrl;
                     previewImg.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    deleteImageBtn.classList.add('hidden'); // Hide delete button for unsaved local preview
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Click handler for delete image overlay button
-        document.getElementById('deleteImageOverlayBtn').addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const confirmed = confirm("Are you sure you want to delete this category image?");
-            if (!confirmed) return;
-
-            const id = editIdInput.value;
-            try {
-                const res = await fetch(`/admin/category-management/delete-image/${id}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    window.location.reload();
+                    deleteImageBtn.classList.remove('hidden');
                 } else {
-                    showEditError(data.message || 'Failed to delete category image');
-                }
-            } catch (err) {
-                showEditError('Network error. Failed to delete image.');
-            }
-        });
-
-        function showEditError(msg) {
-            editErrorMessage.textContent = msg;
-            editErrorContainer.classList.remove('hidden');
-        }
-
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = editNameInput.value.trim();
-
-            // client-side validation (mirrors create)
-            if (name.length < 3) {
-                showEditError('Category Name must be at least 3 characters long');
-                return;
-            }
-            const nameRegex = /^[A-Za-z0-9\s]+$/;
-            if (!nameRegex.test(name)) {
-                showEditError('Category Name must contain only alphanumeric characters and spaces');
-                return;
-            }
-
-            const fileInput = document.getElementById('editCategoryImageInput');
-
-            // ── No-change guard ───────────────────────────────────────
-            const currentDesc       = editDescriptionInput.value.trim();
-            const currentVisibility = document.getElementById('editCategoryVisibilityInput').value;
-            if (
-                name              === _originals.name &&
-                currentDesc       === _originals.description &&
-                currentVisibility === _originals.isHidden &&
-                !fileInput.files[0]
-            ) {
-                showEditError('No changes made. Please modify at least one field before saving.');
-                return;
-            }
-
-            const id = editIdInput.value;
-            editSubmitBtn.disabled   = true;
-            editSubmitBtn.textContent = 'Saving…';
-
-            try {
-                const formData = new FormData();
-                formData.append('categoryName', name);
-                formData.append('description', editDescriptionInput.value.trim());
-                formData.append('isHidden', document.getElementById('editCategoryVisibilityInput').value);
-                if (fileInput.files[0]) {
-                    formData.append('image', fileInput.files[0]);
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    deleteImageBtn.classList.add('hidden');
                 }
 
-                const res = await fetch(`/admin/category-management/edit/${id}`, {
-                    method: 'PATCH',
-                    body: formData
-                });
+                // snapshot originals for change-detection
+                _originals = { name: name.trim(), description: (description || '').trim(), isHidden: (isHidden === 'true') ? 'true' : 'false' };
 
-                const data = await res.json();
+                // reset error state
+                editErrorContainer.classList.add('hidden');
+                editErrorMessage.textContent = '';
 
-                if (res.ok && data.success) {
-                    closeEditModal();
-                    window.location.reload();
-                } else {
-                    showEditError(data.message || 'Failed to update category');
-                }
-            } catch (err) {
-                showEditError('Network error. Please try again.');
-            } finally {
-                editSubmitBtn.disabled   = false;
-                editSubmitBtn.textContent = 'Save Changes';
+                // Clear field-level errors
+                clearFieldError(editNameInput, document.getElementById('editNameError'));
+                clearFieldError(editDescriptionInput, document.getElementById('editDescError'));
+                clearFieldError(fileInput, document.getElementById('editImageError'));
+
+                editModal.classList.remove('hidden');
             }
-        });
 
-        // ── Delete Modal ───────────────────────────────────────────────
-        const deleteModal        = document.getElementById('deleteCategoryModal');
-        const deleteCatName      = document.getElementById('deleteCategoryName');
-        const deleteErrContainer = document.getElementById('deleteCategoryErrorContainer');
-        const deleteErrMessage   = document.getElementById('deleteCategoryErrorMessage');
-        const deleteConfirmBtn   = document.getElementById('deleteCategoryConfirmBtn');
-        let _deleteTargetId      = null;
+            function closeEditModal() {
+                editModal.classList.add('hidden');
+            }
 
-        function openDeleteModal(id, name) {
-            _deleteTargetId = id;
-            deleteCatName.textContent = name;
-            deleteErrContainer.classList.add('hidden');
-            deleteErrMessage.textContent = '';
-            deleteModal.classList.remove('hidden');
-        }
+            // close on backdrop click
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) closeEditModal();
+            });
 
-        function closeDeleteModal() {
-            deleteModal.classList.add('hidden');
-            _deleteTargetId = null;
-        }
+            // Add file input change preview listener
+            document.getElementById('editCategoryImageInput').addEventListener('change', function (e) {
+                const previewImg = document.getElementById('editImagePreview');
+                const placeholder = document.getElementById('editImagePlaceholder');
+                const deleteImageBtn = document.getElementById('deleteImageOverlayBtn');
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        previewImg.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                        deleteImageBtn.classList.add('hidden'); // Hide delete button for unsaved local preview
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
 
-        // close on backdrop click
-        deleteModal.addEventListener('click', (e) => {
-            if (e.target === deleteModal) closeDeleteModal();
-        });
+            // Click handler for delete image overlay button
+            document.getElementById('deleteImageOverlayBtn').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const confirmed = confirm("Are you sure you want to delete this category image?");
+                if (!confirmed) return;
 
-        deleteConfirmBtn.addEventListener('click', async () => {
-            if (!_deleteTargetId) return;
+                const id = editIdInput.value;
+                try {
+                    const res = await fetch(`/admin/category-management/delete-image/${id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        window.location.reload();
+                    } else {
+                        showEditError(data.message || 'Failed to delete category image');
+                    }
+                } catch (err) {
+                    showEditError('Network error. Failed to delete image.');
+                }
+            });
 
-            deleteConfirmBtn.disabled = true;
-            deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Deleting…';
+            function showEditError(msg) {
+                editErrorMessage.textContent = msg;
+                editErrorContainer.classList.remove('hidden');
+            }
 
-            try {
-                const res  = await fetch(`/admin/category-management/delete/${_deleteTargetId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await res.json();
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
 
-                if (res.ok && data.success) {
-                    closeDeleteModal();
-                    window.location.reload();
+                // Clear general error
+                editErrorContainer.classList.add('hidden');
+                editErrorMessage.textContent = '';
+
+                // Elements
+                const nameEl = document.getElementById('editCategoryNameInput');
+                const descEl = document.getElementById('editCategoryDescriptionInput');
+                const imageEl = document.getElementById('editCategoryImageInput');
+                const nameErrEl = document.getElementById('editNameError');
+                const descErrEl = document.getElementById('editDescError');
+                const imageErrEl = document.getElementById('editImageError');
+
+                const name = nameEl.value;
+                const desc = descEl.value;
+                const image = imageEl.files[0];
+
+                const nameErrText = validateCategoryName(name);
+                const descErrText = validateDescription(desc);
+                const imageErrText = validateImageFile(image);
+
+                let hasError = false;
+                if (nameErrText) {
+                    showFieldError(nameEl, nameErrEl, nameErrText);
+                    hasError = true;
                 } else {
-                    deleteErrMessage.textContent = data.message || 'Failed to delete category.';
+                    clearFieldError(nameEl, nameErrEl);
+                }
+
+                if (descErrText) {
+                    showFieldError(descEl, descErrEl, descErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(descEl, descErrEl);
+                }
+
+                if (imageErrText) {
+                    showFieldError(imageEl, imageErrEl, imageErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(imageEl, imageErrEl);
+                }
+
+                if (hasError) return;
+
+                // ── No-change guard ───────────────────────────────────────
+                const currentDesc = desc.trim();
+                const currentVisibility = document.getElementById('editCategoryVisibilityInput').value;
+                if (
+                    name.trim() === _originals.name &&
+                    currentDesc === _originals.description &&
+                    currentVisibility === _originals.isHidden &&
+                    !imageEl.files[0]
+                ) {
+                    showEditError('No changes made. Please modify at least one field before saving.');
+                    return;
+                }
+
+                const id = editIdInput.value;
+                editSubmitBtn.disabled = true;
+                editSubmitBtn.textContent = 'Saving…';
+
+                try {
+                    const formData = new FormData();
+                    formData.append('categoryName', name.trim());
+                    formData.append('description', currentDesc);
+                    formData.append('isHidden', currentVisibility);
+                    if (imageEl.files[0]) {
+                        formData.append('image', imageEl.files[0]);
+                    }
+
+                    const res = await fetch(`/admin/category-management/edit/${id}`, {
+                        method: 'PATCH',
+                        body: formData
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        closeEditModal();
+                        window.location.reload();
+                    } else {
+                        if (data.errors) {
+                            // Show all errors from backend
+                            if (data.errors.categoryName) {
+                                showFieldError(nameEl, nameErrEl, data.errors.categoryName);
+                            }
+                            if (data.errors.description) {
+                                showFieldError(descEl, descErrEl, data.errors.description);
+                            }
+                            if (data.errors.image) {
+                                showFieldError(imageEl, imageErrEl, data.errors.image);
+                            }
+                            if (data.errors.general) {
+                                editErrorMessage.textContent = data.errors.general;
+                                editErrorContainer.classList.remove('hidden');
+                            }
+                        } else {
+                            showEditError(data.message || 'Failed to update category');
+                        }
+                    }
+                } catch (err) {
+                    showEditError('Network error. Please try again.');
+                } finally {
+                    editSubmitBtn.disabled = false;
+                    editSubmitBtn.textContent = 'Save Changes';
+                }
+            });
+
+            // ── Delete Modal ───────────────────────────────────────────────
+            const deleteModal = document.getElementById('deleteCategoryModal');
+            const deleteCatName = document.getElementById('deleteCategoryName');
+            const deleteErrContainer = document.getElementById('deleteCategoryErrorContainer');
+            const deleteErrMessage = document.getElementById('deleteCategoryErrorMessage');
+            const deleteConfirmBtn = document.getElementById('deleteCategoryConfirmBtn');
+            let _deleteTargetId = null;
+
+            function openDeleteModal(id, name) {
+                _deleteTargetId = id;
+                deleteCatName.textContent = name;
+                deleteErrContainer.classList.add('hidden');
+                deleteErrMessage.textContent = '';
+                deleteModal.classList.remove('hidden');
+            }
+
+            function closeDeleteModal() {
+                deleteModal.classList.add('hidden');
+                _deleteTargetId = null;
+            }
+
+            // close on backdrop click
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) closeDeleteModal();
+            });
+
+            deleteConfirmBtn.addEventListener('click', async () => {
+                if (!_deleteTargetId) return;
+
+                deleteConfirmBtn.disabled = true;
+                deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Deleting…';
+
+                try {
+                    const res = await fetch(`/admin/category-management/delete/${_deleteTargetId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        closeDeleteModal();
+                        window.location.reload();
+                    } else {
+                        deleteErrMessage.textContent = data.message || 'Failed to delete category.';
+                        deleteErrContainer.classList.remove('hidden');
+                    }
+                } catch (err) {
+                    deleteErrMessage.textContent = 'Network error. Please try again.';
                     deleteErrContainer.classList.remove('hidden');
+                } finally {
+                    deleteConfirmBtn.disabled = false;
+                    deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm">delete_forever</span> Delete';
                 }
-            } catch (err) {
-                deleteErrMessage.textContent = 'Network error. Please try again.';
-                deleteErrContainer.classList.remove('hidden');
-            } finally {
-                deleteConfirmBtn.disabled = false;
-                deleteConfirmBtn.innerHTML = '<span class="material-symbols-outlined text-sm">delete_forever</span> Delete';
-            }
-        });
-
-    let debounceTimer;
-    let currentSort = '<%= locals.sort || "latest" %>';
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn    = document.getElementById('clearSearch');
-    const sortBtn     = document.getElementById('sortBtn');
-    const sortDropdown = document.getElementById('sortDropdown');
-
-    // ── Sort dropdown toggle
-    sortBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sortDropdown.classList.toggle('hidden');
-    });
-    document.addEventListener('click', () => sortDropdown.classList.add('hidden'));
-
-    // ── Sort option click
-    sortDropdown.querySelectorAll('.sort-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentSort = btn.dataset.sort;
-            // highlight active
-            sortDropdown.querySelectorAll('.sort-option').forEach(b => {
-                b.classList.remove('bg-secondary/10','text-secondary','font-bold');
-                b.classList.add('text-on-surface-variant','hover:bg-surface-container');
             });
-            btn.classList.add('bg-secondary/10','text-secondary','font-bold');
-            btn.classList.remove('text-on-surface-variant','hover:bg-surface-container');
-            sortDropdown.classList.add('hidden');
-            fetchTable(searchInput.value.trim(), currentSort);
-        });
-    });
 
-    // ── Search input
-    searchInput.addEventListener('input', function () {
-        clearTimeout(debounceTimer);
-        clearBtn.classList.toggle('hidden', !this.value);
-        clearBtn.classList.toggle('flex', !!this.value);
-        debounceTimer = setTimeout(() => fetchTable(this.value.trim(), currentSort), 300);
-    });
+            let debounceTimer;
+            let currentSort = '<%= locals.sort || "latest" %>';
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearch');
+            const sortBtn = document.getElementById('sortBtn');
+            const sortDropdown = document.getElementById('sortDropdown');
 
-    clearBtn.addEventListener('click', function () {
-        searchInput.value = '';
-        clearBtn.classList.add('hidden');
-        clearBtn.classList.remove('flex');
-        fetchTable('', currentSort);
-    });
-
-
-
-    async function fetchTable(query, sort = 'latest') {
-        try {
-            const res = await fetch(`/admin/category-management?search=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}`, {
-                headers: { 'x-requested-with': 'XMLHttpRequest' }
+            // ── Sort dropdown toggle
+            sortBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortDropdown.classList.toggle('hidden');
             });
-            const data = await res.json();
-            const tbody = document.getElementById('categoryTableBody');
+            document.addEventListener('click', () => sortDropdown.classList.add('hidden'));
 
-            if (!data.categories.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-12 text-center text-sm text-on-surface-variant">No categories found</td></tr>`;
-                return;
-            }
+            // ── Sort option click
+            sortDropdown.querySelectorAll('.sort-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentSort = btn.dataset.sort;
+                    // highlight active
+                    sortDropdown.querySelectorAll('.sort-option').forEach(b => {
+                        b.classList.remove('bg-secondary/10', 'text-secondary', 'font-bold');
+                        b.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                    });
+                    btn.classList.add('bg-secondary/10', 'text-secondary', 'font-bold');
+                    btn.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+                    sortDropdown.classList.add('hidden');
+                    fetchTable(searchInput.value.trim(), currentSort);
+                });
+            });
 
-            tbody.innerHTML = data.categories.map(c => {
-                const isInactive = c.status === false;
-                const statusBadge = isInactive
-                    ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
+            // ── Search input
+            searchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                clearBtn.classList.toggle('hidden', !this.value);
+                clearBtn.classList.toggle('flex', !!this.value);
+                debounceTimer = setTimeout(() => fetchTable(this.value.trim(), currentSort), 300);
+            });
+
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                clearBtn.classList.add('hidden');
+                clearBtn.classList.remove('flex');
+                fetchTable('', currentSort);
+            });
+
+
+
+            async function fetchTable(query, sort = 'latest') {
+                try {
+                    const res = await fetch(`/admin/category-management?search=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}`, {
+                        headers: { 'x-requested-with': 'XMLHttpRequest' }
+                    });
+                    const data = await res.json();
+                    const tbody = document.getElementById('categoryTableBody');
+
+                    if (!data.categories.length) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-12 text-center text-sm text-on-surface-variant">No categories found</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = data.categories.map(c => {
+                        const isInactive = c.status === false;
+                        const statusBadge = isInactive
+                            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-error-container/20 text-error">
                            <span class="material-symbols-outlined text-[11px]">block</span>Inactive
                        </span>`
-                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>`;
+                            : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Active</span>`;
 
-                const safeId    = c._id;
-                const safeName  = (c.categoryName || '').replace(/'/g, "\\'");
-                const safeDesc  = (c.description  || '').replace(/'/g, "\\'");
-                const safeImage = c.image || '';
-                const safeHidden = c.isHidden ? 'true' : 'false';
+                        const safeId = c._id;
+                        const safeName = (c.categoryName || '').replace(/'/g, "\\'");
+                        const safeDesc = (c.description || '').replace(/'/g, "\\'");
+                        const safeImage = c.image || '';
+                        const safeHidden = c.isHidden ? 'true' : 'false';
 
-                const actionBtns = isInactive
-                    ? `<button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Cannot edit an inactive category">
+                        const actionBtns = isInactive
+                            ? `<button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Cannot edit an inactive category">
                            <span class="material-symbols-outlined text-lg">edit</span>
                        </button>
                        <button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Category is already inactive">
                            <span class="material-symbols-outlined text-lg">delete</span>
                        </button>`
-                    : `<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all" title="Edit"
+                            : `<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all" title="Edit"
                            onclick="openEditModal('${safeId}','${safeName}','${safeDesc}','${safeImage}','${safeHidden}')">
                            <span class="material-symbols-outlined text-lg">edit</span>
                        </button>
@@ -996,18 +1281,18 @@
                            <span class="material-symbols-outlined text-lg">delete</span>
                        </button>`;
 
-                const imageHtml = c.image
-                    ? `<img src="${c.image}" alt="${c.categoryName}" class="w-full h-full object-cover" />`
-                    : `<span class="material-symbols-outlined text-secondary">category</span>`;
+                        const imageHtml = c.image
+                            ? `<img src="${c.image}" alt="${c.categoryName}" class="w-full h-full object-cover" />`
+                            : `<span class="material-symbols-outlined text-secondary">category</span>`;
 
-                const visibilityCell = isInactive
-                    ? `<span class="text-xs text-on-surface-variant/50">&#8212;</span>`
-                    : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${c.isHidden ? 'bg-outline/15 text-outline' : 'bg-secondary-container/60 text-on-secondary-container'}">
+                        const visibilityCell = isInactive
+                            ? `<span class="text-xs text-on-surface-variant/50">&#8212;</span>`
+                            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${c.isHidden ? 'bg-outline/15 text-outline' : 'bg-secondary-container/60 text-on-secondary-container'}">
                            <span class="material-symbols-outlined text-[11px]">${c.isHidden ? 'visibility_off' : 'visibility'}</span>
                            ${c.isHidden ? 'Hidden' : 'Visible'}
                        </span>`;
 
-                return `
+                        return `
                 <tr class="hover:bg-surface-container-low/30 transition-colors group ${isInactive ? 'opacity-60' : ''}">
                     <td class="px-8 py-5">
                         <div class="flex items-center gap-4">
@@ -1022,8 +1307,8 @@
                     </td>
                     <td class="px-8 py-5">
                         ${c.slug
-                            ? `<code class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">${c.slug}</code>`
-                            : `<span class="text-xs text-on-surface-variant">-</span>`}
+                                ? `<code class="text-xs bg-surface-container px-2 py-1 rounded text-secondary font-medium">${c.slug}</code>`
+                                : `<span class="text-xs text-on-surface-variant">-</span>`}
                     </td>
                     <td class="px-8 py-5 font-headline font-semibold text-on-surface">
                         ${c.totalProducts != null ? c.totalProducts : '-'}
@@ -1034,12 +1319,12 @@
                         <div class="flex items-center justify-end gap-1">${actionBtns}</div>
                     </td>
                 </tr>`;
-            }).join('');
-        } catch (err) {
-            console.error('Fetch error:', err);
-        }
-    }
-    </script>
+                    }).join('');
+                } catch (err) {
+                    console.error('Fetch error:', err);
+                }
+            }
+        </script>
 </body>
 
 </html>

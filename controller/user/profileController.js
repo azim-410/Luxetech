@@ -6,18 +6,23 @@ import {
   verifyOldPasswordService,
   changePasswordService,
   deleteProfileImageServices,
-  getProfileOtpTimerData
+  getProfileOtpTimerData,
+  getProfileDashboardData,
+  verifyCurrentOtpService,
+  resendCurrentOtpService,
+  getProfileCurrentOtpTimerData
 } from '../../services/user/profileService.js';
 
 const getProfile = async (req, res) => {
   try {
-
-    const user = await getUserById(req.session.user.id);
-    // console.log("user from profile",user);
+    const userId = req.session.user.id;
+    const user = await getUserById(userId);
 
     if (!user) return res.redirect('/login');
 
-    return res.render('User/profile', { user });
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+
+    return res.render('User/profile', { user, recentOrders, savedAddresses });
 
   } catch (error) {
     console.error('Profile error:', error);
@@ -44,22 +49,27 @@ const updateProfile = async (req, res) => {
     console.log('[updateProfile] result:', result);
 
     if (result.requiresOtp) {
-      console.log('[updateProfile] requiresOtp=true → redirecting to /verify-emailChange-otp');
-      return res.redirect('/verify-emailChange-otp');
+      console.log('[updateProfile] requiresOtp=true → redirecting to /verify-current-email-otp');
+      return res.redirect('/verify-current-email-otp');
     }
 
     const user = await getUserById(userId);
     console.log('[updateProfile] done, rendering profile with success');
 
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+
     return res.status(200).render('User/profile', {
       user,
-      successMessage: result.message
+      successMessage: result.message,
+      recentOrders,
+      savedAddresses
     });
   } catch (error) {
     console.error('[updateProfile] ERROR:', error.message, error.stack);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
-    return res.status(400).render('User/profile', { user, errorMessage: error.message });
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+    return res.status(400).render('User/profile', { user, errorMessage: error.message, recentOrders, savedAddresses });
   }
 };
 
@@ -69,15 +79,86 @@ const deleteProfileImage = async (req, res) => {
    
     const result = await deleteProfileImageServices(userId);
     const user = await getUserById(userId);
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
     return res.status(200).render('User/profile', {
        user,
-       successMessage: result.message
+       successMessage: result.message,
+       recentOrders,
+       savedAddresses
      });
   } catch (error) {
     console.error('Delete image error:', error.message);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
-    return res.status(400).render('User/profile', { user, errorMessage: error.message });
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+    return res.status(400).render('User/profile', { user, errorMessage: error.message, recentOrders, savedAddresses });
+  }
+};
+
+const showCurrentOtpPage = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileCurrentOtpTimerData(userId);
+    return res.render('User/auth/otp-verification', {
+      actionUrl:             '/verify-current-email-otp',
+      resendUrl:             '/verify-current-email-otp/resend',
+      errorMessage:          null,
+      successMessage:        null,
+      remainingSeconds,
+      resendCooldownSeconds
+    });
+  } catch (error) {
+    console.error('[showCurrentOtpPage] ERROR:', error.message);
+    return res.status(500).send('Server error');
+  }
+};
+
+const verifyCurrentOtp = async (req, res) => {
+  try {
+    const otp = Object.values(req.body).join('');
+    const userId = req.session.user.id;
+    await verifyCurrentOtpService(userId, otp);
+    return res.redirect('/verify-emailChange-otp');
+  } catch (error) {
+    console.error('[verifyCurrentOtp] ERROR:', error.message);
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileCurrentOtpTimerData(userId);
+    return res.status(400).render('User/auth/otp-verification', {
+      actionUrl:             '/verify-current-email-otp',
+      resendUrl:             '/verify-current-email-otp/resend',
+      errorMessage:          error.message,
+      successMessage:        null,
+      remainingSeconds,
+      resendCooldownSeconds
+    });
+  }
+};
+
+const resendCurrentOtp = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const result = await resendCurrentOtpService(userId);
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileCurrentOtpTimerData(userId);
+    return res.render('User/auth/otp-verification', {
+      actionUrl:             '/verify-current-email-otp',
+      resendUrl:             '/verify-current-email-otp/resend',
+      errorMessage:          null,
+      successMessage:        result.message,
+      remainingSeconds,
+      resendCooldownSeconds
+    });
+  } catch (error) {
+    console.error('[resendCurrentOtp] ERROR:', error.message);
+    const userId = req.session.user.id;
+    const { remainingSeconds, resendCooldownSeconds } = await getProfileCurrentOtpTimerData(userId);
+    return res.render('User/auth/otp-verification', {
+      actionUrl:             '/verify-current-email-otp',
+      resendUrl:             '/verify-current-email-otp/resend',
+      errorMessage:          error.message,
+      successMessage:        null,
+      remainingSeconds,
+      resendCooldownSeconds
+    });
   }
 };
 
@@ -88,6 +169,8 @@ const showOtpPage = async (req, res) => {
     return res.render('User/auth/otp-verification', {
       actionUrl:             '/verify-emailChange-otp',
       resendUrl:             '/verify-emailChange-otp/resend',
+      errorMessage:          null,
+      successMessage:        null,
       remainingSeconds,
       resendCooldownSeconds
     });
@@ -107,10 +190,13 @@ const verifyOtp = async (req, res) => {
     const result = await verifyOtpService(userId, otp);
     console.log('[verifyOtp] result:', result);
     const user = await getUserById(userId);
+    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
 
     return res.status(200).render('User/profile', {
       user,
-      successMessage: result.message
+      successMessage: result.message,
+      recentOrders,
+      savedAddresses
     });
   } catch (error) {
     console.error('[verifyOtp] ERROR:', error.message);
@@ -120,27 +206,27 @@ const verifyOtp = async (req, res) => {
       actionUrl:             '/verify-emailChange-otp',
       resendUrl:             '/verify-emailChange-otp/resend',
       errorMessage:          error.message,
+      successMessage:        null,
       remainingSeconds,
       resendCooldownSeconds
     });
   }
-}
+};
 
 const resendOtp = async (req, res) => {
   try {
     const userId = req.session.user.id;
-
     const result = await resendOtpService(userId);
     const { remainingSeconds, resendCooldownSeconds } = await getProfileOtpTimerData(userId);
 
     return res.render('User/auth/otp-verification', {
       actionUrl:             '/verify-emailChange-otp',
       resendUrl:             '/verify-emailChange-otp/resend',
+      errorMessage:          null,
       successMessage:        result.message,
       remainingSeconds,
       resendCooldownSeconds
     });
-
   } catch (error) {
     console.error('Resend OTP error:', error.message);
     const userId = req.session.user.id;
@@ -149,6 +235,7 @@ const resendOtp = async (req, res) => {
       actionUrl:             '/verify-emailChange-otp',
       resendUrl:             '/verify-emailChange-otp/resend',
       errorMessage:          error.message,
+      successMessage:        null,
       remainingSeconds,
       resendCooldownSeconds
     });
@@ -252,6 +339,8 @@ export {
   showNewPasswordPage,
   changePassword,
   deleteProfileImage,
-  
+  showCurrentOtpPage,
+  verifyCurrentOtp,
+  resendCurrentOtp,
   getAddresses
 }

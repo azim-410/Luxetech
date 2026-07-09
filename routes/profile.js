@@ -12,6 +12,9 @@ import {
     showNewPasswordPage,
     changePassword,
     deleteProfileImage,
+    showCurrentOtpPage,
+    verifyCurrentOtp,
+    resendCurrentOtp,
  } from '../controller/user/profileController.js';  
 
  import {
@@ -27,10 +30,14 @@ const router = express.Router();
 router.get('/profile', isAuthenticated, checkIfBlocked, getProfile);
 
 router.post('/profile/update', isAuthenticated, checkIfBlocked, upload.single('avatar'), updateProfile);
+
+router.get('/verify-current-email-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser, showCurrentOtpPage);
+router.post('/verify-current-email-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser, verifyCurrentOtp);
+router.get('/verify-current-email-otp/resend', isAuthenticated, checkIfBlocked, blockIfGoogleUser, resendCurrentOtp);
+
 router.get('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  showOtpPage);
 router.post('/verify-emailChange-otp', isAuthenticated, checkIfBlocked, blockIfGoogleUser,  verifyOtp);
-
-router.post('/verify-emailChange-otp/resend', isAuthenticated, checkIfBlocked, blockIfGoogleUser, resendOtp); 
+router.get('/verify-emailChange-otp/resend', isAuthenticated, checkIfBlocked, blockIfGoogleUser, resendOtp); 
 
 router.get('/change-password', isAuthenticated, checkIfBlocked,blockIfGoogleUser, showChangePasswordPage);
 router.post('/change-password/verify-old', isAuthenticated, checkIfBlocked, blockIfGoogleUser, verifyOldPassword);

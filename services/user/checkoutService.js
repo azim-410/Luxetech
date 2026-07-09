@@ -1,6 +1,7 @@
 import addressModal from '../../model/address.js';
 import productModel from '../../model/product.js';
 import variantModel from '../../model/variant.js';
+import categoryModel from '../../model/category.js';
 import cartModal from '../../model/cart.js';
 import Order from '../../model/order.js';
 import { getCartService } from './cartService.js';
@@ -78,7 +79,35 @@ const getCheckoutCartDataService = async (userId, query) => {
             totalItems: quantity
         };
     } else {
-        return await getCartService(userId);
+        const cart = await getCartService(userId);
+
+        // Validate each cart item before allowing checkout
+        for (const item of cart.items) {
+            // Check product availability (blocked / hidden / deleted)
+            if (item.isUnavailable) {
+                const err = new Error(`"${item.name}" is currently unavailable. Please remove it from your cart before proceeding.`);
+                err.statusCode = 400;
+                err.type = 'CART_BLOCKED';
+                throw err;
+            }
+
+            // Check stock
+            if (item.stock <= 0) {
+                const err = new Error(`"${item.name}" is out of stock. Please remove it from your cart before proceeding.`);
+                err.statusCode = 400;
+                err.type = 'CART_OUT_OF_STOCK';
+                throw err;
+            }
+
+            if (item.quantity > item.stock) {
+                const err = new Error(`Not enough stock for "${item.name}". Only ${item.stock} unit(s) available but ${item.quantity} in cart.`);
+                err.statusCode = 400;
+                err.type = 'CART_INSUFFICIENT_STOCK';
+                throw err;
+            }
+        }
+
+        return cart;
     }
 };
 
@@ -106,6 +135,33 @@ const placeOrderService = async (userId, query, body) => {
     const cart = await getCheckoutCartDataService(userId, query);
     if (!cart || cart.items.length === 0) {
         throw new Error('Your cart is empty');
+    }
+
+    // Validate product availability and stock for all items before placing the order
+    for (const item of cart.items) {
+        // Re-fetch the latest product state from DB
+        const product = await productModel.findById(item.productId).populate('category');
+        if (!product || product.isDeleted) {
+            throw new Error(`"${item.name}" is no longer available.`);
+        }
+        if (product.isHidden || product.status === false) {
+            throw new Error(`"${item.name}" has been temporarily disabled and cannot be ordered right now.`);
+        }
+
+        // Also check if the product's category is blocked
+        if (product.category && (product.category.isHidden === true || product.category.status === false)) {
+            throw new Error(`"${item.name}" belongs to a category that is currently unavailable.`);
+        }
+
+        if (item.variantId) {
+            const variant = await variantModel.findById(item.variantId);
+            if (!variant) {
+                throw new Error(`Product variant for "${item.name}" not found.`);
+            }
+            if (variant.stock < item.quantity) {
+                throw new Error(`Insufficient stock for "${item.name}" (${item.variantName || 'Default'}). Only ${variant.stock} left.`);
+            }
+        }
     }
 
     const shippingCost = shippingMethod === 'express' ? 150 : 0;
@@ -153,13 +209,13 @@ const placeOrderService = async (userId, query, body) => {
     });
 
     // Reduce variant stock
-    for (const item of cart.items) {
-        if (item.variantId) {
-            await variantModel.findByIdAndUpdate(item.variantId, {
-                $inc: { stock: -item.quantity }
-            });
+        for (const item of cart.items) {
+            if (item.variantId) {
+                await variantModel.findByIdAndUpdate(item.variantId, {
+                    $inc: { stock: -item.quantity }
+                });
+            }
         }
-    }
 
     // Clear cart if this was checking out the full cart
     if (!query.productId) {

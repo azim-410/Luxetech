@@ -4,6 +4,7 @@ import {
     getOrderConfirmationService
 } from '../../services/user/checkoutService.js';
 import { editAddressService, addAddressService } from '../../services/user/addressService.js';
+import { getCartService } from '../../services/user/cartService.js';
 
 const getCheckout = async (req, res) => {
     try {
@@ -16,6 +17,15 @@ const getCheckout = async (req, res) => {
         try {
             checkoutData = await getCheckoutPageDataService(userId, req.query);
         } catch (err) {
+            // Cart validation errors (blocked/out-of-stock) — re-render cart with inline error
+            if (err.statusCode === 400 && err.type) {
+                const cartData = await getCartService(userId);
+                return res.render('User/cart', {
+                    cart: cartData,
+                    user: req.session.user || req.user || null,
+                    cartError: err.message
+                });
+            }
             return res.redirect('/shop');
         }
 
@@ -145,6 +155,20 @@ const placeOrder = async (req, res) => {
         return res.redirect(`/order/success?orderId=${order.orderId}`);
     } catch (error) {
         console.error("placeOrder Error:", error);
+        // Product availability or stock errors — re-render cart with inline error
+        if (error.message) {
+            try {
+                const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
+                const cartData = await getCartService(userId);
+                return res.render('User/cart', {
+                    cart: cartData,
+                    user: req.session.user || req.user || null,
+                    cartError: error.message
+                });
+            } catch (renderErr) {
+                console.error('placeOrder render fallback error:', renderErr);
+            }
+        }
         res.status(500).send("Internal Server Error: " + error.message);
     }
 };

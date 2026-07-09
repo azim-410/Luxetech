@@ -112,13 +112,12 @@
     <div class="min-h-screen bg-[#F1F5F9]">
         <!-- BEGIN: Main Content Area -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-            <% if (locals.errorMessage) { %>
-                <div class="max-w-7xl mx-auto px-6 mb-4">
-                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-luxe text-sm font-medium">
-                        <%= errorMessage %>
-                    </div>
+            <!-- Error Banner Container (for both server-side and client-side validations) -->
+            <div id="errorBannerContainer" class="max-w-7xl mx-auto px-6 mb-4 <%= locals.errorMessage ? '' : 'hidden' %>">
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-luxe text-sm font-medium" id="errorBannerText">
+                    <%= locals.errorMessage || '' %>
                 </div>
-            <% } %>
+            </div>
             <form id="editProductForm" action="/admin/product-management/edit/<%= locals.product ? locals.product._id : '' %>" method="POST" enctype="multipart/form-data">
                 <!-- Hidden inputs for custom arrays -->
                 <input type="hidden" name="variantData" id="variantData" />
@@ -139,11 +138,13 @@
                                         Name</label>
                                     <input class="w-full px-3 py-2" placeholder='e.g. UltraWide Curved Gaming Monitor 34"'
                                         type="text" name="productName" value="<%= locals.product ? locals.product.name : '' %>" />
+                                    <p id="error-productName" class="text-xs text-red-600 mt-1 hidden"></p>
                                 </div>
                                 <div>
                                     <label
                                         class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">categories</label>
                                     <select class="w-full px-3 py-2" name="category">
+                                        <option value="">Select a Category</option>
                                         <% if(locals.categories) { %>
                                             <% categories.forEach(category=>{ %>
                                                 <% if(category.status){ %>
@@ -156,6 +157,7 @@
                                             <option>fetching data not working or something went wrong</option>
                                         <% }%>
                                     </select>
+                                    <p id="error-category" class="text-xs text-red-600 mt-1 hidden"></p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-1.5 tracking-tight">Technical Summary</label>
@@ -198,6 +200,7 @@
                                         class="block text-[10px] font-bold text-luxe-muted uppercase mb-1 tracking-tight">Description</label>
                                     <textarea class="w-full px-3 py-2"
                                         placeholder="Highlight the key features and luxury specs..." rows="4" name="description"><%= locals.product ? locals.product.description : '' %></textarea>
+                                    <p id="error-description" class="text-xs text-red-600 mt-1 hidden"></p>
                                 </div>
                                 <div class="pt-4 border-t border-luxe-border">
                                     <div class="flex justify-between items-center mb-4">
@@ -205,11 +208,11 @@
                                 </div>
                             </div>
                         </section>
-
+ 
                         <!-- Section: Variants & Stock -->
                         <section class="bg-white p-8 rounded-luxe border border-luxe-border shadow-sm"
                             data-purpose="variants-stock">
-
+ 
                             <!-- Header row -->
                             <div class="flex justify-between items-center mb-8">
                                 <h3 class="text-[22px] font-bold tracking-tight text-luxe-obsidian"
@@ -223,9 +226,10 @@
                                 </button>
                             </div>
                             <div id="variantsContainer" class="space-y-9"></div>
+                            <p id="error-variants" class="text-xs text-red-600 mt-4 hidden"></p>
                         </section>
                     </div>
-
+ 
                     <!-- Right Column: Pricing & Organization -->
                     <aside class="col-span-1 md:col-span-1 lg:col-span-4 space-y-6">
                         <!-- Section: Pricing -->
@@ -241,6 +245,7 @@
                                             class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
                                         <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="basePrice" value="<%= locals.product ? locals.product.basePrice : '' %>" />
                                     </div>
+                                    <p id="error-basePrice" class="text-xs text-red-600 mt-1 hidden"></p>
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Discounted
@@ -250,6 +255,7 @@
                                             class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-luxe-muted">₹</span>
                                         <input class="w-full pl-7 py-2 font-medium" type="text" placeholder="0.00" name="discountedPrice" value="<%= locals.product ? locals.product.discountedPrice : '' %>" />
                                     </div>
+                                    <p id="error-discountedPrice" class="text-xs text-red-600 mt-1 hidden"></p>
                                 </div>
                             </div>
                         </section>
@@ -496,6 +502,8 @@
                                         style="min-width:0;" />
                                     <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Units</span>
                                 </div>
+                                <p id="error-variant_${groupName}_${option}_units" class="text-xs text-red-600 -mt-1 mb-2 hidden"></p>
+
                                 <div class="flex items-center gap-0 mb-2.5">
                                     <input type="number" value="${varPrice}"
                                         name="variant_${groupName}_${option}_price"
@@ -503,6 +511,8 @@
                                         style="min-width:0;" />
                                     <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">Price</span>
                                 </div>
+                                <p id="error-variant_${groupName}_${option}_price" class="text-xs text-red-600 -mt-1 mb-2 hidden"></p>
+
                                 <div class="flex items-center gap-0 mb-3">
                                     <input type="text" placeholder="SKU Code" value="${varSku}"
                                         name="variant_${groupName}_${option}_sku"
@@ -510,6 +520,8 @@
                                         style="min-width:0;" />
                                     <span class="w-14 text-right text-[13px] text-[#94A3B8] font-medium pl-2.5" style="font-family:'Manrope',sans-serif;">SKU</span>
                                 </div>
+                                <p id="error-variant_${groupName}_${option}_sku" class="text-xs text-red-600 -mt-2 mb-2 hidden"></p>
+
                                 <div class="mt-3 pt-3 border-t border-[#DDE3EC]">
                                     <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-2 tracking-wider" style="font-family:'Manrope',sans-serif;">Variant Images (Max 3)</label>
                                     <div class="flex flex-wrap gap-2 items-center">
@@ -526,6 +538,7 @@
                                                onchange="handleVariantFiles(this, '${escapedGroupName}', '${escapedOption}')" />
                                         <div id="preview_${idSuffix}" class="flex flex-wrap gap-2"></div>
                                     </div>
+                                    <p id="error-variant_${groupName}_${option}_images" class="text-xs text-red-600 mt-2 hidden"></p>
                                 </div>
                             </div>
                         `;
@@ -816,36 +829,168 @@
             }
         };
 
+        // Helpers for Field-Level Validation
+        function clearFieldError(inputEl, errorEl) {
+            if (inputEl) {
+                inputEl.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            }
+            if (errorEl) {
+                errorEl.textContent = '';
+                errorEl.classList.add('hidden');
+            }
+        }
+
+        function showFieldError(inputEl, errorEl, msg) {
+            if (inputEl) {
+                inputEl.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            }
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        function validateProductName(name) {
+            if (!name || name.trim() === '') return 'Product Name is required.';
+            if (name.length < 3) return 'Product Name must be at least 3 characters.';
+            if (name.length > 100) return 'Product Name cannot exceed 100 characters.';
+            const nameRegex = /^[a-zA-Z0-9\s.,&'"+()\[\]#-]+$/;
+            if (!nameRegex.test(name)) return 'Product Name contains invalid characters.';
+            return null;
+        }
+
         // Form Submit Handler to package variant data array
         document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            // Clear all previous errors
+            document.querySelectorAll('[id^="error-"]').forEach(el => {
+                el.textContent = '';
+                el.classList.add('hidden');
+            });
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                el.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            });
+            const banner = document.getElementById('errorBannerContainer');
+            const bannerText = document.getElementById('errorBannerText');
+            banner.classList.add('hidden');
+            bannerText.textContent = '';
+
+            let clientErrors = {};
+
+            // Client-side validations
+            const prodName = document.querySelector('[name="productName"]').value;
+            const prodNameErr = validateProductName(prodName);
+            if (prodNameErr) clientErrors.productName = prodNameErr;
+            
             const cards = document.querySelectorAll('.variant-card');
             const variantData = [];
             
+            if (cards.length === 0) {
+                clientErrors.variants = 'Please add at least one variant.';
+            } else {
+                const seenSku = new Set();
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-variant-id') || null;
+                    const groupName = card.getAttribute('data-group-name');
+                    const option = card.getAttribute('data-option');
+                    const prefix = `variant_${groupName}_${option}`;
+                    
+                    const unitsInput = card.querySelector(`[name="${prefix}_units"]`);
+                    const unitsVal = unitsInput ? unitsInput.value.trim() : '';
+                    if (unitsVal === '') {
+                        clientErrors[`${prefix}_units`] = 'Units is required.';
+                    } else {
+                        const uNum = Number(unitsVal);
+                        if (isNaN(uNum) || !Number.isInteger(uNum) || uNum < 0) {
+                            clientErrors[`${prefix}_units`] = 'Units must be a non-negative integer.';
+                        }
+                    }
+
+                    const priceInput = card.querySelector(`[name="${prefix}_price"]`);
+                    const priceVal = priceInput ? priceInput.value.trim() : '';
+                    if (priceVal === '') {
+                        clientErrors[`${prefix}_price`] = 'Price is required.';
+                    } else {
+                        const pNum = Number(priceVal);
+                        if (isNaN(pNum) || pNum < 0) {
+                            clientErrors[`${prefix}_price`] = 'Price must be a non-negative number.';
+                        }
+                    }
+
+                    const skuInput = card.querySelector(`[name="${prefix}_sku"]`);
+                    const skuVal = skuInput ? skuInput.value.trim() : '';
+                    if (!skuVal || skuVal.trim() === '') {
+                        clientErrors[`${prefix}_sku`] = 'SKU is required.';
+                    } else {
+                        const skuTrimmed = skuVal.trim();
+                        if (skuTrimmed.length < 3) {
+                            clientErrors[`${prefix}_sku`] = 'SKU must be at least 3 characters.';
+                        } else if (skuTrimmed.length > 30) {
+                            clientErrors[`${prefix}_sku`] = 'SKU cannot exceed 30 characters.';
+                        } else if (!/^[A-Za-z0-9\-\_]+$/.test(skuTrimmed)) {
+                            clientErrors[`${prefix}_sku`] = 'SKU must be alphanumeric (hyphens and underscores allowed).';
+                        } else if (seenSku.has(skuTrimmed.toLowerCase())) {
+                            clientErrors[`${prefix}_sku`] = 'Duplicate SKU Code found within variants.';
+                        } else {
+                            seenSku.add(skuTrimmed.toLowerCase());
+                        }
+                    }
+    
+                    // Image validation
+                    const key = `${groupName}_${option}`;
+                    const existingCount = (existingVariantImages[key] || []).length;
+                    const newCount = (newVariantImages[key] || []).length;
+                    const totalCount = existingCount + newCount;
+    
+                    if (totalCount === 0) {
+                        clientErrors[`${prefix}_images`] = 'At least one image is required.';
+                    } else if (totalCount > 3) {
+                        clientErrors[`${prefix}_images`] = 'Maximum 3 images allowed.';
+                    }
+                    
+                    variantData.push({
+                        _id: id ? id : null,
+                        groupName: groupName,
+                        option: option,
+                        units: unitsVal ? parseFloat(unitsVal) : 0,
+                        price: priceVal ? parseFloat(priceVal) : 0,
+                        sku: skuVal
+                    });
+                });
+            }
+            
+            if (Object.keys(clientErrors).length > 0) {
+                e.preventDefault();
+                // Display client-side errors
+                for (const [field, msg] of Object.entries(clientErrors)) {
+                    const errEl = document.getElementById(`error-${field}`);
+                    const inputEl = document.querySelector(`[name="${field}"]`) || document.getElementById(`input_${field.replace(/^variant_/, '').replace(/_images$/, '')}`);
+                    showFieldError(inputEl, errEl, msg);
+                }
+                bannerText.textContent = 'Please fix the errors indicated below.';
+                banner.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            document.getElementById('variantData').value = JSON.stringify(variantData);
+
+            // Sync newVariantImages to actual inputs prior to normal form submit
             cards.forEach(card => {
-                const id = card.getAttribute('data-variant-id') || null;
                 const groupName = card.getAttribute('data-group-name');
                 const option = card.getAttribute('data-option');
-                
-                const unitsInput = card.querySelector(`[name="variant_${groupName}_${option}_units"]`);
-                const priceInput = card.querySelector(`[name="variant_${groupName}_${option}_price"]`);
-                const skuInput = card.querySelector(`[name="variant_${groupName}_${option}_sku"]`);
-                
-                const units = unitsInput ? parseFloat(unitsInput.value) || 0 : 0;
-                const price = priceInput ? parseFloat(priceInput.value) || 0 : 0;
-                const sku = skuInput ? skuInput.value.trim() : '';
-                
-                variantData.push({
-                    _id: id ? id : null,
-                    groupName: groupName,
-                    option: option,
-                    units: units,
-                    price: price,
-                    sku: sku
-                });
+                updateVariantInputFiles(groupName, option);
             });
-            
-            document.getElementById('variantData').value = JSON.stringify(variantData);
         });
+
+        // Server-Side Error Render Logic on Page Load
+        const serverErrors = <% if (locals.errors) { %> <%- JSON.stringify(errors).replace(/</g, '\\u003c') %> <% } else { %> null <% } %>;
+        if (serverErrors) {
+            for (const [field, msg] of Object.entries(serverErrors)) {
+                const errEl = document.getElementById(`error-${field}`);
+                const inputEl = document.querySelector(`[name="${field}"]`) || document.getElementById(`input_${field.replace(/^variant_/, '').replace(/_images$/, '')}`);
+                showFieldError(inputEl, errEl, msg);
+            }
+        }
     </script>
 
 </body>

@@ -52,49 +52,51 @@ const getProductAdd = async (req,res)=>{
 }
 
 const addProduct = async (req, res) => {
+    let categories = [];
+    try {
+        categories = await getProductAddService();
+    } catch (err) {
+        console.error('Error fetching categories in addProduct:', err);
+    }
+
+    const keys = Array.isArray(req.body.summaryKey) ? req.body.summaryKey : (req.body.summaryKey ? [req.body.summaryKey] : []);
+    const values = Array.isArray(req.body.summaryValue) ? req.body.summaryValue : (req.body.summaryValue ? [req.body.summaryValue] : []);
+    const summary = keys
+        .map((key, i) => ({
+            key: key ? key.trim() : '',
+            value: values[i] ? values[i].trim() : ''
+        }))
+        .filter(item => item.key !== '' || item.value !== '');
+
+    const productData = {
+        name: req.body.productName,
+        category: req.body.category,
+        description: req.body.description,
+        basePrice: req.body.basePrice,
+        discountedPrice: req.body.discountedPrice,
+        sku: req.body.sku,
+        status: req.body.status,
+        isHidden: req.body.isHidden === 'true',
+        summary: summary,
+        images: req.files ? req.files.map(file => file.path) : [],
+    };
+
     try {
         if (req.uploadError) {
-            const categories = await getProductAddService();
-            return res.render('Admin/addProduct', {
-                categories,
-                errorMessage: req.uploadError,
-                formData: req.body || {}
-            });
+            throw new Error(req.uploadError);
         }
     
-        const keys = Array.isArray(req.body.summaryKey) ? req.body.summaryKey : (req.body.summaryKey ? [req.body.summaryKey] : []);
-        const values = Array.isArray(req.body.summaryValue) ? req.body.summaryValue : (req.body.summaryValue ? [req.body.summaryValue] : []);
-        const summary = keys
-            .map((key, i) => ({
-                key: key ? key.trim() : '',
-                value: values[i] ? values[i].trim() : ''
-            }))
-            .filter(item => item.key !== '' || item.value !== '');
-
-        const productData = {
-            name: req.body.productName,
-            category: req.body.category,
-            description: req.body.description,
-            basePrice: req.body.basePrice,
-            discountedPrice: req.body.discountedPrice,
-            sku: req.body.sku,
-            status: req.body.status,
-            isHidden: req.body.isHidden === 'true',
-            summary: summary,
-            images: req.files ? req.files.map(file => file.path) : [],
-        };
-
-        const newProduct = await addProductService(productData, req.body, req.files);
-
-        res.redirect('/admin/product-management');
+        await addProductService(productData, req.body, req.files);
+        return res.redirect('/admin/product-management');
 
     } catch (error) {
-        console.log(error);
-        const categories = await getProductAddService();
+        console.error('Add product error:', error.message);
         return res.render('Admin/addProduct', {
             categories,
             errorMessage: error.message,
-            formData: req.body || {}
+            errors: error.errors || { general: error.message },
+            product: productData,
+            formData: req.body
         });
     }
 }
@@ -114,35 +116,69 @@ const getProductEdit = async (req, res) => {
     }
 }
 
-
 const updateProduct = async (req, res) => {
     const productId = req.params.id;
     try {
         if (req.uploadError) {
-            const { categories, product, variants } = await getProductEditDataService(productId);
-            return res.render('Admin/editProduct', {
-                categories,
-                product,
-                variants,
-                errorMessage: req.uploadError
-            });
+            throw new Error(req.uploadError);
         }
         await updateProductService(productId, req.body, req.files);
-        res.redirect('/admin/product-management');
+        return res.redirect('/admin/product-management');
     } catch (error) {
-        console.log(error);
+        console.error('Update product error:', error.message);
+        
+        let categories = [];
+        let product = null;
+        let variants = [];
         try {
-            const { categories, product, variants } = await getProductEditDataService(productId);
-            return res.render('Admin/editProduct', {
-                categories,
-                product,
-                variants,
-                errorMessage: error.message
-            });
-        } catch (innerError) {
-            console.log(innerError);
-            res.status(500).send('Error updating product: ' + error.message);
+            const editData = await getProductEditDataService(productId);
+            categories = editData.categories;
+            product = editData.product;
+            variants = editData.variants;
+        } catch (err) {
+            console.error('Error fetching edit data in updateProduct catch:', err);
         }
+
+        // We can override standard fields with submitted fields so user doesn't lose their inputs
+        if (product) {
+            product.name = req.body.productName || product.name;
+            product.category = req.body.category || product.category;
+            product.description = req.body.description || product.description;
+            product.basePrice = req.body.basePrice || product.basePrice;
+            product.discountedPrice = req.body.discountedPrice !== undefined ? req.body.discountedPrice : product.discountedPrice;
+        }
+
+        // Parse variants list from submitted body to keep user's inputs
+        let submittedVariants = [];
+        try {
+            if (req.body.variantData) {
+                const parsed = JSON.parse(req.body.variantData);
+                submittedVariants = parsed.map(v => {
+                    const key = `${v.groupName}_${v.option}`;
+                    // Merge/retain database images or other metadata if matching variant
+                    const matchingDbVar = variants.find(dv => String(dv._id) === String(v._id));
+                    return {
+                        _id: v._id,
+                        groupName: v.groupName,
+                        option: v.option,
+                        stock: v.units,
+                        price: v.price,
+                        sku: v.sku,
+                        images: matchingDbVar ? matchingDbVar.images : []
+                    };
+                });
+            }
+        } catch (e) {
+            console.error('Error parsing submitted variants:', e);
+        }
+
+        return res.render('Admin/editProduct', {
+            categories,
+            product,
+            variants: submittedVariants.length > 0 ? submittedVariants : variants,
+            errorMessage: error.message,
+            errors: error.errors || { general: error.message }
+        });
     }
 }
 

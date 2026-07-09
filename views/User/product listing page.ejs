@@ -91,7 +91,7 @@
     .content-wrap{
       flex:1;
       min-width:0;
-      padding:20px 100px 80px 80px;
+      padding:20px 40px 80px;
       height:100%;
       overflow-y:auto;
     }
@@ -133,7 +133,7 @@
     .sort-wrap select:hover{border-color:#999;}
 
     /* PRODUCT GRID */
-    .product-grid{display:grid;grid-template-columns:repeat(4,360px);row-gap:50px;column-gap:100px;}
+    .product-grid{display:grid;grid-template-columns:repeat(4,1fr);row-gap:48px;column-gap:40px;}
 
     .product-card{
       background:#fff;
@@ -149,7 +149,7 @@
       transform:translateY(-3px);
     }
 
-    .product-img{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden}
+    .product-img{width:100%;height:330px;position:relative;overflow:hidden}
     .img-placeholder{width:100%;height:100%}
     .c1{background:#c4c4c4}
     .c2{background:#d4cdc6}
@@ -324,8 +324,18 @@
     </aside>
 
     <!-- Toolbar -->
-    <div class="toolbar">
-      <span class="toolbar-count">Showing <%= locals.products ? locals.products.length : 0 %> results</span>
+    <div class="toolbar" style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+      <!-- Search Bar -->
+      <div style="position: relative; max-width: 320px; width: 100%; z-index: 10;">
+        <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; pointer-events: none;">search</span>
+        <input type="text" id="search-input" value="" placeholder="Search gear..." 
+          style="width: 100%; padding: 10px 14px 10px 40px; font-size: 13px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-family: inherit; outline: none; background: #fff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease-in-out;"
+          onfocus="this.style.borderColor='#94a3b8'; this.style.boxShadow='0 0 0 3px rgba(148, 163, 184, 0.15)'"
+          onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'" />
+        <span class="material-symbols-outlined" id="clear-search-btn" onclick="clearSearch()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; cursor: pointer; user-select: none; display: none;">close</span>
+      </div>
+
+      <span class="toolbar-count" style="margin-left: auto;">Showing <%= locals.products ? locals.products.length : 0 %> results</span>
       <div class="sort-wrap">
         <span>Sort By:</span>
         <select id="sort-select" onchange="applyFilters()">
@@ -343,11 +353,16 @@
         <% for (let i = 0; i < products.length; i++) { %>
           <% const product = products[i]; %>
           <div class="product-card" onclick="window.location.href='/product-details?id=<%= product._id %>'" style="cursor: pointer;">
-            <div class="product-img">
+            <div class="product-img" style="position: relative;">
               <% if (product.firstImage) { %>
-                <img src="<%= product.firstImage %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                <img src="<%= product.firstImage %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover; display: block; <%= product.isBlocked ? 'filter: grayscale(1) opacity(0.6);' : '' %>" />
               <% } else { %>
-                <div class="img-placeholder c1"></div>
+                <div class="img-placeholder c1 <%= product.isBlocked ? 'filter: grayscale(1) opacity(0.6);' : '' %>"></div>
+              <% } %>
+              <% if (product.isBlocked) { %>
+                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;">
+                  Unavailable
+                </div>
               <% } %>
             </div>
             <div class="product-info">
@@ -359,7 +374,12 @@
                   <span class="product-price">₹<%= product.basePrice %></span>
                 <% } %>
               </div>
-              <div class="stars">
+              <% if (product.isBlocked) { %>
+                <div style="color: #ef4444; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px;">
+                  Temporarily Unavailable
+                </div>
+              <% } %>
+              <div class="stars" style="<%= product.isBlocked ? 'margin-top: 6px;' : '' %>">
                 <span class="star">★</span>
                 <span class="star">★</span>
                 <span class="star">★</span>
@@ -370,11 +390,11 @@
             </div>
           </div>
         <% } %>
-      <% } else { %>
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
-          <p>No products found.</p>
-        </div>
       <% } %>
+      <!-- Dynamic no products message -->
+      <div id="no-products-message" style="display: none; grid-column: 1 / -1; text-align: center; padding: 40px; color: #777; width: 100%;">
+        <p>No products found matching your search.</p>
+      </div>
     </div><!-- /product-grid -->
 
     <!-- Pagination -->
@@ -451,7 +471,7 @@
       });
 
       const sortVal = document.getElementById('sort-select').value;
-
+ 
       const params = new URLSearchParams();
       if (categories.length > 0) {
           params.set('category', categories.join(','));
@@ -462,9 +482,72 @@
       if (sortVal && sortVal !== 'featured') {
           params.set('sort', sortVal);
       }
-
+ 
       window.location.href = '/shop?' + params.toString();
   }
+ 
+  function clearSearch() {
+      const input = document.getElementById('search-input');
+      if (input) {
+          input.value = '';
+          input.dispatchEvent(new Event('input'));
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('search-input');
+      
+      function filterProducts() {
+          const query = searchInput.value.toLowerCase().trim();
+          const cards = document.querySelectorAll('.product-card');
+          let visibleCount = 0;
+
+          cards.forEach(card => {
+              const nameEl = card.querySelector('.product-name');
+              if (nameEl) {
+                  const name = nameEl.textContent.toLowerCase();
+                  if (name.includes(query)) {
+                      card.style.display = '';
+                      visibleCount++;
+                  } else {
+                      card.style.display = 'none';
+                  }
+              }
+          });
+
+          // Update count text
+          const countEl = document.querySelector('.toolbar-count');
+          if (countEl) {
+              countEl.textContent = `Showing ${visibleCount} results`;
+          }
+
+          // Show/hide close (clear) icon
+          const clearBtn = document.getElementById('clear-search-btn');
+          if (clearBtn) {
+              if (query) {
+                  clearBtn.style.display = 'block';
+              } else {
+                  clearBtn.style.display = 'none';
+              }
+          }
+
+          // Show/hide no products message
+          const noProdMsg = document.getElementById('no-products-message');
+          if (noProdMsg) {
+              if (visibleCount === 0) {
+                  noProdMsg.style.display = 'block';
+              } else {
+                  noProdMsg.style.display = 'none';
+              }
+          }
+      }
+
+      if (searchInput) {
+          searchInput.addEventListener('input', filterProducts);
+          // Run immediately on page load to handle pre-populated query
+          filterProducts();
+      }
+  });
 </script>
 </body>
 </html>

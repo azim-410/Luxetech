@@ -35,7 +35,7 @@ const getProductsForListing = async (queryObject) => {
         const sortOption = sortMap[selectedSort] || {};
 
         // Build database query
-        const query = { isDeleted: { $ne: true }, isHidden: { $ne: true } };
+        const query = { isDeleted: { $ne: true } };
         if (selectedCategories.length > 0) {
             query.category = { $in: selectedCategories };
         }
@@ -66,6 +66,8 @@ const getProductsForListing = async (queryObject) => {
                 displayPrice = product.discountedPrice;
             }
 
+            const isBlocked = product.isHidden === true || product.status === false || !product.category || product.category.isHidden === true || product.category.status === false;
+
             productList.push({
                 _id: product._id,
                 name: product.name,
@@ -75,7 +77,8 @@ const getProductsForListing = async (queryObject) => {
                 displayPrice: displayPrice,
                 category: product.category,
                 firstImage: firstImage,
-                createdAt: product.createdAt
+                createdAt: product.createdAt,
+                isBlocked: isBlocked
             });
         }
 

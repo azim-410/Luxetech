@@ -40,6 +40,7 @@
                         </header>
 
                         <form action="/register" method="POST" class="registration-form">
+                            <% const _errors = locals.errors || {}; %>
 
                             <% if (locals.expiredMessage) { %>
                                 <div class="general-error" style="background: #1a1a2e; border-left: 3px solid #f39c12; color: #f39c12;">
@@ -56,8 +57,8 @@
                                 <input id="full-name" name="name" placeholder="Nikola Tesla" type="text"
                                     value="<%= locals.formData?.name || '' %>"
                                      />
-                                <% if (locals.errorField === 'name') { %>
-                                    <p class="field-error"><%= locals.errorMessage %></p>
+                                <% if (_errors.name || locals.errorField === 'name') { %>
+                                    <p class="field-error"><%= _errors.name || locals.errorMessage %></p>
                                 <% } %>
                             </div>
 
@@ -66,8 +67,8 @@
                                 <input id="email" name="email" placeholder="precision@luxetech.com" type="email"
                                     value="<%= locals.formData?.email || '' %>"
                                      />
-                                <% if (locals.errorField === 'email') { %>
-                                    <p class="field-error"><%= locals.errorMessage %></p>
+                                <% if (_errors.email || locals.errorField === 'email') { %>
+                                    <p class="field-error"><%= _errors.email || locals.errorMessage %></p>
                                 <% } %>
                             </div>
 
@@ -89,8 +90,8 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    <% if (locals.errorField === 'password') { %>
-                                        <p class="field-error"><%= locals.errorMessage %></p>
+                                    <% if (_errors.password || locals.errorField === 'password') { %>
+                                        <p class="field-error"><%= _errors.password || locals.errorMessage %></p>
                                     <% } %>
                                 </div>
                                 <div class="input-group">
@@ -111,26 +112,26 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    <% if (locals.errorField === 'confirmPassword') { %>
-                                        <p class="field-error"><%= locals.errorMessage %></p>
+                                    <% if (_errors.confirmPassword || locals.errorField === 'confirmPassword') { %>
+                                        <p class="field-error"><%= _errors.confirmPassword || locals.errorMessage %></p>
                                     <% } %>
                                 </div>
                             </div>
 
                             <div class="input-group">
                                 <label for="referral">Referral Code</label>
-                                <input id="referral" name="referral" placeholder="REF-582617-ROCK (OPTIONAL)" type="text" />
+                                <input id="referral" name="referral" placeholder="REF-582617-ROCK (OPTIONAL)" type="text" value="<%= locals.formData?.referral || '' %>" />
                             </div>
 
                             <div class="checkbox-group">
-                                <input id="terms" name="terms" type="checkbox"  />
+                                <input id="terms" name="terms" type="checkbox" <%= locals.formData?.terms ? 'checked' : '' %> />
                                 <label for="terms">
                                     I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy
                                         Policy</a>.
                                 </label>
                             </div>
-                            <% if (locals.errorField === 'terms') { %>
-                                <p class="field-error" style="margin-top: 0; margin-bottom: 15px;"><%= locals.errorMessage %></p>
+                            <% if (_errors.terms || locals.errorField === 'terms') { %>
+                                <p class="field-error" style="margin-top: 0; margin-bottom: 15px;"><%= _errors.terms || locals.errorMessage %></p>
                             <% } %>
                        
                             <div class="form-actions">

@@ -10,52 +10,59 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 // ─── REGISTER ───────────────────────────────────────────
 const registerUser = async (data) => {
     const { name, email, password, confirmPassword, terms } = data;
+    const errors = {};
 
-    if (!name || !email || !password) {
-        const err = new Error("All required fields missing");
-        err.field = 'general';
-        throw err;
+    // Name Validation
+    if (!name || name.trim() === '') {
+        errors.name = "Name is required";
+    } else if (!/^[A-Za-z\s]+$/.test(name.trim())) {
+        errors.name = "Name must contain only letters";
+    } else {
+        const existUser = await User.findOne({ name });
+        if (existUser) {
+            errors.name = "name already taken by other user";
+        }
     }
-    const existUser = await User.findOne({name})
-    console.log("registerUser",existUser)
 
-    if(existUser){
-         const err = new Error("name already taken by other user");
-        err.field = 'name';
-        throw err;
+    // Email Validation
+    if (!email || email.trim() === '') {
+        errors.email = "Email address is required";
+    } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            errors.email = "Please enter a valid email address";
+        } else {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                errors.email = "This email is already registered. Please login instead.";
+            }
+        }
     }
+
+    // Password Validation
+    if (!password) {
+        errors.password = "Password is required";
+    } else if (password.length < 6) {
+        errors.password = "Password must be at least 6 characters";
+    }
+
+    // Confirm Password Validation
+    if (!confirmPassword) {
+        errors.confirmPassword = "Confirm password is required";
+    } else if (password && password !== confirmPassword) {
+        errors.confirmPassword = "Password and confirm password do not match";
+    }
+
+    // Terms Validation
     if (!terms) {
-        const err = new Error("You must agree to the Terms and Conditions");
-        err.field = 'terms';
-        throw err;
-    }
-    if (!/^[A-Za-z\s]+$/.test(name.trim())) {
-        const err = new Error("Name must contain only letters");
-        err.field = 'name';
-        throw err;
+        errors.terms = "You must agree to the Terms and Conditions";
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        const err = new Error('Please enter a valid email address');
-        err.field = 'email';
-        throw err;
-    }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        const err = new Error('This email is already registered. Please login instead.');
-        err.field = 'email';
-        throw err;
-    }
-    if (password !== confirmPassword) {
-        const err = new Error("Password and confirm password do not match");
-        err.field = 'confirmPassword';
-        throw err;
-    }
-    if (password.length < 6) {
-        const err = new Error("Password must be at least 6 characters");
-        err.field = 'password';
+    // Throw all validation errors if any
+    if (Object.keys(errors).length > 0) {
+        const err = new Error("Validation failed");
+        err.statusCode = 400;
+        err.errors = errors;
         throw err;
     }
 

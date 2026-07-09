@@ -80,10 +80,22 @@ const register = async (req, res) => {
         return res.redirect('/otp');
     } catch (error) {
         console.error("Register Error:", error.message);
+        const googleError = req.session.googleError || null;
+        req.session.googleError = null;
+        if (error.statusCode === 400 && error.errors) {
+            return res.status(400).render('User/auth/register', {
+                errors: error.errors,
+                formData: req.body,
+                googleError,
+                expiredMessage: null
+            });
+        }
         return res.status(400).render('User/auth/register', {
             errorMessage: error.message,
             errorField: error.field || 'general',
-            formData: req.body
+            formData: req.body,
+            googleError,
+            expiredMessage: null
         });
     }
 };

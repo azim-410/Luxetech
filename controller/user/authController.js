@@ -1,14 +1,15 @@
-import { 
-    registerUser, 
-    loginUser, 
-    verifyOtp, 
-    resendOtpService, 
-    sendPasswordResetOtpService, 
-    verifyResetOtpService, 
+import {
+    registerUser,
+    loginUser,
+    verifyOtp,
+    resendOtpService,
+    sendPasswordResetOtpService,
+    verifyResetOtpService,
     updatePasswordService,
     resendResetOtpService,
     getOtpTimerData
 } from "../../services/user/authService.js";
+import User from '../../model/userModel.js';
 
 // ─── PAGE RENDERS ─────────────────────────────────────────
 const registerPage = (req, res) => {
@@ -24,23 +25,24 @@ const loginPage = (req, res) => {
     const blocked = req.query.blocked === '1';
     return res.render('User/auth/login', {
         errorMessage: blocked ? 'Your account has been blocked by the admin. Please contact support.' : null,
-        errorField:   blocked ? 'general' : null,
+        errorField: blocked ? 'general' : null,
         formData: {}
     });
 };
 
 const otpPage = async (req, res) => {
     const userId = req.session.userId;
-    const { remainingSeconds, resendCooldownSeconds } = userId
+    const { remainingSeconds, resendCooldownSeconds, email } = userId
         ? await getOtpTimerData(userId)
-        : { remainingSeconds: 0, resendCooldownSeconds: 0 };
+        : { remainingSeconds: 0, resendCooldownSeconds: 0, email: null };
     return res.render('User/auth/otp-verification', {
-        actionUrl:             '/verify-otp',
-        resendUrl:             '/resend-otp',
-        errorMessage:          null,
-        successMessage:        null,
+        actionUrl: '/verify-otp',
+        resendUrl: '/resend-otp',
+        errorMessage: null,
+        successMessage: null,
         remainingSeconds,
-        resendCooldownSeconds
+        resendCooldownSeconds,
+        email
     });
 };
 
@@ -49,19 +51,22 @@ const forgotPasswordPage = (req, res) => {
 };
 
 const verifyResetOtpPage = async (req, res) => {
-    const userId = req.session.resetEmail
-        ? (await (await import('../../model/userModel.js')).default.findOne({ email: req.session.resetEmail }))?._id
+    const email = req.session.resetEmail;
+    const user = email
+        ? await User.findOne({ email })
         : null;
+    const userId = user ? user._id : null;
     const { remainingSeconds, resendCooldownSeconds } = userId
         ? await getOtpTimerData(userId)
         : { remainingSeconds: 0, resendCooldownSeconds: 0 };
     return res.render('User/auth/otp-verification', {
-        actionUrl:             '/verify-reset-otp',
-        resendUrl:             '/resend-reset-otp',
-        errorMessage:          null,
-        successMessage:        null,
+        actionUrl: '/verify-reset-otp',
+        resendUrl: '/resend-reset-otp',
+        errorMessage: null,
+        successMessage: null,
         remainingSeconds,
-        resendCooldownSeconds
+        resendCooldownSeconds,
+        email
     });
 };
 
@@ -143,7 +148,8 @@ const otp = async (req, res) => {
                 errorMessage: 'Session expired. Please register again.',
                 successMessage: null,
                 actionUrl: '/verify-otp',
-                resendUrl: '/resend-otp'
+                resendUrl: '/resend-otp',
+                email: null
             });
         }
 
@@ -151,16 +157,18 @@ const otp = async (req, res) => {
         return res.redirect('/login');
     } catch (error) {
         console.error('OTP Error:', error.message);
-        const { remainingSeconds, resendCooldownSeconds } = req.session.userId
-            ? await getOtpTimerData(req.session.userId)
-            : { remainingSeconds: 0, resendCooldownSeconds: 0 };
+        const userId = req.session.userId;
+        const { remainingSeconds, resendCooldownSeconds, email } = userId
+            ? await getOtpTimerData(userId)
+            : { remainingSeconds: 0, resendCooldownSeconds: 0, email: null };
         return res.status(400).render('User/auth/otp-verification', {
-            errorMessage:          error.message,
-            successMessage:        null,
-            actionUrl:             '/verify-otp',
-            resendUrl:             '/resend-otp',
+            errorMessage: error.message,
+            successMessage: null,
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp',
             remainingSeconds,
-            resendCooldownSeconds
+            resendCooldownSeconds,
+            email
         });
     }
 };
@@ -174,18 +182,20 @@ const resendOtp = async (req, res) => {
                 actionUrl: '/verify-otp',
                 resendUrl: '/resend-otp',
                 errorMessage: 'Session expired. Please register again.',
-                successMessage: null
+                successMessage: null,
+                email: null
             });
         }
         await resendOtpService(userId);
-        const { remainingSeconds, resendCooldownSeconds } = await getOtpTimerData(userId);
+        const { remainingSeconds, resendCooldownSeconds, email } = await getOtpTimerData(userId);
         return res.render('User/auth/otp-verification', {
-            actionUrl:             '/verify-otp',
-            resendUrl:             '/resend-otp',
-            errorMessage:          null,
-            successMessage:        'OTP resent successfully.',
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp',
+            errorMessage: null,
+            successMessage: 'OTP resent successfully.',
             remainingSeconds,
-            resendCooldownSeconds
+            resendCooldownSeconds,
+            email
         });
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
@@ -195,16 +205,18 @@ const resendOtp = async (req, res) => {
             return res.redirect('/register?expired=1');
         }
 
-        const { remainingSeconds, resendCooldownSeconds } = req.session.userId
-            ? await getOtpTimerData(req.session.userId)
-            : { remainingSeconds: 0, resendCooldownSeconds: 0 };
+        const userId = req.session.userId;
+        const { remainingSeconds, resendCooldownSeconds, email } = userId
+            ? await getOtpTimerData(userId)
+            : { remainingSeconds: 0, resendCooldownSeconds: 0, email: null };
         return res.status(500).render('User/auth/otp-verification', {
-            actionUrl:             '/verify-otp',
-            resendUrl:             '/resend-otp',
-            errorMessage:          error.message || "Failed to resend OTP.",
-            successMessage:        null,
+            actionUrl: '/verify-otp',
+            resendUrl: '/resend-otp',
+            errorMessage: error.message || "Failed to resend OTP.",
+            successMessage: null,
             remainingSeconds,
-            resendCooldownSeconds
+            resendCooldownSeconds,
+            email
         });
     }
 };
@@ -220,8 +232,8 @@ const forgotPasswordController = async (req, res) => {
         console.error('Forgot Password Error:', error.message);
         return res.render('User/auth/forget-password', {
             errorMessage: error.message,
-            errorField:   error.field || 'email',
-            formData:     req.body
+            errorField: error.field || 'email',
+            formData: req.body
         });
     }
 };
@@ -237,18 +249,19 @@ const verifyResetOtpController = async (req, res) => {
         return res.redirect('/reset-password');
     } catch (error) {
         console.error("Verify Reset OTP Error:", error.message);
-        const User = (await import('../../model/userModel.js')).default;
-        const user = req.session.resetEmail ? await User.findOne({ email: req.session.resetEmail }) : null;
+        const email = req.session.resetEmail;
+        const user = email ? await User.findOne({ email }) : null;
         const { remainingSeconds, resendCooldownSeconds } = user
             ? await getOtpTimerData(user._id)
             : { remainingSeconds: 0, resendCooldownSeconds: 0 };
         return res.render('User/auth/otp-verification', {
-            errorMessage:          error.message,
-            successMessage:        null,
-            actionUrl:             '/verify-reset-otp',
-            resendUrl:             '/resend-reset-otp',
+            errorMessage: error.message,
+            successMessage: null,
+            actionUrl: '/verify-reset-otp',
+            resendUrl: '/resend-reset-otp',
             remainingSeconds,
-            resendCooldownSeconds
+            resendCooldownSeconds,
+            email
         });
     }
 };
@@ -259,29 +272,31 @@ const resendResetOtp = async (req, res) => {
         const email = req.session.resetEmail;
 
         await resendResetOtpService(email);
-        const User = (await import('../../model/userModel.js')).default;
         const user = email ? await User.findOne({ email }) : null;
         const { remainingSeconds, resendCooldownSeconds } = user
             ? await getOtpTimerData(user._id)
             : { remainingSeconds: 0, resendCooldownSeconds: 0 };
         return res.render('User/auth/otp-verification', {
-            errorMessage:          null,
-            successMessage:        'OTP resent successfully.',
-            actionUrl:             '/verify-reset-otp',
-            resendUrl:             '/resend-reset-otp',
+            errorMessage: null,
+            successMessage: 'OTP resent successfully.',
+            actionUrl: '/verify-reset-otp',
+            resendUrl: '/resend-reset-otp',
             remainingSeconds,
-            resendCooldownSeconds
+            resendCooldownSeconds,
+            email
         });
 
     } catch (error) {
         console.error("Resend Reset OTP Error:", error.message);
+        const email = req.session.resetEmail;
         return res.render('User/auth/otp-verification', {
-            errorMessage:          error.message,
-            successMessage:        null,
-            actionUrl:             '/verify-reset-otp',
-            resendUrl:             '/resend-reset-otp',
-            remainingSeconds:      0,
-            resendCooldownSeconds: 0
+            errorMessage: error.message,
+            successMessage: null,
+            actionUrl: '/verify-reset-otp',
+            resendUrl: '/resend-reset-otp',
+            remainingSeconds: 0,
+            resendCooldownSeconds: 0,
+            email
         });
     }
 };
@@ -307,9 +322,9 @@ const updatePasswordController = async (req, res) => {
         return res.redirect('/login');
     } catch (error) {
         console.error("Update Password Error:", error.message);
-        return res.render('User/auth/reset-password', { 
+        return res.render('User/auth/reset-password', {
             actionUrl: '/reset-password',
-            errorMessage: error.message 
+            errorMessage: error.message
         });
     }
 };
@@ -334,7 +349,7 @@ const googleCallback = (req, res) => {
     return res.redirect('/');
 };
 
-export { 
+export {
     registerPage,
     loginPage,
     otpPage,
@@ -342,13 +357,13 @@ export {
     verifyResetOtpPage,
     resetPasswordPage,
     googleCallback,
-    register, 
-    login, 
-    logout, 
-    otp, 
-    resendOtp, 
-    forgotPasswordController, 
-    verifyResetOtpController, 
+    register,
+    login,
+    logout,
+    otp,
+    resendOtp,
+    forgotPasswordController,
+    verifyResetOtpController,
     resendResetOtp,
-    updatePasswordController 
+    updatePasswordController
 };

@@ -189,7 +189,9 @@ const resendCurrentOtpService = async (userId) => {
 
 const getProfileCurrentOtpTimerData = async (userId) => {
     const otpRecord = await OTP.findOne({ userId });
-    if (!otpRecord) return { remainingSeconds: 0, resendCooldownSeconds: 0 };
+    const user = await userModel.findById(userId);
+    const email = user ? user.email : null;
+    if (!otpRecord) return { remainingSeconds: 0, resendCooldownSeconds: 0, email };
 
     const remainingSeconds = Math.max(
         0,
@@ -198,7 +200,7 @@ const getProfileCurrentOtpTimerData = async (userId) => {
     const elapsedSinceCreated = Math.floor((Date.now() - new Date(otpRecord.createdAt).getTime()) / 1000);
     const resendCooldownSeconds = Math.max(0, 60 - elapsedSinceCreated);
 
-    return { remainingSeconds, resendCooldownSeconds };
+    return { remainingSeconds, resendCooldownSeconds, email };
 };
 
 const verifyOtpService = async (userId, otp) => {
@@ -340,7 +342,8 @@ const changePasswordService = async (userId, newPassword, confirmPassword) => {
 
 const getProfileOtpTimerData = async (userId) => {
     const tempUser = await tempUserModel.findOne({ userId });
-    if (!tempUser || !tempUser.emailOtpExpiry) return { remainingSeconds: 0, resendCooldownSeconds: 0 };
+    const email = tempUser ? tempUser.tempEmail : null;
+    if (!tempUser || !tempUser.emailOtpExpiry) return { remainingSeconds: 0, resendCooldownSeconds: 0, email };
 
     const remainingSeconds = Math.max(
         0,
@@ -349,7 +352,7 @@ const getProfileOtpTimerData = async (userId) => {
     const elapsedSinceCreated = Math.floor((Date.now() - new Date(tempUser.createdAt).getTime()) / 1000);
     const resendCooldownSeconds = Math.max(0, 60 - elapsedSinceCreated);
 
-    return { remainingSeconds, resendCooldownSeconds };
+    return { remainingSeconds, resendCooldownSeconds, email };
 };
 
 

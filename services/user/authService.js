@@ -249,7 +249,9 @@ const updatePasswordService = async (email, newPassword, confirmPassword) => {
 // can resend (60s window from createdAt). Returns 0 when wait is over.
 const getOtpTimerData = async (userId) => {
     const otpRecord = await OTP.findOne({ userId });
-    if (!otpRecord) return { remainingSeconds: 0, resendCooldownSeconds: 0 };
+    const user = await User.findById(userId);
+    const email = user ? user.email : null;
+    if (!otpRecord) return { remainingSeconds: 0, resendCooldownSeconds: 0, email };
 
     const remainingSeconds = Math.max(
         0,
@@ -258,7 +260,7 @@ const getOtpTimerData = async (userId) => {
     const elapsedSinceCreated = Math.floor((Date.now() - new Date(otpRecord.createdAt).getTime()) / 1000);
     const resendCooldownSeconds = Math.max(0, 60 - elapsedSinceCreated);
 
-    return { remainingSeconds, resendCooldownSeconds };
+    return { remainingSeconds, resendCooldownSeconds, email };
 };
 
 export { 

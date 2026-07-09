@@ -32,7 +32,7 @@
                             <span class="material-symbols-outlined icon-vibration">vibration</span>
                         </div>
                         <h1>Two-Step Verification</h1>
-                        <p>Enter the 6-digit code sent to your email</p>
+                        <p>Enter the 6-digit code sent to <span class="email-highlight"><%= locals.email || 'your email' %></span></p>
                         <% if (locals.errorMessage) { %>
                             <p style="color: red; font-size: 0.85rem; margin-top: 10px; text-align: center;">
                                 <%= locals.errorMessage %>
@@ -51,7 +51,8 @@
 
                     <form class="verification-form" action="<%= locals.actionUrl || '/verify-otp' %>" method="POST">
                         <div class="otp-inputs">
-                            <input type="text" name="otp1" maxlength="1" inputmode="numeric" aria-label="Digit 1"autofocus />
+                            <input type="text" name="otp1" maxlength="1" inputmode="numeric" aria-label="Digit 1"
+                                autofocus />
                             <input type="text" name="otp2" maxlength="1" inputmode="numeric" aria-label="Digit 2" />
                             <input type="text" name="otp3" maxlength="1" inputmode="numeric" aria-label="Digit 3" />
                             <input type="text" name="otp4" maxlength="1" inputmode="numeric" aria-label="Digit 4" />
@@ -110,16 +111,16 @@
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
 
-                    const inputs           = document.querySelectorAll('.otp-inputs input');
-                    const resendBtn        = document.querySelector('.btn-resend');
-                    const timerDisplay     = document.querySelector('.timer-display');
-                    const verifyBtn        = document.querySelector('.btn-primary');
-                    const form             = document.querySelector('.verification-form');
-                    const clientErrEl      = document.querySelector('#client-error-message');
+                    const inputs = document.querySelectorAll('.otp-inputs input');
+                    const resendBtn = document.querySelector('.btn-resend');
+                    const timerDisplay = document.querySelector('.timer-display');
+                    const verifyBtn = document.querySelector('.btn-primary');
+                    const form = document.querySelector('.verification-form');
+                    const clientErrEl = document.querySelector('#client-error-message');
 
                     // ── Server-injected values ─────────────────────────────────────────
                     // Both are calculated fresh on every page request (including refresh).
-                    let timeLeft      = parseInt("<%= typeof remainingSeconds     !== 'undefined' ? remainingSeconds     : 0 %>") || 0;
+                    let timeLeft = parseInt("<%= typeof remainingSeconds     !== 'undefined' ? remainingSeconds     : 0 %>") || 0;
                     let resendCooldown = parseInt("<%= typeof resendCooldownSeconds !== 'undefined' ? resendCooldownSeconds : 0 %>") || 0;
 
                     // ── Helpers ───────────────────────────────────────────────────────
@@ -140,13 +141,13 @@
                         if (timeLeft <= 0) {
                             timerDisplay.textContent = 'OTP Expired';
                             timerDisplay.style.color = 'red';
-                            verifyBtn.disabled       = true;
-                            verifyBtn.style.opacity  = '0.4';
+                            verifyBtn.disabled = true;
+                            verifyBtn.style.opacity = '0.4';
                         } else {
                             timerDisplay.textContent = `Expires in ${formatTime(timeLeft)}`;
                             timerDisplay.style.color = '';
-                            verifyBtn.disabled       = false;
-                            verifyBtn.style.opacity  = '1';
+                            verifyBtn.disabled = false;
+                            verifyBtn.style.opacity = '1';
                         }
                     };
 
@@ -154,20 +155,20 @@
                     const renderResendBtn = () => {
                         if (timeLeft <= 0) {
                             // OTP expired → always enable resend regardless of cooldown
-                            resendBtn.disabled     = false;
+                            resendBtn.disabled = false;
                             resendBtn.style.opacity = '1';
-                            resendBtn.style.cursor  = 'pointer';
-                            resendBtn.textContent   = 'Request New OTP';
+                            resendBtn.style.cursor = 'pointer';
+                            resendBtn.textContent = 'Request New OTP';
                         } else if (resendCooldown > 0) {
-                            resendBtn.disabled     = true;
+                            resendBtn.disabled = true;
                             resendBtn.style.opacity = '0.4';
-                            resendBtn.style.cursor  = 'not-allowed';
-                            resendBtn.textContent   = `Resend in ${resendCooldown}s`;
+                            resendBtn.style.cursor = 'not-allowed';
+                            resendBtn.textContent = `Resend in ${resendCooldown}s`;
                         } else {
-                            resendBtn.disabled     = false;
+                            resendBtn.disabled = false;
                             resendBtn.style.opacity = '1';
-                            resendBtn.style.cursor  = 'pointer';
-                            resendBtn.textContent   = 'Resend Code';
+                            resendBtn.style.cursor = 'pointer';
+                            resendBtn.textContent = 'Resend Code';
                         }
                     };
 
@@ -239,15 +240,11 @@
 
                     // ── Resend button ─────────────────────────────────────────────────
                     resendBtn.addEventListener('click', () => {
-                        if (otpIntervalId)    clearInterval(otpIntervalId);
+                        if (otpIntervalId) clearInterval(otpIntervalId);
                         if (resendIntervalId) clearInterval(resendIntervalId);
-                        // Submit resend form — server will create a new OTP and
-                        // re-render the page with fresh remainingSeconds & resendCooldownSeconds.
-                        const resendForm = document.createElement('form');
-                        resendForm.method = 'POST';
-                        resendForm.action = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/resend-otp" %>';
-                        document.body.appendChild(resendForm);
-                        resendForm.submit();
+                        // Redirect to the GET resend route
+                        const resendUrl = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/resend-otp" %>';
+                        window.location.href = resendUrl;
                     });
 
                 });

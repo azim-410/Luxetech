@@ -44,9 +44,9 @@ router.post('/login', isLogin,login);
 router.post('/logout', isAuthenticated, checkIfBlocked, logout);
 
 // ─── REGISTRATION OTP ───────────────────────────────────
-router.get('/otp',              otpPage);
-router.post('/verify-otp',      otp);
-router.post('/resend-otp',      resendOtp);
+router.get('/otp',isLogin, otpPage);
+router.post('/verify-otp',isLogin, otp);
+router.get('/resend-otp',isLogin, resendOtp);
 
 // ─── FORGOT PASSWORD ────────────────────────────────────
 router.get('/forget-password',  isLogin, forgotPasswordPage);
@@ -55,7 +55,7 @@ router.post('/forget-password', isLogin, forgotPasswordController);
 // ─── RESET OTP ──────────────────────────────────────────
 router.get('/verify-reset-otp',  isLogin, verifyResetOtpPage);
 router.post('/verify-reset-otp', isLogin, verifyResetOtpController);
-router.post('/resend-reset-otp', isLogin, resendResetOtp);
+router.get('/resend-reset-otp', isLogin, resendResetOtp);
 
 // ─── RESET PASSWORD ─────────────────────────────────────
 router.get('/reset-password',    isLogin, resetPasswordPage);

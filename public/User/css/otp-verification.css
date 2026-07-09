@@ -198,6 +198,12 @@ body {
     font-size: 0.875rem;
 }
 
+.email-highlight {
+    color: var(--on-surface);
+    font-weight: 600;
+    word-break: break-all;
+}
+
 /* --- Form & OTP Inputs --- */
 .verification-form {
     display: flex;

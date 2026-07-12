@@ -71,7 +71,8 @@ const getCart = async (req, res) => {
 
         res.render('User/cart', {
             cart: cartData,
-            user: req.session.user || req.user || null
+            user: req.session.user || req.user || null,
+            cartError: null
         });
     } catch (error) {
         console.error('getCart error:', error);

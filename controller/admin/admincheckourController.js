@@ -1,24 +1,26 @@
-import { getAdminOrdersService, updateOrderEstimateDateService, updateOrderStatusService, updateOrderPaymentStatusService } from '../../services/admin/adminCheckoutService.js';
+import { getAdminOrdersService, updateOrderEstimateDateService, updateOrderStatusService, updateOrderPaymentStatusService, processAdminItemActionService } from '../../services/admin/adminCheckoutService.js';
 import Order from '../../model/order.js';
 
-const getOrderList = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 5;
+    const getOrderList = async (req, res) => {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = 5;
+            const sort = req.query.sort || 'date-desc';
 
-        const { orders, totalOrders, totalPage } = await getAdminOrdersService(page, limit);
+            const { orders, totalOrders, totalPage } = await getAdminOrdersService(page, limit, sort);
 
-        return res.render('Admin/orderManagmentPage', {
-            orders,
-            totalOrders,
-            totalPage,
-            currentPage: page
-        });
-    } catch (error) {
-        console.error("getOrderList error:", error);
-        res.status(500).send("Internal Server Error");
-    }
-};
+            return res.render('Admin/orderManagmentPage', {
+                orders,
+                totalOrders,
+                totalPage,
+                currentPage: page,
+                sort
+            });
+        } catch (error) {
+            console.error("getOrderList error:", error);
+            res.status(500).send("Internal Server Error");
+        }
+    };
 
 const getOrderDetails = async (req, res) => {
     try {
@@ -65,12 +67,27 @@ const updateOrderPaymentStatus = async (req, res) => {
     try {
         const orderId = req.params.id;
         const { paymentStatus } = req.body;
-        
+
         await updateOrderPaymentStatusService(orderId, paymentStatus);
-        
+
         return res.json({ success: true });
     } catch (error) {
         console.error("updateOrderPaymentStatus error:", error);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+const processAdminItemAction = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const itemId = req.params.itemId;
+        const { action } = req.body;
+
+        await processAdminItemActionService(orderId, itemId, action);
+
+        return res.json({ success: true, message: `Item return processed as ${action} successfully` });
+    } catch (error) {
+        console.error("processAdminItemAction error:", error);
         return res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -80,5 +97,6 @@ export {
     getOrderDetails,
     updateOrderEstimateDate,
     updateOrderStatus,
-    updateOrderPaymentStatus
+    updateOrderPaymentStatus,
+    processAdminItemAction
 };

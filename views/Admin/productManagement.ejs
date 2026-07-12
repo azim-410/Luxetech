@@ -332,6 +332,8 @@
                                                  <span class="inline-block md:hidden text-[10px] font-bold uppercase tracking-wider text-outline">Status</span>
                                                  <% if (product.isDeleted) { %>
                                                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container/20 text-on-error-container">Deleted</span>
+                                                 <% } else if (!product.status) { %>
+                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-outline/20 text-outline">Inactive</span>
                                                  <% } else { %>
                                                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/30 text-on-tertiary-container">Active</span>
                                                  <% } %>
@@ -444,7 +446,7 @@
                     <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Total
                         Inventory Value</p>
                     <div class="flex items-end justify-between">
-                        <h3 class="text-3xl font-extrabold font-headline">$1.4M</h3>
+                        <h3 class="text-3xl font-extrabold font-headline">₹1.4M</h3>
                     </div>
                 </div>
             </div>
@@ -869,7 +871,9 @@
 
                     const statusBadge = product.isDeleted
                         ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container/20 text-on-error-container">Deleted</span>`
-                        : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/30 text-on-tertiary-container">Active</span>`;
+                        : (!product.status
+                            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-outline/20 text-outline">Inactive</span>`
+                            : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/30 text-on-tertiary-container">Active</span>`);
 
                     const actionHtml = product.isDeleted
                         ? `<span class="p-2 text-outline bg-transparent rounded min-w-[36px] min-h-[36px] flex items-center justify-center cursor-not-allowed" title="Product is deleted">

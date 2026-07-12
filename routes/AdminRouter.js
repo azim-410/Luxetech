@@ -33,7 +33,8 @@ import {
     deleteCategoryImage,
     toggleCategoryVisibility
 } from '../controller/admin/categoryManagementController.js';
-import { getOrderList, getOrderDetails, updateOrderEstimateDate, updateOrderStatus, updateOrderPaymentStatus } from '../controller/admin/admincheckourController.js';
+import { getOrderList, getOrderDetails, updateOrderEstimateDate, updateOrderStatus, updateOrderPaymentStatus, processAdminItemAction } from '../controller/admin/admincheckourController.js';
+import { getCouponList, createCoupon, deleteCoupon, updateCoupon } from '../controller/admin/couponManagementController.js';
 
 
 const router = express.Router()
@@ -57,16 +58,16 @@ router.get('/category-management', isAdminAuthenticated, getCategoryList)
 router.post('/category-management/create', isAdminAuthenticated, upload.single('image'), createCategory)
 router.patch('/category-management/edit/:id', isAdminAuthenticated, upload.single('image'), editCategory)
 router.post('/category-management/delete-image/:id', isAdminAuthenticated, deleteCategoryImage)
-router.patch('/category-management/delete/:id',isAdminAuthenticated,deleteCategory)
+router.patch('/category-management/delete/:id', isAdminAuthenticated, deleteCategory)
 router.patch('/category-management/toggle-visibility/:id', isAdminAuthenticated, toggleCategoryVisibility)
 
-router.get('/product-management/add',isAdminAuthenticated,getProductAdd);
+router.get('/product-management/add', isAdminAuthenticated, getProductAdd);
 router.post('/product-management/add', isAdminAuthenticated, (req, res, next) => {
     upload.any()(req, res, (err) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: err.message 
+                message: err.message
             });
         }
         next();
@@ -89,5 +90,12 @@ router.get('/order-management/details/:id', isAdminAuthenticated, getOrderDetail
 router.post('/order-management/details/:id/update-estimate', isAdminAuthenticated, updateOrderEstimateDate)
 router.post('/order-management/details/:id/update-status', isAdminAuthenticated, updateOrderStatus)
 router.post('/order-management/details/:id/update-payment-status', isAdminAuthenticated, updateOrderPaymentStatus)
+router.post('/order-management/details/:id/item/:itemId/action', isAdminAuthenticated, processAdminItemAction)
 
-export default router  
+
+router.get('/coupon-management', isAdminAuthenticated, getCouponList)
+router.post('/coupon-management/create', isAdminAuthenticated, createCoupon)
+router.patch('/coupon-management/:id', isAdminAuthenticated, updateCoupon)
+router.delete('/coupon-management/:id', isAdminAuthenticated, deleteCoupon)
+
+export default router

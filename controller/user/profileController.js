@@ -12,6 +12,7 @@ import {
   resendCurrentOtpService,
   getProfileCurrentOtpTimerData
 } from '../../services/user/profileService.js';
+import Transaction from '../../model/transaction.js';
 
 const getProfile = async (req, res) => {
   try {
@@ -336,6 +337,22 @@ const getAddresses = async (req, res) => {
     return res.status(500).send('Server error');
   }
 }
+
+const getWallet = async (req, res) => {
+  try {
+    const user = await getUserById(req.session.user.id);
+
+    if (!user) return res.redirect('/login');
+
+    const transactions = await Transaction.find({ userId: req.session.user.id }).sort({ createdAt: -1 });
+
+    return res.render('User/wallet', { user, transactions });
+  } catch (error) {
+    console.error('Wallet error:', error);
+    return res.status(500).send('Server error');
+  }
+}
+
 export {
   getProfile,
   updateProfile,
@@ -350,5 +367,6 @@ export {
   showCurrentOtpPage,
   verifyCurrentOtp,
   resendCurrentOtp,
-  getAddresses
+  getAddresses,
+  getWallet
 }

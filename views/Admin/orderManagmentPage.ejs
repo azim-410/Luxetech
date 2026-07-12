@@ -178,10 +178,46 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button
-                                    class="px-4 py-2 bg-surface-container-low text-on-surface text-xs font-semibold rounded-full border border-outline-variant/10 hover:bg-surface-container transition-colors">
-                                    More Filters
-                                </button>
+                                <div class="relative inline-block text-left" id="sort-container">
+                                    <button onclick="toggleSortDropdown(event)"
+                                        class="px-4 py-2 bg-surface-container-low text-on-surface text-xs font-semibold rounded-full border border-outline-variant/10 hover:bg-surface-container transition-colors flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">sort</span>
+                                        Sort
+                                    </button>
+                                    <div id="sort-dropdown"
+                                        class="hidden absolute right-0 mt-2 py-2 w-52 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-50 border border-outline-variant/10">
+                                        <div class="flex flex-col">
+                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=date-desc"
+                                                class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'date-desc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
+                                                <span>Date: Newest to Oldest</span>
+                                                <% if (sort === 'date-desc') { %>
+                                                    <span class="material-symbols-outlined text-[14px]">check</span>
+                                                <% } %>
+                                            </a>
+                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=date-asc"
+                                                class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'date-asc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
+                                                <span>Date: Oldest to Newest</span>
+                                                <% if (sort === 'date-asc') { %>
+                                                    <span class="material-symbols-outlined text-[14px]">check</span>
+                                                <% } %>
+                                            </a>
+                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=price-desc"
+                                                class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'price-desc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
+                                                <span>Price: High to Low</span>
+                                                <% if (sort === 'price-desc') { %>
+                                                    <span class="material-symbols-outlined text-[14px]">check</span>
+                                                <% } %>
+                                            </a>
+                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=price-asc"
+                                                class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'price-asc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
+                                                <span>Price: Low to High</span>
+                                                <% if (sort === 'price-asc') { %>
+                                                    <span class="material-symbols-outlined text-[14px]">check</span>
+                                                <% } %>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Status Tabs -->
@@ -199,6 +235,12 @@
                                 class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Delivered</button>
                             <button
                                 class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Cancelled</button>
+                            <button
+                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Returned</button>
+                            <button
+                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Return Requested</button>
+                            <button
+                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Return Confirmed</button>
                         </div>
                     </div>
                     <!-- Table -->
@@ -267,11 +309,16 @@
                                                                 <% } %>
                                             </td>
                                             <td class="px-6 py-5">
-                                                <% let dotColor='bg-outline' ; let textColor='text-outline' ; if
-                                                    (['Shipped', 'Delivered' ].includes(order.orderStatus)) {
-                                                    dotColor='bg-secondary' ; textColor='text-on-secondary-container' ;
-                                                    } else if (['Cancelled', 'Returned' ].includes(order.orderStatus)) {
-                                                    dotColor='bg-error' ; textColor='text-error' ; } %>
+                                                <% let dotColor='bg-outline' ; let textColor='text-outline' ; 
+                                                    if (['Shipped', 'Delivered'].includes(order.orderStatus)) {
+                                                        dotColor='bg-secondary' ; textColor='text-on-secondary-container' ;
+                                                    } else if (['Cancelled', 'Returned', 'Return Confirmed'].includes(order.orderStatus)) {
+                                                        dotColor='bg-error' ; textColor='text-error' ; 
+                                                    } else if (order.orderStatus === 'Return Requested') {
+                                                        dotColor='bg-amber-500' ; textColor='text-amber-700' ;
+                                                    } else if (order.orderStatus === 'Replacement Confirmed') {
+                                                        dotColor='bg-blue-500' ; textColor='text-blue-700' ;
+                                                    } %>
                                                     <span
                                                         class="flex items-center gap-1.5 text-sm <%= textColor %> font-medium">
                                                         <span class="w-2 h-2 rounded-full <%= dotColor %>"></span>
@@ -308,7 +355,7 @@
                         </p>
                         <div class="flex gap-1.5 items-center">
                             <% if (currentPage > 1) { %>
-                                <a href="/admin/order-management?page=<%= currentPage - 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>"
+                                <a href="/admin/order-management?page=<%= currentPage - 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
                                     class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container transition-all">
                                     <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                                 </a>
@@ -326,7 +373,7 @@
                                                     <%= i %>
                                                 </span>
                                                 <% } else { %>
-                                                    <a href="/admin/order-management?page=<%= i %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>"
+                                                    <a href="/admin/order-management?page=<%= i %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
                                                         class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container text-xs font-semibold transition-all">
                                                         <%= i %>
                                                     </a>
@@ -334,7 +381,7 @@
                                                         <% } %>
 
                                                             <% if (currentPage < totalPage) { %>
-                                                                <a href="/admin/order-management?page=<%= currentPage + 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>"
+                                                                <a href="/admin/order-management?page=<%= currentPage + 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
                                                                     class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container transition-all">
                                                                     <span
                                                                         class="material-symbols-outlined text-[18px]">chevron_right</span>
@@ -374,7 +421,18 @@
                 event.stopPropagation();
 
                 const dropdown = document.getElementById('date-range-dropdown');
+                const sortDropdown = document.getElementById('sort-dropdown');
                 dropdown.classList.toggle('hidden');
+                if (sortDropdown) sortDropdown.classList.add('hidden');
+            }
+
+            function toggleSortDropdown(event) {
+                event.stopPropagation();
+
+                const dropdown = document.getElementById('sort-dropdown');
+                const dateDropdown = document.getElementById('date-range-dropdown');
+                dropdown.classList.toggle('hidden');
+                if (dateDropdown) dateDropdown.classList.add('hidden');
             }
 
             /**
@@ -431,14 +489,20 @@
 
             // 2. WINDOW-LEVEL CLICK LISTENER
             // This event listener detects clicks anywhere on the page.
-            // If the user clicks outside the date range button/dropdown, we automatically hide the dropdown.
+            // If the user clicks outside the date range/sort buttons or dropdowns, we hide them.
             window.addEventListener('click', function (event) {
                 const dateContainer = document.getElementById('date-range-container');
                 const dateDropdown = document.getElementById('date-range-dropdown');
+                const sortContainer = document.getElementById('sort-container');
+                const sortDropdown = document.getElementById('sort-dropdown');
 
                 // If the click happened outside the entire date range container, hide the dropdown
                 if (dateContainer && !dateContainer.contains(event.target)) {
                     dateDropdown.classList.add('hidden');
+                }
+                // If the click happened outside the entire sort container, hide the dropdown
+                if (sortContainer && !sortContainer.contains(event.target)) {
+                    sortDropdown.classList.add('hidden');
                 }
             });
 

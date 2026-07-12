@@ -543,6 +543,10 @@
                                         Pay directly from your Luxe Tech wallet balance. Ensure your wallet has
                                         sufficient funds before placing the order.
                                     </p>
+                                    <div class="mt-3.5 p-3.5 bg-surface-container/50 border border-outline-variant/10 rounded flex justify-between items-center text-xs">
+                                        <span class="text-on-surface-variant font-medium">Available Balance:</span>
+                                        <span class="font-extrabold text-primary">₹<%= (user && user.wallet || 0).toFixed(2) %></span>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -1347,6 +1351,18 @@
                 const selectedShippingRadio = document.querySelector('input[name="shipping"]:checked');
                 if (selectedShippingRadio) {
                     shippingMethod = selectedShippingRadio.value;
+                }
+
+                if (activePaymentMethod === 'Wallet') {
+                    const grandTotalText = document.getElementById('summary-grand-total').textContent.replace(/[^\d.]/g, '');
+                    const grandTotal = parseFloat(grandTotalText) || 0;
+                    const walletBalance = <%= (user && user.wallet) || 0 %>;
+                    
+                    if (walletBalance < grandTotal) {
+                        e.preventDefault();
+                        showAlert('Your wallet balance is insufficient to place this order.', 'Insufficient Funds');
+                        return;
+                    }
                 }
 
                 if (activePaymentMethod === 'Razorpay') {

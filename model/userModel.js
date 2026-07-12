@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
             default: 'local'
         },
         isVerified: { type: Boolean, default: false },
+        wallet: {
+            type: Number,
+            default: 0
+        }
     },
     {
         timestamps: true

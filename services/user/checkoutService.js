@@ -8,6 +8,8 @@ import { getCartService } from './cartService.js';
 import couponModel from '../../model/coupon.js';
 import razorpay from '../../config/razorpay.js';
 import crypto from 'crypto';
+import userModel from '../../model/userModel.js';
+import Transaction from '../../model/transaction.js';
 
 const getCheckoutAddressDataService = async (userId) => {
     if (!userId) {
@@ -218,6 +220,13 @@ const placeOrderService = async (userId, query, body) => {
     const finalDiscount = (cart.discount || 0) + couponDiscount;
     const finalGrandTotal = Math.max(0, cart.grandTotal - couponDiscount + shippingCost);
 
+    if (paymentMethod === 'Wallet') {
+        const user = await userModel.findById(userId);
+        if (!user || (user.wallet || 0) < finalGrandTotal) {
+            throw new Error('Insufficient wallet balance to place this order.');
+        }
+    }
+
     // Generate unique order ID
     const orderId = `LX-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -275,7 +284,7 @@ const placeOrderService = async (userId, query, body) => {
         razorpayOrderId: razorpayOrderId,
         paymentMethod: paymentMethod || 'COD',
         shippingMethod: shippingMethod || 'standard',
-        paymentStatus: 'Pending',
+        paymentStatus: paymentMethod === 'Wallet' ? 'Paid' : 'Pending',
         orderStatus: 'Pending'
     });
 
@@ -309,6 +318,20 @@ const placeOrderService = async (userId, query, body) => {
         // Clear cart if this was checking out the full cart
         if (!query.productId) {
             await cartModal.deleteOne({ userId });
+        }
+
+        if (paymentMethod === 'Wallet') {
+            await userModel.findByIdAndUpdate(userId, {
+                $inc: { wallet: -finalGrandTotal }
+            });
+            await Transaction.create({
+                userId,
+                amount: finalGrandTotal,
+                type: 'debit',
+                description: `Payment for order #${orderId}`,
+                orderId: orderId,
+                status: 'completed'
+            });
         }
     }
 

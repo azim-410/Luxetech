@@ -234,6 +234,14 @@
     </a>
 
     <a
+      class="admin-sidebar__link <%= (typeof activePage !== 'undefined' && activePage === 'coupons') ? 'active' : '' %>"
+      href="/admin/coupon-management"
+    >
+      <span class="material-symbols-outlined">confirmation_number</span>
+      Coupons
+    </a>
+
+    <a
       class="admin-sidebar__link <%= (typeof activePage !== 'undefined' && activePage === 'analytics') ? 'active' : '' %>"
       href="#"
     >

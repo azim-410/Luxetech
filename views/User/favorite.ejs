@@ -613,7 +613,10 @@
             <% } else if (firstItem.isStockout) { %>
               <button class="btn-add" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Stockout</button>
             <% } else { %>
-              <button class="btn-add" onclick="window.location.href='/product-details?id=<%= firstItem.productId %><%= firstItem.variantId ? '&variantId=' + firstItem.variantId : '' %>'">&#10041; View Details</button>
+              <div style="display: flex; gap: 8px; width: 100%;">
+                <button class="btn-add" style="flex: 1;" onclick="singleAddToCart('<%= firstItem.productId %>', '<%= firstItem.variantId || '' %>')">&#128722; Add to Cart</button>
+                <button class="btn-add" style="flex: 1; background: #111; color: #fff;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#111'" onclick="window.location.href='/product-details?id=<%= firstItem.productId %><%= firstItem.variantId ? '&variantId=' + firstItem.variantId : '' %>'">View Details</button>
+              </div>
             <% } %>
           </div>
         </div>
@@ -663,7 +666,10 @@
                           <p style="color: #d97706; font-size: 9px; font-weight: 600; margin-top: 2px; margin-bottom: 0;">Only <%= item.stock %> left!</p>
                         <% } %>
                       </div>
-                      <button onclick="window.location.href='/product-details?id=<%= item.productId %><%= item.variantId ? '&variantId=' + item.variantId : '' %>'" class="btn-buy">View Details</button>
+                      <div style="display: flex; gap: 6px; align-items: center;">
+                        <button onclick="singleAddToCart('<%= item.productId %>', '<%= item.variantId || '' %>')" class="btn-buy" style="background: #7c3408;" onmouseover="this.style.background='#5c2408'" onmouseout="this.style.background='#7c3408'">Add to Cart</button>
+                        <button onclick="window.location.href='/product-details?id=<%= item.productId %><%= item.variantId ? '&variantId=' + item.variantId : '' %>'" class="btn-buy">Details</button>
+                      </div>
                     <% } %>
                   </div>
                 </div>
@@ -842,6 +848,52 @@
             showAlert('An error occurred. Please try again.', 'Error');
             moveBtn.disabled = false;
             moveBtn.textContent = originalText;
+        }
+    }
+
+    async function singleAddToCart(productId, variantId) {
+        try {
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    variantId: variantId || null,
+                    quantity: 1
+                })
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                // Remove from wishlist database after successful addition to cart
+                try {
+                    await fetch('/wishlist/remove', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            productId: productId,
+                            variantId: variantId || null
+                        })
+                    });
+                } catch (removeErr) {
+                    console.error('Error removing item from wishlist after cart add:', removeErr);
+                }
+                window.location.href = '/cart';
+            } else {
+                showAlert(data.message || 'Failed to add item to cart.', 'Attention');
+            }
+        } catch (err) {
+            console.error('Error adding item to cart:', err);
+            showAlert('An error occurred. Please try again.', 'Error');
         }
     }
     </script>

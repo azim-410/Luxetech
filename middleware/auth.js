@@ -56,4 +56,6 @@ const blockIfGoogleUser = async (req,res,next)=>{
 
     return next();
 }
+
+
 export { isAuthenticated, isLogin, checkIfBlocked, blockIfGoogleUser };

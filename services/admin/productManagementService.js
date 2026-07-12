@@ -10,24 +10,59 @@ const getProductAddService = async () => {
 
 const addProductService = async (productData, body, files) => {
 
+    const errors = {};
+
     // ─── Basic Validation ───────────────────────────────
     if (!productData.name || productData.name.trim() === '') {
-        throw new Error('Product name is required');
+        errors.productName = 'Product name is required';
+    } else {
+        const nameTrimmed = productData.name.trim();
+        if (nameTrimmed.length < 3) {
+            errors.productName = 'Product name must be at least 3 characters';
+        } else if (nameTrimmed.length > 100) {
+            errors.productName = 'Product name cannot exceed 100 characters';
+        } else if (!/^[A-Za-z0-9\s\-\'\"\(\)]+$/.test(nameTrimmed)) {
+            errors.productName = 'Product name must contain only alphanumeric characters, spaces, hyphens, quotes, or parentheses';
+        }
     }
-    if (!productData.category) {
-        throw new Error('Category is required');
+
+    if (!productData.category || productData.category.trim() === '') {
+        errors.category = 'Category is required';
     }
+
     if (!productData.description || productData.description.trim() === '') {
-        throw new Error('Description is required');
+        errors.description = 'Description is required';
+    } else {
+        const descTrimmed = productData.description.trim();
+        if (descTrimmed.length < 10) {
+            errors.description = 'Description must be at least 10 characters';
+        } else if (descTrimmed.length > 5000) {
+            errors.description = 'Description cannot exceed 5000 characters';
+        }
     }
-    if (!productData.basePrice || isNaN(productData.basePrice)) {
-        throw new Error('Valid base price is required');
+
+    if (productData.basePrice === undefined || productData.basePrice === null || String(productData.basePrice).trim() === '') {
+        errors.basePrice = 'Base price is required';
+    } else {
+        const baseVal = Number(productData.basePrice);
+        if (isNaN(baseVal)) {
+            errors.basePrice = 'Base price must be a valid number';
+        } else if (baseVal <= 0) {
+            errors.basePrice = 'Base price must be greater than 0';
+        }
     }
-    if (productData.discountedPrice && isNaN(productData.discountedPrice)) {
-        throw new Error('Valid discounted price is required');
-    }
-    if (Number(productData.discountedPrice) >= Number(productData.basePrice)) {
-        throw new Error('Discounted price must be less than base price');
+
+    const discStr = String(productData.discountedPrice || '').trim();
+    if (discStr !== '') {
+        const discVal = Number(productData.discountedPrice);
+        const baseVal = Number(productData.basePrice);
+        if (isNaN(discVal)) {
+            errors.discountedPrice = 'Discounted price must be a valid number';
+        } else if (discVal < 0) {
+            errors.discountedPrice = 'Discounted price must be a positive number';
+        } else if (!isNaN(baseVal) && discVal >= baseVal) {
+            errors.discountedPrice = 'Discounted price must be less than base price';
+        }
     }
 
     // ─── Parse Variants from body ───────────────────────
@@ -65,33 +100,71 @@ const addProductService = async (productData, body, files) => {
     const variantKeys = Object.keys(variantMap);
 
     if (variantKeys.length === 0) {
-        throw new Error('At least one variant is required');
+        errors.variants = 'At least one variant is required';
+    } else {
+        for (const key of variantKeys) {
+            const v = variantMap[key];
+            const prefix = `variant_${key}`;
+
+            if (!v.sku || v.sku.trim() === '') {
+                errors[`${prefix}_sku`] = 'SKU is required';
+            } else {
+                const skuTrimmed = v.sku.trim();
+                if (skuTrimmed.length < 3) {
+                    errors[`${prefix}_sku`] = 'SKU must be at least 3 characters';
+                } else if (skuTrimmed.length > 30) {
+                     errors[`${prefix}_sku`] = 'SKU cannot exceed 30 characters';
+                } else if (!/^[A-Za-z0-9\-\_]+$/.test(skuTrimmed)) {
+                     errors[`${prefix}_sku`] = 'SKU must be alphanumeric (hyphens and underscores allowed)';
+                } else {
+                    const existingSku = await variantModel.findOne({ sku: skuTrimmed });
+                    if (existingSku) {
+                        errors[`${prefix}_sku`] = 'SKU already exists';
+                    }
+                }
+            }
+
+            if (v.units === undefined || v.units === null || String(v.units).trim() === '') {
+                errors[`${prefix}_units`] = 'Units is required';
+            } else {
+                const unitsVal = Number(v.units);
+                if (isNaN(unitsVal) || !Number.isInteger(unitsVal) || unitsVal < 0) {
+                    errors[`${prefix}_units`] = 'Units must be a non-negative integer';
+                }
+            }
+
+            if (v.price === undefined || v.price === null || String(v.price).trim() === '') {
+                errors[`${prefix}_price`] = 'Price is required';
+            } else {
+                const priceVal = Number(v.price);
+                if (isNaN(priceVal) || priceVal < 0) {
+                    errors[`${prefix}_price`] = 'Price must be a non-negative number';
+                }
+            }
+
+            const imageCount = (variantImageMap[key] || []).length;
+            if (imageCount === 0) {
+                errors[`${prefix}_images`] = 'At least one image is required';
+            } else if (imageCount > 3) {
+                errors[`${prefix}_images`] = 'Maximum 3 images allowed';
+            }
+        }
     }
 
-    for (const key of variantKeys) {
-        const v = variantMap[key];
-
-        if (!v.sku || v.sku.trim() === '') {
-            throw new Error(`SKU is required for variant: ${key}`);
-        }
-        if (!v.units || isNaN(v.units) || Number(v.units) < 0) {
-            throw new Error(`Valid units required for variant: ${key}`);
-        }
-        if (isNaN(v.price) || Number(v.price) < 0) {
-            throw new Error(`Valid price required for variant: ${key}`);
-        }
-        if (!variantImageMap[key] || variantImageMap[key].length === 0) {
-            throw new Error(`At least one image required for variant: ${key}`);
-        }
-
-        // Check duplicate SKU
-        const existingSku = await variantModel.findOne({ sku: v.sku.trim() });
-        if (existingSku) {
-            throw new Error(`SKU already exists: ${v.sku}`);
-        }
+    if (Object.keys(errors).length > 0) {
+        const validationError = new Error('Validation Failed');
+        validationError.errors = errors;
+        throw validationError;
     }
 
     // ─── All Validation Passed — Save to DB ─────────────
+
+    // Calculate total stock from variantMap
+    let totalStock = 0;
+    for (const key of variantKeys) {
+        totalStock += Number(variantMap[key].units || 0);
+    }
+    const isProductInStock = totalStock > 0;
 
     // Save Product
     const newProduct = new productModel({
@@ -102,7 +175,7 @@ const addProductService = async (productData, body, files) => {
         discountedPrice: Number(productData.discountedPrice) || 0,
         summary: productData.summary,
         hasVariants: true,
-        status: productData.status === 'InStock',
+        status: isProductInStock,
         isHidden: productData.isHidden === true,
     });
 
@@ -210,28 +283,63 @@ const getProductEditDataService = async (productId) => {
 
 
 const updateProductService = async (id, body, files) => {
-        // ─── Basic Validation ───────────────────────────────
+    const errors = {};
+
+    // ─── Basic Validation ───────────────────────────────
     if (!body.productName || body.productName.trim() === '') {
-        throw new Error('Product name is required');
+        errors.productName = 'Product name is required';
+    } else {
+        const nameTrimmed = body.productName.trim();
+        if (nameTrimmed.length < 3) {
+            errors.productName = 'Product name must be at least 3 characters';
+        } else if (nameTrimmed.length > 100) {
+            errors.productName = 'Product name cannot exceed 100 characters';
+        } else if (!/^[A-Za-z0-9\s\-\'\"\(\)]+$/.test(nameTrimmed)) {
+            errors.productName = 'Product name must contain only alphanumeric characters, spaces, hyphens, quotes, or parentheses';
+        }
     }
-    if (!body.category) {
-        throw new Error('Category is required');
+
+    if (!body.category || body.category.trim() === '') {
+        errors.category = 'Category is required';
     }
+
     if (!body.description || body.description.trim() === '') {
-        throw new Error('Description is required'); ``
+        errors.description = 'Description is required';
+    } else {
+        const descTrimmed = body.description.trim();
+        if (descTrimmed.length < 10) {
+            errors.description = 'Description must be at least 10 characters';
+        } else if (descTrimmed.length > 5000) {
+            errors.description = 'Description cannot exceed 5000 characters';
+        }
     }
-    if (!body.basePrice || isNaN(body.basePrice)) {
-        throw new Error('Valid base price is required');
+
+    if (body.basePrice === undefined || body.basePrice === null || String(body.basePrice).trim() === '') {
+        errors.basePrice = 'Base price is required';
+    } else {
+        const baseVal = Number(body.basePrice);
+        if (isNaN(baseVal)) {
+            errors.basePrice = 'Base price must be a valid number';
+        } else if (baseVal <= 0) {
+            errors.basePrice = 'Base price must be greater than 0';
+        }
     }
-    if (body.discountedPrice && isNaN(body.discountedPrice)) {
-        throw new Error('Valid discounted price is required');
-    }
-    if (Number(body.discountedPrice) >= Number(body.basePrice)) {
-        throw new Error('Discounted price must be less than base price');
+
+    const discStr = String(body.discountedPrice || '').trim();
+    if (discStr !== '') {
+        const discVal = Number(body.discountedPrice);
+        const baseVal = Number(body.basePrice);
+        if (isNaN(discVal)) {
+            errors.discountedPrice = 'Discounted price must be a valid number';
+        } else if (discVal < 0) {
+            errors.discountedPrice = 'Discounted price must be a positive number';
+        } else if (!isNaN(baseVal) && discVal >= baseVal) {
+            errors.discountedPrice = 'Discounted price must be less than base price';
+        }
     }
 
     // ─── Parse variantData JSON from hidden input ───────
-     let variantData = [];
+    let variantData = [];
     if (body.variantData) {
         try {
             variantData = JSON.parse(body.variantData);
@@ -240,7 +348,7 @@ const updateProductService = async (id, body, files) => {
         }
     }
 
-     // ─── Parse new variant images from files ────────────
+    // ─── Parse new variant images from files ────────────
     const variantImageMap = {};
     if (files && files.length > 0) {
         files.forEach(file => {
@@ -254,7 +362,7 @@ const updateProductService = async (id, body, files) => {
         });
     }
 
-      // ─── Parse summary ──────────────────────────────────
+    // ─── Parse summary ──────────────────────────────────
     const summary = body.summaryKey
         ? (Array.isArray(body.summaryKey)
             ? body.summaryKey.map((key, i) => ({
@@ -264,28 +372,87 @@ const updateProductService = async (id, body, files) => {
             : [{ key: body.summaryKey, value: body.summaryValue }])
         : [];
 
+    // ─── Variant Validation ─────────────────────────────
+    const removedImagesList = body.removedImages ? body.removedImages.split(',').map(img => img.trim()).filter(Boolean) : [];
 
-       // ─── Variant Validation ─────────────────────────────
-    for (const v of variantData) {
-        if (!v.sku || v.sku.trim() === '') {
-            throw new Error(`SKU is required for variant: ${v.groupName} ${v.option}`);
-        }
-        if (isNaN(v.units) || Number(v.units) < 0) {
-            throw new Error(`Valid units required for variant: ${v.groupName} ${v.option}`);
-        }
-        if (isNaN(v.price) || Number(v.price) < 0) {
-            throw new Error(`Valid price required for variant: ${v.groupName} ${v.option}`);
-        }
+    if (variantData.length === 0) {
+        errors.variants = 'At least one variant is required';
+    } else {
+        for (const v of variantData) {
+            const prefix = `variant_${v.groupName}_${v.option}`;
 
-        // Check duplicate SKU — skip if same variant
-        const existingSku = await variantModel.findOne({
-            sku: v.sku.trim(),
-            _id: { $ne: v._id } // exclude itself
-        });
-        if (existingSku) {
-            throw new Error(`SKU already exists: ${v.sku}`);
+            if (!v.sku || v.sku.trim() === '') {
+                errors[`${prefix}_sku`] = 'SKU is required';
+            } else {
+                const skuTrimmed = v.sku.trim();
+                if (skuTrimmed.length < 3) {
+                    errors[`${prefix}_sku`] = 'SKU must be at least 3 characters';
+                } else if (skuTrimmed.length > 30) {
+                    errors[`${prefix}_sku`] = 'SKU cannot exceed 30 characters';
+                } else if (!/^[A-Za-z0-9\-\_]+$/.test(skuTrimmed)) {
+                    errors[`${prefix}_sku`] = 'SKU must be alphanumeric (hyphens and underscores allowed)';
+                } else {
+                    const existingSku = await variantModel.findOne({
+                        sku: skuTrimmed,
+                        _id: { $ne: v._id }
+                    });
+                    if (existingSku) {
+                        errors[`${prefix}_sku`] = 'SKU already exists';
+                    }
+                }
+            }
+
+            if (v.units === undefined || v.units === null || String(v.units).trim() === '') {
+                errors[`${prefix}_units`] = 'Units is required';
+            } else {
+                const unitsVal = Number(v.units);
+                if (isNaN(unitsVal) || !Number.isInteger(unitsVal) || unitsVal < 0) {
+                    errors[`${prefix}_units`] = 'Units must be a non-negative integer';
+                }
+            }
+
+            if (v.price === undefined || v.price === null || String(v.price).trim() === '') {
+                errors[`${prefix}_price`] = 'Price is required';
+            } else {
+                const priceVal = Number(v.price);
+                if (isNaN(priceVal) || priceVal < 0) {
+                    errors[`${prefix}_price`] = 'Price must be a non-negative number';
+                }
+            }
+
+            const key = `${v.groupName}_${v.option}`;
+            const newUploadedImages = variantImageMap[key] || [];
+            let totalImages = 0;
+            if (v._id) {
+                const dbVar = await variantModel.findById(v._id);
+                if (dbVar) {
+                    const retainedImages = (dbVar.images || []).filter(img => !removedImagesList.includes(img));
+                    totalImages = retainedImages.length + newUploadedImages.length;
+                }
+            } else {
+                totalImages = newUploadedImages.length;
+            }
+
+            if (totalImages === 0) {
+                errors[`${prefix}_images`] = 'At least one image is required';
+            } else if (totalImages > 3) {
+                errors[`${prefix}_images`] = 'Maximum 3 images allowed';
+            }
         }
     }
+
+    if (Object.keys(errors).length > 0) {
+        const validationError = new Error('Validation Failed');
+        validationError.errors = errors;
+        throw validationError;
+    }
+
+    // Calculate total stock from variantData
+    let totalStock = 0;
+    for (const v of variantData) {
+        totalStock += Number(v.units || 0);
+    }
+    const isProductInStock = totalStock > 0;
 
      await productModel.findByIdAndUpdate(id, {
         name: body.productName.trim(),
@@ -294,7 +461,7 @@ const updateProductService = async (id, body, files) => {
         basePrice: Number(body.basePrice),
         discountedPrice: Number(body.discountedPrice) || 0,
         summary,
-        status: body.status === 'InStock',
+        status: isProductInStock,
         hasVariants: variantData.length > 0,
         isHidden: body.isHidden === 'true',
     });
@@ -313,8 +480,6 @@ const updateProductService = async (id, body, files) => {
     if (toDelete.length > 0) {
         await variantModel.deleteMany({ _id: { $in: toDelete } });
     }
-
-    const removedImagesList = body.removedImages ? body.removedImages.split(',').map(img => img.trim()).filter(Boolean) : [];
 
     for (const v of variantData) {
         const key = `${v.groupName}_${v.option}`;
@@ -357,6 +522,7 @@ const deleteProductService = async (productId) => {
         throw new Error('Product not found');
     }
     product.isDeleted = true;
+    product.status = false;
     await product.save();
     await variantModel.updateMany({ productId }, { status: false });
     return { success: true };

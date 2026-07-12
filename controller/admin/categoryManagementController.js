@@ -33,10 +33,14 @@ const createCategory = async (req, res) => {
         const { categoryName, description, isHidden } = req.body;
         const image = req.file ? req.file.path : null;
         await createCategoryService(categoryName, description, true, image, isHidden);
-        return res.redirect('/admin/category-management');
+        return res.json({ success: true });
     } catch (error) {
         console.error('Create category error:', error.message);
-        return res.redirect(`/admin/category-management?createError=${encodeURIComponent(error.message)}`);
+        return res.status(400).json({ 
+            success: false, 
+            message: error.message,
+            errors: error.errors || { general: error.message }
+        });
     }
 };
 
@@ -50,7 +54,11 @@ const editCategory = async (req, res) => {
         return res.json({ success: true });
     } catch (error) {
         console.error('Edit category error:', error.message);
-        return res.status(400).json({ success: false, message: error.message });
+        return res.status(400).json({ 
+            success: false, 
+            message: error.message,
+            errors: error.errors || { general: error.message }
+        });
     }
 };
 

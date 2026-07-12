@@ -122,7 +122,7 @@
               <div>
                 <p class="text-[10px] uppercase tracking-[0.25em] text-slate-400 font-semibold mb-1">Available Funds</p>
                 <div class="text-4xl md:text-5xl font-black tracking-tight text-white font-headline mt-1 select-none drop-shadow-[0_2px_10px_rgba(255,255,255,0.05)]">
-                  ₹1,240.50
+                  ₹<%= (user.wallet || 0).toFixed(2) %>
                 </div>
               </div>
               <div class="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner">
@@ -168,9 +168,9 @@
           <div class="p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">Transaction Ledger</h3>
             <div class="flex gap-2">
-              <button class="px-4 py-2 bg-surface-container-low rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-surface-container-high transition-colors">All</button>
-              <button class="px-4 py-2 bg-white rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Credit</button>
-              <button class="px-4 py-2 bg-white rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Debit</button>
+              <button onclick="filterTransactions('all', this)" class="tx-filter-btn px-4 py-2 bg-surface-container-low rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-surface-container-high transition-colors">All</button>
+              <button onclick="filterTransactions('credit', this)" class="tx-filter-btn px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Credit</button>
+              <button onclick="filterTransactions('debit', this)" class="tx-filter-btn px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Debit</button>
             </div>
           </div>
           <div class="overflow-x-auto">
@@ -184,15 +184,39 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-outline-variant/10 font-body">
-                <tr>
-                  <td colspan="4" class="px-8 py-16 text-center text-on-surface-variant">
-                    <div class="flex flex-col items-center justify-center gap-2">
-                      <span class="material-symbols-outlined text-4xl text-slate-350 select-none">history_toggle_off</span>
-                      <p class="font-bold text-slate-700">No transactions yet</p>
-                      <p class="text-xs text-slate-400">Your wallet transaction activity history will be listed here.</p>
-                    </div>
-                  </td>
-                </tr>
+                <% if (typeof transactions !== 'undefined' && transactions && transactions.length > 0) { %>
+                  <% transactions.forEach(tx => { %>
+                    <tr data-type="<%= tx.type %>" class="hover:bg-slate-50/50 transition-colors">
+                      <td class="px-8 py-4 text-xs font-medium text-on-surface-variant">
+                        <%= new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                      </td>
+                      <td class="px-8 py-4">
+                        <div class="text-xs font-bold text-on-surface"><%= tx.description %></div>
+                        <% if (tx.orderId) { %>
+                          <div class="text-[9px] text-on-surface-variant font-mono mt-0.5">Order #<%= tx.orderId %></div>
+                        <% } %>
+                      </td>
+                      <td class="px-8 py-4 text-center">
+                        <span class="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider <%= tx.status === 'completed' ? 'bg-green-50 text-green-700' : tx.status === 'failed' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700' %>">
+                          <%= tx.status %>
+                        </span>
+                      </td>
+                      <td class="px-8 py-4 text-right text-xs font-extrabold <%= tx.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                        <%= tx.type === 'credit' ? '+' : '-' %>₹<%= tx.amount.toFixed(2) %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4" class="px-8 py-16 text-center text-on-surface-variant">
+                      <div class="flex flex-col items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-4xl text-slate-350 select-none">history_toggle_off</span>
+                        <p class="font-bold text-slate-700">No transactions yet</p>
+                        <p class="text-xs text-slate-400">Your wallet transaction activity history will be listed here.</p>
+                      </div>
+                    </td>
+                  </tr>
+                <% } %>
               </tbody>
             </table>
           </div>
@@ -200,6 +224,28 @@
       </div>
     </main>
   </div>
+
+  <script>
+    function filterTransactions(type, btn) {
+      // Update button styles
+      document.querySelectorAll('.tx-filter-btn').forEach(b => {
+        b.classList.remove('bg-surface-container-low');
+        b.classList.add('bg-white', 'text-outline');
+      });
+      btn.classList.add('bg-surface-container-low');
+      btn.classList.remove('bg-white', 'text-outline');
+
+      // Filter rows
+      const rows = document.querySelectorAll('tbody tr[data-type]');
+      rows.forEach(row => {
+        if (type === 'all' || row.getAttribute('data-type') === type) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
 
   <%- include('../partials/user/profile-mobile-nav') %>
 </body>

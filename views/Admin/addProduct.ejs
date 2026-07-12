@@ -265,13 +265,6 @@
                             </h3>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Status</label>
-                                    <select class="w-full px-3 py-2 font-medium" name="status">
-                                        <option <%= (locals.formData && locals.formData.status === 'InStock') ? 'selected' : '' %>>InStock</option>
-                                        <option <%= (locals.formData && locals.formData.status === 'Out of Stock') ? 'selected' : '' %>>Out of Stock</option>
-                                    </select>
-                                </div>
-                                <div>
                                     <label class="block text-[9px] font-bold text-luxe-muted uppercase mb-1">Visibility</label>
                                     <select class="w-full px-3 py-2 font-medium" name="isHidden">
                                         <option value="false" <%= (locals.formData && locals.formData.isHidden === 'false') ? 'selected' : '' %>>Visible</option>

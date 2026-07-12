@@ -1,17 +1,27 @@
 import Order from '../../model/order.js';
 import User from '../../model/userModel.js'; // Ensure User model is loaded for populate
+import Transaction from '../../model/transaction.js';
 
-const getAdminOrdersService = async (page, limit) => {
+const getAdminOrdersService = async (page, limit, sort = 'date-desc') => {
     try {
         const skip = (page - 1) * limit;
         const totalOrders = await Order.countDocuments({});
         const totalPage = Math.max(1, Math.ceil(totalOrders / limit));
 
+        let sortQuery = { createdAt: -1 };
+        if (sort === 'date-asc') {
+            sortQuery = { createdAt: 1 };
+        } else if (sort === 'price-asc') {
+            sortQuery = { 'pricing.grandTotal': 1 };
+        } else if (sort === 'price-desc') {
+            sortQuery = { 'pricing.grandTotal': -1 };
+        }
+
         const orders = await Order.find({})
             .populate('userId')
             .skip(skip)
             .limit(limit)
-            .sort({ createdAt: -1 });
+            .sort(sortQuery);
 
         return { orders, totalOrders, totalPage };
     } catch (error) {
@@ -87,6 +97,23 @@ const updateOrderStatusService = async (orderId, status) => {
         order.deliveredDate = new Date();
     } else if (status === 'Cancelled') {
         order.cancelledDate = new Date();
+        if (order.paymentStatus === 'Paid') {
+            order.paymentStatus = 'Refunded';
+            const refundAmount = order.pricing.grandTotal;
+            if (refundAmount > 0) {
+                await User.findByIdAndUpdate(order.userId, {
+                    $inc: { wallet: refundAmount }
+                });
+                await Transaction.create({
+                    userId: order.userId,
+                    amount: refundAmount,
+                    type: 'credit',
+                    description: `Refund for order cancellation by Admin (Order #${order.orderId})`,
+                    orderId: order.orderId,
+                    status: 'completed'
+                });
+            }
+        }
     }
 
     // Save to DB
@@ -102,7 +129,7 @@ const updateOrderPaymentStatusService = async (orderId, paymentStatus) => {
         throw new Error('Order not found');
     }
 
-    const validStatuses = ['Pending', 'Paid'];
+    const validStatuses = ['Pending', 'Paid', 'Failed', 'Refunded'];
     if (!validStatuses.includes(paymentStatus)) {
         throw new Error('Invalid payment status.');
     }
@@ -112,9 +139,122 @@ const updateOrderPaymentStatusService = async (orderId, paymentStatus) => {
     return order;
 };
 
+const processAdminItemActionService = async (orderId, itemId, action) => {
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new Error('Order not found');
+    }
+
+    const item = order.items.find(i => String(i._id) === String(itemId) || String(i.productId) === String(itemId));
+
+    if (!item) {
+        throw new Error('Item not found in order');
+    }
+
+    if (action === 'Return' || action === 'Replacement') {
+        if (item.status !== 'Return Requested') {
+            throw new Error('This item does not have an active return request');
+        }
+        if (action === 'Return') {
+            item.status = 'Return Confirmed';
+            // Credit refund to user's wallet
+            const refundAmount = item.subtotal;
+            await User.findByIdAndUpdate(order.userId, {
+                $inc: { wallet: refundAmount }
+            });
+            await Transaction.create({
+                userId: order.userId,
+                amount: refundAmount,
+                type: 'credit',
+                description: `Refund for returned item: ${item.name}`,
+                orderId: order.orderId,
+                status: 'completed'
+            });
+        } else {
+            item.status = 'Replacement Confirmed';
+        }
+        item.returnConfirmedDate = new Date();
+        if (!item.returnRequestDate) {
+            item.returnRequestDate = new Date();
+        }
+    } else if (action === 'MarkReturned') {
+        if (item.status !== 'Return Confirmed') {
+            throw new Error('This item is not in Return Confirmed state');
+        }
+        item.status = 'Returned';
+        item.returnedDate = new Date();
+        if (!item.returnConfirmedDate) {
+            item.returnConfirmedDate = new Date();
+        }
+        if (!item.returnRequestDate) {
+            item.returnRequestDate = new Date();
+        }
+    } else if (action === 'MarkReplaced') {
+        if (item.status !== 'Replacement Confirmed') {
+            throw new Error('This item is not in Replacement Confirmed state');
+        }
+        item.status = 'Replaced';
+        item.returnedDate = new Date();
+        if (!item.returnConfirmedDate) {
+            item.returnConfirmedDate = new Date();
+        }
+        if (!item.returnRequestDate) {
+            item.returnRequestDate = new Date();
+        }
+    } else {
+        throw new Error('Invalid action');
+    }
+
+    // Now update overall order status based on item statuses:
+    const hasPendingReturnRequests = order.items.some(i => i.status === 'Return Requested');
+    const hasConfirmedReturns = order.items.some(i => i.status === 'Return Confirmed');
+    const hasConfirmedReplacements = order.items.some(i => i.status === 'Replacement Confirmed');
+
+    if (hasPendingReturnRequests) {
+        order.orderStatus = 'Return Requested';
+        if (!order.returnRequestDate) {
+            order.returnRequestDate = new Date();
+        }
+    } else if (hasConfirmedReturns || hasConfirmedReplacements) {
+        if (hasConfirmedReturns) {
+            order.orderStatus = 'Return Confirmed';
+            // order.paymentStatus = 'Refunded';
+        } else {
+            order.orderStatus = 'Replacement Confirmed';
+        }
+        if (!order.returnConfirmedDate) {
+            order.returnConfirmedDate = new Date();
+        }
+        if (!order.returnRequestDate) {
+            order.returnRequestDate = new Date();
+        }
+    } else {
+        const hasReturnedItems = order.items.some(i => i.status === 'Returned');
+        const hasReplacedItems = order.items.some(i => i.status === 'Replaced');
+
+        if (hasReturnedItems || hasReplacedItems) {
+            order.orderStatus = hasReturnedItems ? 'Returned' : 'Replaced';
+            if (!order.returnedDate) {
+                order.returnedDate = new Date();
+            }
+            if (!order.returnConfirmedDate) {
+                order.returnConfirmedDate = new Date();
+            }
+            if (!order.returnRequestDate) {
+                order.returnRequestDate = new Date();
+            }
+        }
+    }
+
+    await order.save();
+    return order;
+};
+
 export {
     getAdminOrdersService,
     updateOrderEstimateDateService,
     updateOrderStatusService,
-    updateOrderPaymentStatusService
+    updateOrderPaymentStatusService,
+    processAdminItemActionService
 };
+

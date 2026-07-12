@@ -9,6 +9,7 @@ import {
 import { editAddressService, addAddressService } from '../../services/user/addressService.js';
 import { getCartService } from '../../services/user/cartService.js';
 import couponModel from '../../model/coupon.js';
+import { getUserById } from '../../services/user/profileService.js';
 
 const getCheckout = async (req, res) => {
     try {
@@ -24,9 +25,10 @@ const getCheckout = async (req, res) => {
             // Cart validation errors (blocked/out-of-stock) — re-render cart with inline error
             if (err.statusCode === 400 && err.type) {
                 const cartData = await getCartService(userId);
+                const dbUser = await getUserById(userId);
                 return res.render('User/cart', {
                     cart: cartData,
-                    user: req.session.user || req.user || null,
+                    user: dbUser,
                     cartError: err.message
                 });
             }
@@ -34,11 +36,12 @@ const getCheckout = async (req, res) => {
         }
 
         const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
+        const dbUser = await getUserById(userId);
 
         res.render('User/cheackoutPage.ejs', {
             ...checkoutData,
             coupons,
-            user: req.session.user || req.user || null,
+            user: dbUser,
             errors: null,
             formData: null,
             editAddressId: null,
@@ -83,11 +86,12 @@ const editAddress = async (req, res) => {
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
                 const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
+                const dbUser = await getUserById(userId);
 
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
                     coupons,
-                    user: req.session.user || req.user || null,
+                    user: dbUser,
                     errors: error.errors,
                     formData: req.body,
                     editAddressId: req.params.addressId,
@@ -135,11 +139,12 @@ const addAddress = async (req, res) => {
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
                 const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
+                const dbUser = await getUserById(userId);
 
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
                     coupons,
-                    user: req.session.user || req.user || null,
+                    user: dbUser,
                     errors: null,
                     formData: null,
                     editAddressId: null,
@@ -204,12 +209,13 @@ const placeOrder = async (req, res) => {
                     cart = await getCartService(userId);
                 }
                 const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
+                const dbUser = await getUserById(userId);
                 return res.render('User/cheackoutPage.ejs', {
                     addresses,
                     defaultAddress,
                     cart,
                     coupons,
-                    user: req.session.user || req.user || null,
+                    user: dbUser,
                     errors: null,
                     formData: null,
                     editAddressId: null,
@@ -238,9 +244,12 @@ const getOrderConfirmation = async (req, res) => {
             return res.redirect('/shop');
         }
 
+        const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
+        const dbUser = userId ? await getUserById(userId) : null;
+
         res.render('User/orderconformedPage.ejs', {
             order,
-            user: req.session.user || req.user || null
+            user: dbUser
         });
     } catch (error) {
         console.error("getOrderConfirmation error:", error);

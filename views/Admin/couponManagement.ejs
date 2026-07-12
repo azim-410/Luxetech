@@ -114,12 +114,20 @@
 <section class="space-y-6">
 <div class="flex items-center justify-between">
 <h3 class="text-xl font-headline font-bold tracking-tight">Active Promotions</h3>
-<div class="flex gap-2">
-<button class="text-xs px-3 py-1.5 bg-surface-container-high rounded font-medium hover:bg-surface-dim transition-colors">All Types</button>
-<button class="text-xs px-3 py-1.5 bg-surface-container-lowest shadow-sm rounded font-medium border border-outline-variant/15">Latest</button>
+<div class="flex items-center gap-2">
+    <span class="text-xs font-bold text-on-surface-variant flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">filter_list</span> Sort:
+    </span>
+    <select id="couponSortSelect" onchange="sortActiveCoupons()" class="text-xs font-semibold pl-2 pr-6 py-1.5 rounded-lg border border-outline-variant/20 bg-white text-on-surface cursor-pointer outline-none focus:ring-1 focus:ring-secondary transition-all">
+        <option value="latest">Latest Created</option>
+        <option value="discount-desc">Discount (High to Low)</option>
+        <option value="discount-asc">Discount (Low to High)</option>
+        <option value="expiry-asc">Expiry (Soonest First)</option>
+        <option value="usage-desc">Most Used</option>
+    </select>
 </div>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="activeCouponsGrid">
 <!-- New Promotion Card -->
 <div onclick="openCouponModal()" class="border-2 border-dashed border-outline-variant/30 rounded-xl flex flex-col items-center justify-center p-8 text-center hover:bg-surface-container-low transition-all group cursor-pointer h-full min-h-[280px]">
 <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -132,7 +140,11 @@
 <% if (locals.activeCoupons && activeCoupons.length > 0) { %>
     <% activeCoupons.forEach(coupon => { %>
         <!-- Coupon Card -->
-        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10 flex flex-col justify-between group">
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10 flex flex-col justify-between group coupon-card-item"
+             data-created="<%= coupon.createdAt ? new Date(coupon.createdAt).getTime() : 0 %>"
+             data-discount-value="<%= coupon.discountValue %>"
+             data-expiry="<%= new Date(coupon.expiryDate).getTime() %>"
+             data-used-count="<%= coupon.usedCount || 0 %>">
             <div class="space-y-4">
                 <div class="flex justify-between items-start">
                     <div class="px-2 py-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold uppercase tracking-wider rounded">
@@ -909,6 +921,44 @@
 
         // Re-append in sorted order
         rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Sort Active Coupons client-side function
+    function sortActiveCoupons() {
+        const sortBy = document.getElementById('couponSortSelect').value;
+        const grid = document.getElementById('activeCouponsGrid');
+        if (!grid) return;
+
+        // Get all coupon cards that are actual coupon items (excluding the "New Promotion Card")
+        const cards = Array.from(grid.querySelectorAll('.coupon-card-item'));
+        if (cards.length === 0) return;
+
+        cards.sort((a, b) => {
+            const valA = parseFloat(a.getAttribute('data-discount-value'));
+            const valB = parseFloat(b.getAttribute('data-discount-value'));
+            const expA = parseInt(a.getAttribute('data-expiry'));
+            const expB = parseInt(b.getAttribute('data-expiry'));
+            const usedA = parseInt(a.getAttribute('data-used-count'));
+            const usedB = parseInt(b.getAttribute('data-used-count'));
+            const createdA = parseInt(a.getAttribute('data-created'));
+            const createdB = parseInt(b.getAttribute('data-created'));
+
+            if (sortBy === 'latest') {
+                return createdB - createdA;
+            } else if (sortBy === 'discount-desc') {
+                return valB - valA;
+            } else if (sortBy === 'discount-asc') {
+                return valA - valB;
+            } else if (sortBy === 'expiry-asc') {
+                return expA - expB;
+            } else if (sortBy === 'usage-desc') {
+                return usedB - usedA;
+            }
+            return 0;
+        });
+
+        // Re-append card items after the "New Promotion Card"
+        cards.forEach(card => grid.appendChild(card));
     }
 
     // Close redemption history modal on backdrop click

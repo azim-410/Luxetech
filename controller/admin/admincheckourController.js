@@ -1,4 +1,4 @@
-import { getAdminOrdersService, updateOrderEstimateDateService, updateOrderStatusService, updateOrderPaymentStatusService, processAdminItemActionService } from '../../services/admin/adminCheckoutService.js';
+import { getAdminOrdersService, updateOrderEstimateDateService, updateOrderStatusService, updateOrderPaymentStatusService, processAdminItemActionService, exportOrdersService } from '../../services/admin/adminCheckoutService.js';
 import Order from '../../model/order.js';
 
     const getOrderList = async (req, res) => {
@@ -92,11 +92,22 @@ const processAdminItemAction = async (req, res) => {
     }
 };
 
+const exportOrders = async (req, res) => {
+    try {
+        const orders = await exportOrdersService();
+        return res.json(orders);
+    } catch (error) {
+        console.error("exportOrders error:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     getOrderList,
     getOrderDetails,
     updateOrderEstimateDate,
     updateOrderStatus,
     updateOrderPaymentStatus,
-    processAdminItemAction
+    processAdminItemAction,
+    exportOrders
 };

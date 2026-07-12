@@ -34,7 +34,7 @@ import {
     deleteCategoryImage,
     toggleCategoryVisibility
 } from '../controller/admin/categoryManagementController.js';
-import { getOrderList, getOrderDetails, updateOrderEstimateDate, updateOrderStatus, updateOrderPaymentStatus, processAdminItemAction } from '../controller/admin/admincheckourController.js';
+import { getOrderList, getOrderDetails, updateOrderEstimateDate, updateOrderStatus, updateOrderPaymentStatus, processAdminItemAction, exportOrders } from '../controller/admin/admincheckourController.js';
 import { getCouponList, createCoupon, deleteCoupon, updateCoupon } from '../controller/admin/couponManagementController.js';
 
 
@@ -88,6 +88,7 @@ router.delete('/product-management/delete/:id', isAdminAuthenticated, deleteProd
 
 
 router.get('/order-management', isAdminAuthenticated, getOrderList)
+router.get('/order-management/export', isAdminAuthenticated, exportOrders)
 router.get('/order-management/details/:id', isAdminAuthenticated, getOrderDetails)
 router.post('/order-management/details/:id/update-estimate', isAdminAuthenticated, updateOrderEstimateDate)
 router.post('/order-management/details/:id/update-status', isAdminAuthenticated, updateOrderStatus)

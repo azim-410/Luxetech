@@ -61,243 +61,257 @@
 
             <!-- Checkout Error Banner (shown when blocked items prevent checkout) -->
             <% if (locals.cartError) { %>
-            <div class="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4">
-                <span class="material-symbols-outlined text-red-500 mt-0.5 flex-shrink-0">error</span>
-                <div>
-                    <p class="text-sm font-bold text-red-700 mb-0.5">Checkout Blocked</p>
-                    <p class="text-sm text-red-600"><%= locals.cartError %></p>
-                </div>
-            </div>
-            <% } %>
-
-            <!-- Layout Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <!-- Left Column: Cart Items -->
-                <div class="lg:col-span-8 space-y-6">
-                    <!-- Headers Row (Desktop) -->
-                    <div
-                        class="hidden sm:grid grid-cols-12 px-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        <div class="col-span-6">Product Details</div>
-                        <div class="col-span-2 text-right">Price</div>
-                        <div class="col-span-2 text-center">Quantity</div>
-                        <div class="col-span-2 text-right">Subtotal</div>
+                <div class="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4">
+                    <span class="material-symbols-outlined text-red-500 mt-0.5 flex-shrink-0">error</span>
+                    <div>
+                        <p class="text-sm font-bold text-red-700 mb-0.5">Checkout Blocked</p>
+                        <p class="text-sm text-red-600">
+                            <%= locals.cartError %>
+                        </p>
                     </div>
+                </div>
+                <% } %>
 
-                    <!-- Cart Items List Container -->
-                    <div id="cart-items-container" class="space-y-6">
-                        <% if (cart && cart.items && cart.items.length> 0) { %>
-                            <% cart.items.forEach(function(item) { %>
-                                <div class="cart-item bg-white border border-slate-200/60 rounded-xl p-8 relative flex flex-col sm:grid sm:grid-cols-12 items-center gap-4 sm:gap-0"
-                                    data-product-id="<%= item.productId %>"
-                                    data-variant-id="<%= item.variantId || '' %>"
-                                    data-price="<%= item.discountedPrice %>" data-max-allowed="<%= item.maxAllowed %>">
-                                    <!-- Product Info -->
-                                    <div class="col-span-6 flex items-center gap-6 w-full">
-                                        <div
-                                            class="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
-                                            <% if (item.image) { %>
-                                                <img src="<%= item.image %>" alt="<%= item.name %>"
-                                                    class="w-full h-full object-cover" />
-                                                <% } else { %>
-                                                    <div
-                                                        class="w-full h-full bg-slate-200 flex items-center justify-center text-xs text-slate-400 font-bold">
-                                                        No Image</div>
-                                                    <% } %>
-                                        </div>
-                                        <div>
-                                            <h3
-                                                class="font-headline font-bold text-lg <%= item.isUnavailable ? 'text-slate-400 line-through' : 'text-[#0D1B2A]' %> mb-1">
-                                                <%= item.name %>
-                                            </h3>
-                                            <% if (item.variantName) { %>
-                                                <p class="text-xs text-slate-500 mb-3">
-                                                    <%= item.variantName %>
-                                                </p>
-                                                <% } %>
-                                                    <% if (item.isUnavailable) { %>
-                                                        <div class="flex flex-col gap-1 items-start mt-1">
-                                                            <span
-                                                                class="bg-red-50 text-red-600 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-red-100">Unavailable</span>
-                                                            <p
-                                                                class="text-[11px] font-semibold tracking-wide text-red-600 mt-1">
-                                                                This product is currently unavailable.</p>
-                                                        </div>
-                                                        <% } else if (item.stock <=0) { %>
-                                                            <div class="flex flex-col gap-1 items-start mt-1">
-                                                                <span
-                                                                    class="bg-red-50 text-red-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-red-100">Out
-                                                                    of Stock</span>
-                                                                <p
-                                                                    class="text-[11px] font-semibold tracking-wide text-red-600 mt-1">
-                                                                    This variant is currently sold out and unavailable.
-                                                                </p>
-                                                            </div>
-                                                            <% } else if (item.stock <=5) { %>
+                    <!-- Layout Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <!-- Left Column: Cart Items -->
+                        <div class="lg:col-span-8 space-y-6">
+                            <!-- Headers Row (Desktop) -->
+                            <div
+                                class="hidden sm:grid grid-cols-12 px-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                                <div class="col-span-6">Product Details</div>
+                                <div class="col-span-2 text-right">Price</div>
+                                <div class="col-span-2 text-center">Quantity</div>
+                                <div class="col-span-2 text-right">Subtotal</div>
+                            </div>
+
+                            <!-- Cart Items List Container -->
+                            <div id="cart-items-container" class="space-y-6">
+                                <% if (cart && cart.items && cart.items.length> 0) { %>
+                                    <% cart.items.forEach(function(item) { %>
+                                        <div class="cart-item bg-white border border-slate-200/60 rounded-xl p-8 relative flex flex-col sm:grid sm:grid-cols-12 items-center gap-4 sm:gap-0"
+                                            data-product-id="<%= item.productId %>"
+                                            data-variant-id="<%= item.variantId || '' %>"
+                                            data-price="<%= item.discountedPrice %>"
+                                            data-max-allowed="<%= item.maxAllowed %>">
+                                            <!-- Product Info -->
+                                            <div class="col-span-6 flex items-center gap-6 w-full">
+                                                <div
+                                                    class="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                                                    <% if (item.image) { %>
+                                                        <img src="<%= item.image %>" alt="<%= item.name %>"
+                                                            class="w-full h-full object-cover" />
+                                                        <% } else { %>
+                                                            <div
+                                                                class="w-full h-full bg-slate-200 flex items-center justify-center text-xs text-slate-400 font-bold">
+                                                                No Image</div>
+                                                            <% } %>
+                                                </div>
+                                                <div>
+                                                    <h3
+                                                        class="font-headline font-bold text-lg <%= item.isUnavailable ? 'text-slate-400 line-through' : 'text-[#0D1B2A]' %> mb-1">
+                                                        <%= item.name %>
+                                                    </h3>
+                                                    <% if (item.variantName) { %>
+                                                        <p class="text-xs text-slate-500 mb-3">
+                                                            <%= item.variantName %>
+                                                        </p>
+                                                        <% } %>
+                                                            <% if (item.isUnavailable) { %>
                                                                 <div class="flex flex-col gap-1 items-start mt-1">
                                                                     <span
-                                                                        class="bg-amber-50 text-amber-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-100">Low
-                                                                        Stock</span>
+                                                                        class="bg-red-50 text-red-600 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-red-100">Unavailable</span>
                                                                     <p
-                                                                        class="text-[11px] font-semibold tracking-wide text-amber-600 mt-1">
-                                                                        Only <%= item.stock %> units remaining! Order
-                                                                            soon.</p>
+                                                                        class="text-[11px] font-semibold tracking-wide text-red-600 mt-1">
+                                                                        This product is currently unavailable.</p>
                                                                 </div>
-                                                                <% } else { %>
+                                                                <% } else if (item.stock <=0) { %>
                                                                     <div class="flex flex-col gap-1 items-start mt-1">
                                                                         <span
-                                                                            class="bg-green-50 text-green-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-green-100">In
-                                                                            Stock</span>
+                                                                            class="bg-red-50 text-red-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-red-100">Out
+                                                                            of Stock</span>
+                                                                        <p
+                                                                            class="text-[11px] font-semibold tracking-wide text-red-600 mt-1">
+                                                                            This variant is currently sold out and
+                                                                            unavailable.
+                                                                        </p>
                                                                     </div>
-                                                                    <% } %>
-                                        </div>
-                                    </div>
+                                                                    <% } else if (item.stock <=5) { %>
+                                                                        <div
+                                                                            class="flex flex-col gap-1 items-start mt-1">
+                                                                            <span
+                                                                                class="bg-amber-50 text-amber-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-100">Low
+                                                                                Stock</span>
+                                                                            <p
+                                                                                class="text-[11px] font-semibold tracking-wide text-amber-600 mt-1">
+                                                                                Only <%= item.stock %> units remaining!
+                                                                                    Order
+                                                                                    soon.</p>
+                                                                        </div>
+                                                                        <% } else { %>
+                                                                            <div
+                                                                                class="flex flex-col gap-1 items-start mt-1">
+                                                                                <span
+                                                                                    class="bg-green-50 text-green-700 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-green-100">In
+                                                                                    Stock</span>
+                                                                            </div>
+                                                                            <% } %>
+                                                </div>
+                                            </div>
 
-                                    <!-- Price -->
-                                    <div
-                                        class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block mt-2 sm:mt-0">
-                                        <span class="sm:hidden text-xs font-bold text-slate-400 uppercase">Price:</span>
-                                        <span class="font-bold text-[#0D1B2A]">
-                                            <% if (item.isUnavailable) { %>
-                                                —
-                                                <% } else { %>
-                                                    ₹<%= item.discountedPrice %>
-                                                        <% } %>
-                                        </span>
-                                    </div>
+                                            <!-- Price -->
+                                            <div
+                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block mt-2 sm:mt-0">
+                                                <span
+                                                    class="sm:hidden text-xs font-bold text-slate-400 uppercase">Price:</span>
+                                                <span class="font-bold text-[#0D1B2A]">
+                                                    <% if (item.isUnavailable) { %>
+                                                        —
+                                                        <% } else { %>
+                                                            ₹<%= item.discountedPrice %>
+                                                                <% } %>
+                                                </span>
+                                            </div>
 
-                                    <!-- Quantity Selector -->
-                                    <div class="col-span-2 flex justify-center w-full sm:w-auto my-2 sm:my-0">
-                                        <div
-                                            class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                                            <!-- Quantity Selector -->
+                                            <div class="col-span-2 flex justify-center w-full sm:w-auto my-2 sm:my-0">
+                                                <div
+                                                    class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                                                    <button
+                                                        class="minus-btn px-3 py-1.5 hover:bg-slate-50 text-slate-500 hover:text-[#0D1B2A] transition-colors flex items-center justify-center font-bold"
+                                                        <%- item.isUnavailable
+                                                        ? 'disabled style="cursor: not-allowed; opacity: 0.5;"'
+                                                        : 'onclick="changeQty(this, -1)"' %>>-</button>
+                                                    <input type="text"
+                                                        class="qty-input w-10 text-center font-bold text-sm text-[#0D1B2A] border-none focus:ring-0 p-0"
+                                                        value="<%= item.quantity %>" readonly />
+                                                    <button
+                                                        class="plus-btn px-3 py-1.5 hover:bg-slate-50 text-slate-500 hover:text-[#0D1B2A] transition-colors flex items-center justify-center font-bold"
+                                                        <%- item.isUnavailable
+                                                        ? 'disabled style="cursor: not-allowed; opacity: 0.5;"'
+                                                        : 'onclick="changeQty(this, 1)"' %>>+</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Subtotal -->
+                                            <div
+                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block">
+                                                <span
+                                                    class="sm:hidden text-xs font-bold text-slate-400 uppercase">Subtotal:</span>
+                                                <span class="item-subtotal font-bold text-[#0D1B2A]">
+                                                    <% if (item.isUnavailable) { %>
+                                                        —
+                                                        <% } else { %>
+                                                            ₹<%= item.subtotal %>
+                                                                <% } %>
+                                                </span>
+                                            </div>
+
+                                            <!-- Delete Button -->
                                             <button
-                                                class="minus-btn px-3 py-1.5 hover:bg-slate-50 text-slate-500 hover:text-[#0D1B2A] transition-colors flex items-center justify-center font-bold"
-                                                <%- item.isUnavailable
-                                                ? 'disabled style="cursor: not-allowed; opacity: 0.5;"'
-                                                : 'onclick="changeQty(this, -1)"' %>>-</button>
-                                            <input type="text"
-                                                class="qty-input w-10 text-center font-bold text-sm text-[#0D1B2A] border-none focus:ring-0 p-0"
-                                                value="<%= item.quantity %>" readonly />
-                                            <button
-                                                class="plus-btn px-3 py-1.5 hover:bg-slate-50 text-slate-500 hover:text-[#0D1B2A] transition-colors flex items-center justify-center font-bold"
-                                                <%- item.isUnavailable
-                                                ? 'disabled style="cursor: not-allowed; opacity: 0.5;"'
-                                                : 'onclick="changeQty(this, 1)"' %>>+</button>
+                                                class="delete-btn absolute top-6 right-6 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                                                onclick="removeCartItem(this)">
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
                                         </div>
-                                    </div>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <div
+                                                    class="text-center py-16 bg-white border border-slate-200/60 rounded-xl">
+                                                    <span
+                                                        class="material-symbols-outlined text-5xl text-slate-300 mb-4">shopping_cart</span>
+                                                    <p class="text-slate-500 font-medium">Your cart is currently empty.
+                                                    </p>
+                                                </div>
+                                                <% } %>
+                            </div>
 
-                                    <!-- Subtotal -->
-                                    <div
-                                        class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block">
-                                        <span
-                                            class="sm:hidden text-xs font-bold text-slate-400 uppercase">Subtotal:</span>
-                                        <span class="item-subtotal font-bold text-[#0D1B2A]">
-                                            <% if (item.isUnavailable) { %>
-                                                —
-                                                <% } else { %>
-                                                    ₹<%= item.subtotal %>
-                                                        <% } %>
-                                        </span>
-                                    </div>
+                            <!-- Continue Shopping -->
+                            <div class="pt-6">
+                                <a href="/shop"
+                                    class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-[#0D1B2A] transition-colors">
+                                    <span class="material-symbols-outlined text-sm">arrow_back</span> Continue Shopping
+                                </a>
+                            </div>
+                        </div>
 
-                                    <!-- Delete Button -->
-                                    <button
-                                        class="delete-btn absolute top-6 right-6 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center"
-                                        onclick="removeCartItem(this)">
-                                        <span class="material-symbols-outlined">delete</span>
-                                    </button>
+                        <!-- Right Column: Order Summary Card -->
+                        <div class="lg:col-span-4 bg-[#F8FAFC] border border-slate-200/60 rounded-xl p-8 space-y-6">
+                            <h2 class="text-xl font-bold font-headline text-[#0D1B2A]">Order Summary</h2>
+
+                            <div class="space-y-4 text-sm font-medium">
+                                <div class="flex justify-between text-slate-500">
+                                    <span>Original Price</span>
+                                    <span id="original-price" class="text-[#0D1B2A] font-semibold">₹<%= cart ?
+                                            cart.originalTotal : 0 %></span>
                                 </div>
-                                <% }); %>
-                                    <% } else { %>
-                                        <div class="text-center py-16 bg-white border border-slate-200/60 rounded-xl">
-                                            <span
-                                                class="material-symbols-outlined text-5xl text-slate-300 mb-4">shopping_cart</span>
-                                            <p class="text-slate-500 font-medium">Your cart is currently empty.</p>
-                                        </div>
-                                        <% } %>
-                    </div>
-
-                    <!-- Continue Shopping -->
-                    <div class="pt-6">
-                        <a href="/shop"
-                            class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-[#0D1B2A] transition-colors">
-                            <span class="material-symbols-outlined text-sm">arrow_back</span> Continue Shopping
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Right Column: Order Summary Card -->
-                <div class="lg:col-span-4 bg-[#F8FAFC] border border-slate-200/60 rounded-xl p-8 space-y-6">
-                    <h2 class="text-xl font-bold font-headline text-[#0D1B2A]">Order Summary</h2>
-
-                    <div class="space-y-4 text-sm font-medium">
-                        <div class="flex justify-between text-slate-500">
-                            <span>Original Price</span>
-                            <span id="original-price" class="text-[#0D1B2A] font-semibold">₹<%= cart ?
-                                    cart.originalTotal : 0 %></span>
-                        </div>
-                        <div class="flex justify-between text-green-600">
-                            <span>Discount</span>
-                            <span id="discount-amount">-₹<%= cart ? cart.discount : 0 %></span>
-                        </div>
-                        <div class="flex justify-between text-slate-500 border-t border-slate-200/60 pt-4">
-                            <span>Subtotal</span>
-                            <span id="subtotal-amount" class="text-[#0D1B2A] font-semibold">₹<%= cart ? cart.subtotal :
-                                    0 %></span>
-                        </div>
-                        <div class="flex justify-between text-slate-500">
-                            <span>Estimated Tax (8%)</span>
-                            <span id="tax-amount" class="text-[#0D1B2A] font-semibold">₹<%= cart ? cart.tax : 0 %>
+                                <div class="flex justify-between text-green-600">
+                                    <span>Discount</span>
+                                    <span id="discount-amount">-₹<%= cart ? cart.discount : 0 %></span>
+                                </div>
+                                <div class="flex justify-between text-slate-500 border-t border-slate-200/60 pt-4">
+                                    <span>Subtotal</span>
+                                    <span id="subtotal-amount" class="text-[#0D1B2A] font-semibold">₹<%= cart ?
+                                            cart.subtotal : 0 %></span>
+                                </div>
+                                <div class="flex justify-between text-slate-500">
+                                    <span>Estimated Tax (8%)</span>
+                                    <span id="tax-amount" class="text-[#0D1B2A] font-semibold">₹<%= cart ? cart.tax : 0
+                                            %>
                                     </span>
+                                </div>
+                            </div>
+
+                            <% const hasUnavailableInCart=cart && cart.items && cart.items.some(item=>
+                                item.isUnavailable);
+                                const hasStockoutInCart = cart && cart.items && cart.items.some(item => item.stock <= 0
+                                    && !item.isUnavailable); const isCheckoutBlocked=hasUnavailableInCart ||
+                                    hasStockoutInCart; %>
+                                    <div class="border-t border-slate-200 pt-6">
+                                        <div class="flex justify-between items-baseline mb-6">
+                                            <span
+                                                class="text-xs font-bold uppercase tracking-wider text-slate-400">Grand
+                                                Total</span>
+                                            <span id="grand-total"
+                                                class="text-3xl font-extrabold font-headline text-[#0D1B2A]">₹<%= cart ?
+                                                    cart.grandTotal : 0 %></span>
+                                        </div>
+
+                                        <div id="checkout-btn-container">
+                                            <% if (isCheckoutBlocked) { %>
+                                                <button
+                                                    class="w-full py-4 bg-slate-200 text-slate-400 cursor-not-allowed font-label font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3"
+                                                    disabled>
+                                                    Proceed to Checkout <span
+                                                        class="material-symbols-outlined text-sm">arrow_forward</span>
+                                                </button>
+                                                <p class="text-red-500 text-[11px] font-semibold text-center mt-3">
+                                                    Please remove unavailable or out of stock items to proceed.
+                                                </p>
+                                                <% } else { %>
+                                                    <a href="/checkout"
+                                                        class="w-full py-4 bg-[#0D1B2A] text-white hover:bg-slate-800 transition-all duration-300 font-label font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3">
+                                                        Proceed to Checkout <span
+                                                            class="material-symbols-outlined text-sm">arrow_forward</span>
+                                                    </a>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Secure Checkouts Badges -->
+                                    <div class="space-y-3 pt-2 text-[11px] font-semibold text-slate-500">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-base text-slate-400">lock</span>
+                                            <span>Secure Encryption 256-bit AES</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="material-symbols-outlined text-base text-slate-400">local_shipping</span>
+                                            <span>Expedited Precision Logistics</span>
+                                        </div>
+                                    </div>
                         </div>
-                    </div>
-
-                    <% const hasUnavailableInCart=cart && cart.items && cart.items.some(item=> item.isUnavailable);
-                        const hasStockoutInCart = cart && cart.items && cart.items.some(item => item.stock <= 0 &&
-                            !item.isUnavailable); const isCheckoutBlocked=hasUnavailableInCart || hasStockoutInCart; %>
-                            <div class="border-t border-slate-200 pt-6">
-                                <div class="flex justify-between items-baseline mb-6">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Grand
-                                        Total</span>
-                                    <span id="grand-total"
-                                        class="text-3xl font-extrabold font-headline text-[#0D1B2A]">₹<%= cart ?
-                                            cart.grandTotal : 0 %></span>
-                                </div>
-
-                                <div id="checkout-btn-container">
-                                    <% if (isCheckoutBlocked) { %>
-                                        <button
-                                            class="w-full py-4 bg-slate-200 text-slate-400 cursor-not-allowed font-label font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3"
-                                            disabled>
-                                            Proceed to Checkout <span
-                                                class="material-symbols-outlined text-sm">arrow_forward</span>
-                                        </button>
-                                        <p class="text-red-500 text-[11px] font-semibold text-center mt-3">
-                                            Please remove unavailable or out of stock items to proceed.
-                                        </p>
-                                        <% } else { %>
-                                            <a href="/checkout"
-                                                 class="w-full py-4 bg-[#0D1B2A] text-white hover:bg-slate-800 transition-all duration-300 font-label font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3">
-                                                 Proceed to Checkout <span
-                                                     class="material-symbols-outlined text-sm">arrow_forward</span>
-                                             </a>
-                                            <% } %>
-                                </div>
-                            </div>
-
-                            <!-- Secure Checkouts Badges -->
-                            <div class="space-y-3 pt-2 text-[11px] font-semibold text-slate-500">
-                                <div class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-base text-slate-400">lock</span>
-                                    <span>Secure Encryption 256-bit AES</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span
-                                        class="material-symbols-outlined text-base text-slate-400">local_shipping</span>
-                                    <span>Expedited Precision Logistics</span>
-                                </div>
-                            </div>
-                </div>
-            </div><!-- end grid wrapper -->
+                    </div><!-- end grid wrapper -->
         </main>
 
         <!-- Beautiful Tailwind Delete Confirmation Modal -->
@@ -428,7 +442,7 @@
                         </p>
                     `;
                     } else {
-                      btnContainer.innerHTML = `
+                        btnContainer.innerHTML = `
     <a href="/checkout" class="w-full py-4 bg-[#0D1B2A] text-white hover:bg-slate-800 transition-all duration-300 font-label font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3">
         Proceed to Checkout <span class="material-symbols-outlined text-sm">arrow_forward</span>
     </a>

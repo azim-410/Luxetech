@@ -1,12 +1,34 @@
-import { adminLoginService } from '../../services/admin/adminAuthService.js';
+import { adminLoginService, getDashboardStatsService } from '../../services/admin/adminAuthService.js';
 
 const showLoginPage = (req, res) => {
     return res.render('Admin/auth/login.ejs');
 };
 
 const showDashboard = async (req, res) => {
-    return res.render('Admin/dashboard.ejs')
-}
+    try {
+        const {
+            totalCustomers,
+            totalOrders,
+            totalRevenue,
+            pendingOrders
+        } = await getDashboardStatsService();
+
+        return res.render('Admin/dashboard.ejs', {
+            totalCustomers,
+            totalOrders,
+            totalRevenue,
+            pendingOrders
+        });
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+        return res.render('Admin/dashboard.ejs', {
+            totalCustomers: 0,
+            totalOrders: 0,
+            totalRevenue: 0,
+            pendingOrders: 0
+        });
+    }
+};
 
 const adminLogin = async (req, res) => {
     try {

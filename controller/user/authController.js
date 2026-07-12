@@ -18,7 +18,8 @@ const registerPage = (req, res) => {
     const expiredMessage = req.query.expired === '1'
         ? 'Your registration session expired (12 minutes). Please register again.'
         : null;
-    return res.render('User/auth/register', { googleError, expiredMessage });
+    const refer = req.query.refer || '';
+    return res.render('User/auth/register', { googleError, expiredMessage, refer });
 };
 
 const loginPage = (req, res) => {

@@ -1,5 +1,7 @@
 import userModel from '../../model/userModel.js';
+import Order from '../../model/order.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 const adminLoginService = async (email, password) => {
     if (!email || email.trim() === '' || !password || password.trim() === '') throw new Error('All feild required');
@@ -18,5 +20,29 @@ const adminLoginService = async (email, password) => {
     return { id: admin._id, email: admin.email, name: admin.name };
 };
 
-export { adminLoginService };
+const getDashboardStatsService = async () => {
+    const totalCustomers = await userModel.countDocuments({ role: 'user' });
+    const totalOrders = await Order.countDocuments();
+    
+    // Sum grandTotal of orders where paymentStatus is 'Paid'
+    const revenueResult = await Order.aggregate([
+        { $match: { paymentStatus: 'Paid' } },
+        { $group: { _id: null, total: { $sum: '$pricing.grandTotal' } } }
+    ]);
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    // Count pending/processing orders
+    const pendingOrders = await Order.countDocuments({
+        orderStatus: { $in: ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Out for Delivery'] }
+    });
+
+    return {
+        totalCustomers,
+        totalOrders,
+        totalRevenue,
+        pendingOrders
+    };
+};
+
+export { adminLoginService, getDashboardStatsService };
  

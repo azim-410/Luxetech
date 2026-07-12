@@ -18,6 +18,7 @@ import {
     getWallet,
     getWalletHistory
  } from '../controller/user/profileController.js';  
+import { getReferralPage } from '../controller/user/referralController.js';
 
  import {
     getAddresses,
@@ -57,5 +58,6 @@ router.post('/address/delete/:addressId', isAuthenticated, checkIfBlocked, delet
 
 router.get('/wallet', isAuthenticated, checkIfBlocked, getWallet);
 router.get('/wallet/history', isAuthenticated, checkIfBlocked, getWalletHistory);
+router.get('/refer', isAuthenticated, checkIfBlocked, getReferralPage);
 
 export default router;  

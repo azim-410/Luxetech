@@ -3,13 +3,14 @@ import OTP from '../../model/otp.js';
 import bcrypt from 'bcrypt';
 import { generateOTP } from '../../utils/genarateOTP.js';
 import { sendOTP } from '../../utils/sendEmail.js';
+import { processReferralReward } from './referralService.js';
 
 // ── Validation helpers ───────────────────────────────────────
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
 // ─── REGISTER ───────────────────────────────────────────
 const registerUser = async (data) => {
-    const { name, email, password, confirmPassword, terms } = data;
+    const { name, email, password, confirmPassword, terms, referral } = data;
     const errors = {};
 
     // Name Validation
@@ -58,6 +59,17 @@ const registerUser = async (data) => {
         errors.terms = "You must agree to the Terms and Conditions";
     }
 
+    // Referral Validation (Optional)
+    let referredByCode = null;
+    if (referral && referral.trim() !== '') {
+        const referredByUser = await User.findOne({ myReferralCode: referral.trim().toUpperCase() });
+        if (!referredByUser) {
+            errors.referral = "Invalid referral code";
+        } else {
+            referredByCode = referral.trim().toUpperCase();
+        }
+    }
+
     // Throw all validation errors if any
     if (Object.keys(errors).length > 0) {
         const err = new Error("Validation failed");
@@ -67,7 +79,13 @@ const registerUser = async (data) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword, terms: true });
+    const user = new User({ 
+        name, 
+        email, 
+        password: hashedPassword, 
+        terms: true,
+        referredBy: referredByCode
+    });
     await user.save();
 
     const otp = generateOTP();
@@ -135,6 +153,9 @@ const verifyOtp = async (inputValue, userId) => {
 
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
+
+    // Handle referral credit via referralService
+    await processReferralReward(user);
 
     await OTP.deleteOne({ userId });
     return { success: true, user };

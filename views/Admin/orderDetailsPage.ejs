@@ -8,6 +8,8 @@
     <title>Order Details - Luxe Obsidian</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- html2pdf.js for exporting PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts: Manrope & Inter -->
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
@@ -166,7 +168,7 @@
                                     <span class="material-symbols-outlined text-[20px]">check</span>
                                 </button>
                             </div>
-                            <button
+                            <button onclick="downloadInvoicePDF(this)"
                                 class="px-5 py-2.5 rounded-md border border-outline-variant/15 text-on-surface text-xs font-semibold hover:bg-surface-container-low transition-all flex items-center gap-2">
                                 <span class="material-symbols-outlined text-lg">print</span> Print Invoice
                             </button>
@@ -1095,6 +1097,188 @@
                     }
                 });
             });
+
+            async function downloadInvoicePDF(btn) {
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `
+                    <span class="material-symbols-outlined text-sm animate-spin">sync</span>
+                    Generating...
+                `;
+
+                try {
+                    // Create virtual element for PDF rendering
+                    const container = document.createElement('div');
+                    container.style.fontFamily = "'Inter', sans-serif";
+                    container.style.color = '#1e293b';
+                    container.style.padding = '40px';
+                    container.style.backgroundColor = '#ffffff';
+
+                    const downloadDateTime = new Date().toLocaleString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
+
+                    // Retrieve pricing information from template variables
+                    const subtotal = <%= order.pricing.subtotal || 0 %>;
+                    const shipping = <%= order.pricing.shipping || 0 %>;
+                    const tax = <%= order.pricing.tax || 0 %>;
+                    const grandTotal = <%= order.pricing.grandTotal || 0 %>;
+                    const couponCode = '<%= order.couponCode || "" %>';
+                    
+                    let couponDiscount = 0;
+                    let offerDiscount = 0;
+                    <% if (typeof order.pricing.couponDiscount !== 'undefined') { %>
+                        couponDiscount = <%= order.pricing.couponDiscount %>;
+                        offerDiscount = <%= order.pricing.productDiscount || 0 %>;
+                    <% } else if (order.couponCode) { %>
+                        couponDiscount = <%= order.pricing.discount || 0 %>;
+                    <% } else { %>
+                        offerDiscount = <%= order.pricing.discount || 0 %>;
+                    <% } %>
+
+                    container.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px;">
+                            <div>
+                                <h1 style="font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">LUXE TECH</h1>
+                                <p style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin: 4px 0 0 0; font-weight: 600;">Luxury Tech & Hardware Invoice</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">INVOICE</h2>
+                                <p style="font-size: 11px; font-weight: 700; color: #0f172a; margin: 5px 0 0 0;">Order Reference: #<%= order.orderId %></p>
+                                <p style="font-size: 9px; color: #64748b; margin: 2px 0 0 0;">Date Placed: <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+                                <p style="font-size: 9px; color: #64748b; margin: 2px 0 0 0;">Downloaded On: \${downloadDateTime}</p>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; font-size: 11px; line-height: 1.5;">
+                            <div>
+                                <h3 style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px;">Billed & Shipped To</h3>
+                                <p style="font-size: 12px; font-weight: 700; color: #0f172a; margin: 0 0 4px 0;"><%= order.shippingAddress.fullName %></p>
+                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.streetAddress %></p>
+                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></p>
+                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.country %></p>
+                                <p style="margin: 8px 0 0 0; color: #475569; font-weight: 600;">Phone: <%= order.shippingAddress.phoneNumber %></p>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px;">Payment & Delivery Details</h3>
+                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Payment Method:</strong> <%= order.paymentMethod %></p>
+                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Payment Status:</strong> <%= order.paymentStatus %></p>
+                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Order Status:</strong> <%= order.orderStatus %></p>
+                                <% if (order.estimateDate) { %>
+                                    <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Estimated Delivery Date:</strong> <%= order.estimateDate %></p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <h3 style="font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 800; color: #0f172a; margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em;">Order Summary</h3>
+                        
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 30px;">
+                            <thead>
+                                <tr style="background-color: #0f172a; border-bottom: 2px solid #0f172a;">
+                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; width: 45%;">Item Details</th>
+                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: center; width: 15%;">Unit Price</th>
+                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: center; width: 15%;">Qty</th>
+                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: right; width: 25%;">Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% order.items.forEach(function(item) { %>
+                                    <tr style="border-bottom: 1px solid #e2e8f0; page-break-inside: avoid;">
+                                        <td style="padding: 12px 8px;">
+                                            <div style="font-size: 11px; font-weight: 700; color: #0f172a; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                                <%= item.name %>
+                                            </div>
+                                            <% if (item.variantName) { %>
+                                                <div style="font-size: 9px; color: #64748b; margin-top: 2px; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                                    <%= item.variantName %>
+                                                </div>
+                                            <% } %>
+                                            <% if (item.status !== 'Pending' && item.status !== 'Processing' && item.status !== 'Shipped' && item.status !== 'Out for Delivery' && item.status !== 'Delivered') { %>
+                                                <span style="display: inline-block; background-color: #fee2e2; color: #b91c1c; font-size: 8px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 3px; margin-top: 4px;">
+                                                    <%= item.status %>
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td style="padding: 12px 8px; font-size: 10px; color: #475569; text-align: center; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                            ₹<%= item.price.toFixed(2) %>
+                                        </td>
+                                        <td style="padding: 12px 8px; font-size: 10px; color: #475569; text-align: center; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                            <%= String(item.quantity).padStart(2, '0') %>
+                                        </td>
+                                        <td style="padding: 12px 8px; text-align: right; font-size: 11px; font-weight: 700; color: #0f172a; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                            ₹<%= item.subtotal.toFixed(2) %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+
+                        <div style="display: flex; justify-content: flex-end; page-break-inside: avoid;">
+                            <div style="width: 250px; font-size: 11px; line-height: 1.8;">
+                                <div style="display: flex; justify-content: space-between; color: #475569;">
+                                    <span>Subtotal:</span>
+                                    <span style="font-weight: 600; color: #0f172a;">₹\${subtotal.toFixed(2)}</span>
+                                </div>
+                                
+                                \${offerDiscount > 0 ? `
+                                    <div style="display: flex; justify-content: space-between; color: #16a34a;">
+                                        <span>Offer Discount:</span>
+                                        <span>-₹\${offerDiscount.toFixed(2)}</span>
+                                    </div>
+                                ` : ''}
+
+                                \${couponCode ? `
+                                    <div style="display: flex; justify-content: space-between; color: #475569;">
+                                        <span>Coupon (\${couponCode}):</span>
+                                        <span style="color: #16a34a; font-weight: 600;">-₹\${couponDiscount.toFixed(2)}</span>
+                                    </div>
+                                ` : ''}
+
+                                <div style="display: flex; justify-content: space-between; color: #475569;">
+                                    <span>Shipping:</span>
+                                    <span style="font-weight: 600; color: #0f172a;">\${shipping === 0 ? 'FREE' : '₹' + shipping.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; color: #475569;">
+                                    <span>Tax (8%):</span>
+                                    <span style="font-weight: 600; color: #0f172a;">₹\${tax.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px; color: #0f172a;">
+                                    <span>Total:</span>
+                                    <span>₹\${grandTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 50px; border-top: 1px dashed #cbd5e1; padding-top: 20px; text-align: center; page-break-inside: avoid;">
+                            <p style="font-size: 9px; color: #94a3b8; margin: 0;">Thank you for shopping with Luxe Tech. For support or warranty queries, contact support@luxetech.com.</p>
+                            <p style="font-size: 9px; color: #94a3b8; margin: 4px 0 0 0;">Luxe Tech Inc. | This is a computer generated invoice and requires no physical signature.</p>
+                        </div>
+                    `;
+
+                    const opt = {
+                        margin:       [15, 15, 20, 15],
+                        filename:     'LuxeTech_Invoice_#<%= order.orderId %>.pdf',
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    await html2pdf().set(opt).from(container).save();
+
+                } catch (err) {
+                    console.error('Error generating PDF:', err);
+                    alert('An error occurred while generating the invoice PDF.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
         </script>
 </body>
 

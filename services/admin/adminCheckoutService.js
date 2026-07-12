@@ -268,11 +268,23 @@ const processAdminItemActionService = async (orderId, itemId, action) => {
     return order;
 };
 
+const exportOrdersService = async () => {
+    try {
+        const orders = await Order.find({})
+            .populate('userId')
+            .sort({ createdAt: -1 });
+        return orders;
+    } catch (error) {
+        throw new Error('Failed to retrieve all orders for export: ' + error.message);
+    }
+};
+
 export {
     getAdminOrdersService,
     updateOrderEstimateDateService,
     updateOrderStatusService,
     updateOrderPaymentStatusService,
-    processAdminItemActionService
+    processAdminItemActionService,
+    exportOrdersService
 };
 

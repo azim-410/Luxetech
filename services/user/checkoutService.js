@@ -5,6 +5,7 @@ import categoryModel from '../../model/category.js';
 import cartModal from '../../model/cart.js';
 import Order from '../../model/order.js';
 import { getCartService } from './cartService.js';
+import couponModel from '../../model/coupon.js';
 
 const getCheckoutAddressDataService = async (userId) => {
     if (!userId) {
@@ -122,7 +123,7 @@ const getCheckoutPageDataService = async (userId, query) => {
 };
 
 const placeOrderService = async (userId, query, body) => {
-    const { addressId, shippingMethod, paymentMethod } = body;
+    const { addressId, shippingMethod, paymentMethod, couponId } = body;
     if (!addressId) {
         throw new Error('Address is required');
     }
@@ -164,8 +165,38 @@ const placeOrderService = async (userId, query, body) => {
         }
     }
 
+    let couponDiscount = 0;
+    let coupon = null;
+    if (couponId) {
+        coupon = await couponModel.findById(couponId);
+        if (!coupon || !coupon.status || coupon.expiryDate < new Date()) {
+            throw new Error('Invalid or expired coupon');
+        }
+        if (cart.subtotal < coupon.minOrderValue) {
+            throw new Error(`Minimum order value of ₹${coupon.minOrderValue} is required to use this coupon`);
+        }
+        if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+            throw new Error('This coupon has reached its usage limit');
+        }
+
+        if (coupon.discountType === 'percentage') {
+            couponDiscount = Math.round(cart.subtotal * (coupon.discountValue / 100));
+            if (coupon.maxDiscount && couponDiscount > coupon.maxDiscount) {
+                couponDiscount = coupon.maxDiscount;
+            }
+        } else if (coupon.discountType === 'fixed') {
+            couponDiscount = coupon.discountValue;
+        }
+
+        // Cap coupon discount to cart subtotal
+        if (couponDiscount > cart.subtotal) {
+            couponDiscount = cart.subtotal;
+        }
+    }
+
     const shippingCost = shippingMethod === 'express' ? 150 : 0;
-    const grandTotal = cart.grandTotal + shippingCost;
+    const finalDiscount = (cart.discount || 0) + couponDiscount;
+    const finalGrandTotal = Math.max(0, cart.grandTotal - couponDiscount + shippingCost);
 
     // Generate unique order ID
     const orderId = `LX-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -196,12 +227,14 @@ const placeOrderService = async (userId, query, body) => {
         },
         pricing: {
             originalTotal: cart.originalTotal,
-            discount: cart.discount || 0,
+            discount: finalDiscount,
             subtotal: cart.subtotal,
             tax: cart.tax,
             shipping: shippingCost,
-            grandTotal: grandTotal
+            grandTotal: finalGrandTotal
         },
+        couponCode: coupon ? coupon.code : undefined,
+        coupon: coupon ? coupon._id : undefined,
         paymentMethod: paymentMethod || 'COD',
         shippingMethod: shippingMethod || 'standard',
         paymentStatus: 'Pending',
@@ -216,6 +249,13 @@ const placeOrderService = async (userId, query, body) => {
                 });
             }
         }
+
+    // Increment coupon usage count
+    if (coupon) {
+        await couponModel.findByIdAndUpdate(coupon._id, {
+            $inc: { usedCount: 1 }
+        });
+    }
 
     // Clear cart if this was checking out the full cart
     if (!query.productId) {

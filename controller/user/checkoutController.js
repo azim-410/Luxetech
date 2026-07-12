@@ -6,6 +6,7 @@ import {
 } from '../../services/user/checkoutService.js';
 import { editAddressService, addAddressService } from '../../services/user/addressService.js';
 import { getCartService } from '../../services/user/cartService.js';
+import couponModel from '../../model/coupon.js';
 
 const getCheckout = async (req, res) => {
     try {
@@ -30,8 +31,11 @@ const getCheckout = async (req, res) => {
             return res.redirect('/shop');
         }
 
+        const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+
         res.render('User/cheackoutPage.ejs', {
             ...checkoutData,
+            coupons,
             user: req.session.user || req.user || null,
             errors: null,
             formData: null,
@@ -71,14 +75,16 @@ const editAddress = async (req, res) => {
     } catch (error) {
         console.error("editAddress Error", error);
 
-        // Catch validation errors and render the checkout page directly with errors
         if (error.statusCode === 400 && error.errors) {
             try {
                 const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
+                    coupons,
                     user: req.session.user || req.user || null,
                     errors: error.errors,
                     formData: req.body,
@@ -126,8 +132,11 @@ const addAddress = async (req, res) => {
                 const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
+                    coupons,
                     user: req.session.user || req.user || null,
                     errors: null,
                     formData: null,
@@ -167,10 +176,12 @@ const placeOrder = async (req, res) => {
                 // the blocking validation inside getCheckoutCartDataService
                 const { addresses, defaultAddress } = await getCheckoutAddressDataService(userId);
                 const cart = await getCartService(userId);
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
                 return res.render('User/cheackoutPage.ejs', {
                     addresses,
                     defaultAddress,
                     cart,
+                    coupons,
                     user: req.session.user || req.user || null,
                     errors: null,
                     formData: null,

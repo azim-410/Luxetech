@@ -467,15 +467,31 @@
                         <!-- Coupon Code Section -->
                         <div class="mb-8 pt-6 border-t border-slate-100">
                             <label
-                                class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 font-label">Coupon
-                                Code</label>
-                            <div class="flex gap-2">
-                                <input
-                                    class="flex-1 bg-surface-container-low border-0 focus:ring-1 focus:ring-primary rounded-sm py-3 px-4 text-xs font-bold uppercase tracking-widest"
-                                    placeholder="LUXE20" type="text" />
-                                <button
-                                    class="bg-primary text-white px-6 py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">Apply</button>
+                                class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 font-label">Coupon</label>
+                            <div class="relative">
+                                <select id="coupon-select"
+                                    class="w-full bg-surface-container-lowest bg-none border border-slate-200 focus:border-primary focus:ring-0 rounded-sm py-4 px-5 pr-12 text-xs font-bold uppercase tracking-widest text-[#0D1B2A] appearance-none cursor-pointer transition-all">
+                                    <option value="" data-type="" data-value="0" data-min="0" data-max="0">Select a Coupon</option>
+                                    <% if (locals.coupons && coupons.length > 0) { %>
+                                        <% coupons.forEach(function(coupon) { %>
+                                            <option value="<%= coupon._id %>"
+                                                data-code="<%= coupon.code %>"
+                                                data-type="<%= coupon.discountType %>"
+                                                data-value="<%= coupon.discountValue %>"
+                                                data-min="<%= coupon.minOrderValue %>"
+                                                data-max="<%= coupon.maxDiscount || '' %>">
+                                                <%= coupon.code %> — <%= coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '₹' + coupon.discountValue %> OFF
+                                            </option>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <option value="" disabled>No coupons available</option>
+                                    <% } %>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#0D1B2A]">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </div>
                             </div>
+                            <p id="coupon-message" class="text-[10px] font-semibold mt-2 hidden"></p>
                         </div>
                         <!-- Price Breakdown -->
                         <div class="space-y-4 pt-6 border-t border-slate-100">
@@ -489,6 +505,11 @@
                                     <span class="font-medium">-₹<%= cart.discount.toFixed(2) %></span>
                                 </div>
                             <% } %>
+                            <!-- Coupon Discount -->
+                            <div id="coupon-discount-row" class="flex justify-between text-sm text-green-600 hidden">
+                                <span>Coupon Discount (<span id="coupon-discount-code"></span>)</span>
+                                <span class="font-medium">-₹<span id="coupon-discount-amount">0.00</span></span>
+                            </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-on-surface-variant">Shipping</span>
                                 <span id="summary-shipping" class="font-medium text-primary">FREE</span>
@@ -920,33 +941,85 @@
             openEditModal();
         <% } %>
 
-        // Shipping Method Dynamic pricing
+        // Shipping Method and Coupon Dynamic pricing
         const shippingRadios = document.querySelectorAll('input[name="shipping"]');
         const summaryShippingSpan = document.getElementById('summary-shipping');
         const summaryGrandTotalSpan = document.getElementById('summary-grand-total');
 
-        const baseGrandTotal = <%= (cart ? cart.grandTotal : 0) %>;
+        const baseSubtotal = <%= (cart ? cart.subtotal : 0) %>;
+        const baseTax = <%= (cart ? cart.tax : 0) %>;
+        const baseProductDiscount = <%= (cart ? cart.discount : 0) %>;
+        
+        const couponSelect = document.getElementById('coupon-select');
+        const couponDiscountRow = document.getElementById('coupon-discount-row');
+        const couponDiscountCode = document.getElementById('coupon-discount-code');
+        const couponDiscountAmount = document.getElementById('coupon-discount-amount');
+        const couponMessage = document.getElementById('coupon-message');
 
-        function updateShippingPrice() {
+        function updateTotals() {
+            // 1. Shipping Method
             let selectedShipping = 'standard';
             shippingRadios.forEach(radio => {
                 if (radio.checked) {
                     selectedShipping = radio.value;
                 }
             });
+            let shippingCost = selectedShipping === 'express' ? 150 : 0;
+            summaryShippingSpan.textContent = selectedShipping === 'express' ? '₹150.00' : 'FREE';
 
-            if (selectedShipping === 'express') {
-                summaryShippingSpan.textContent = '₹150.00';
-                summaryGrandTotalSpan.textContent = '₹' + (baseGrandTotal + 150).toFixed(2);
+            // 2. Coupon Discount Calculation
+            let couponDiscount = 0;
+            if (couponSelect && couponSelect.value) {
+                const selectedOption = couponSelect.options[couponSelect.selectedIndex];
+                const code = selectedOption.getAttribute('data-code');
+                const type = selectedOption.getAttribute('data-type');
+                const value = parseFloat(selectedOption.getAttribute('data-value')) || 0;
+                const minVal = parseFloat(selectedOption.getAttribute('data-min')) || 0;
+                const maxVal = parseFloat(selectedOption.getAttribute('data-max')) || null;
+
+                if (baseSubtotal < minVal) {
+                    couponMessage.textContent = `Minimum order of ₹${minVal.toFixed(2)} required for coupon ${code}`;
+                    couponMessage.className = "text-[10px] font-semibold mt-2 text-red-500 block";
+                    couponSelect.value = ""; // Reset selection
+                    couponDiscountRow.classList.add('hidden');
+                } else {
+                    if (type === 'percentage') {
+                        couponDiscount = Math.round(baseSubtotal * (value / 100));
+                        if (maxVal && couponDiscount > maxVal) {
+                            couponDiscount = maxVal;
+                        }
+                    } else if (type === 'fixed') {
+                        couponDiscount = value;
+                    }
+
+                    if (couponDiscount > baseSubtotal) {
+                        couponDiscount = baseSubtotal;
+                    }
+
+                    couponMessage.textContent = `Coupon ${code} applied successfully!`;
+                    couponMessage.className = "text-[10px] font-semibold mt-2 text-green-600 block";
+                    
+                    couponDiscountCode.textContent = code;
+                    couponDiscountAmount.textContent = couponDiscount.toFixed(2);
+                    couponDiscountRow.classList.remove('hidden');
+                }
             } else {
-                summaryShippingSpan.textContent = 'FREE';
-                summaryGrandTotalSpan.textContent = '₹' + baseGrandTotal.toFixed(2);
+                couponMessage.classList.add('hidden');
+                couponDiscountRow.classList.add('hidden');
             }
+
+            // 3. Grand Total
+            // grandTotal = subtotal + tax + shipping - couponDiscount
+            const finalGrandTotal = Math.max(0, baseSubtotal + baseTax + shippingCost - couponDiscount);
+            summaryGrandTotalSpan.textContent = '₹' + finalGrandTotal.toFixed(2);
         }
 
         shippingRadios.forEach(radio => {
-            radio.addEventListener('change', updateShippingPrice);
+            radio.addEventListener('change', updateTotals);
         });
+        if (couponSelect) {
+            couponSelect.addEventListener('change', updateTotals);
+        }
 
         const placeOrderForm = document.getElementById('place-order-form');
         if (placeOrderForm) {
@@ -983,6 +1056,12 @@
                 paymentInput.name = 'paymentMethod';
                 paymentInput.value = 'COD';
                 placeOrderForm.appendChild(paymentInput);
+
+                const couponInput = document.createElement('input');
+                couponInput.type = 'hidden';
+                couponInput.name = 'couponId';
+                couponInput.value = couponSelect ? couponSelect.value : '';
+                placeOrderForm.appendChild(couponInput);
 
                 placeOrderForm.action = `/checkout/place-order${window.location.search}`;
             });

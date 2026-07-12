@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-dim": "#3b5669",
+              "on-tertiary-fixed": "#364455",
+              "secondary-fixed": "#cae6fd",
+              "on-surface-variant": "#586064",
+              "secondary": "#476275",
+              "on-secondary-container": "#3a5568",
+              "on-tertiary-fixed-variant": "#526072",
+              "primary-container": "#e2e2e5",
+              "primary-fixed": "#e2e2e5",
+              "on-secondary-fixed": "#274254",
+              "secondary-container": "#cae6fd",
+              "on-background": "#2b3437",
+              "on-primary": "#f7f7fa",
+              "primary-dim": "#515255",
+              "tertiary": "#526072",
+              "tertiary-dim": "#465465",
+              "surface-bright": "#f8f9fa",
+              "on-secondary": "#f5f9ff",
+              "background": "#f8f9fa",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e3e9ec",
+              "tertiary-fixed": "#dbe9ff",
+              "surface-container-highest": "#dbe4e7",
+              "on-primary-fixed": "#3e3f42",
+              "surface-tint": "#5d5e61",
+              "error": "#9f403d",
+              "surface-dim": "#d1dce0",
+              "surface-container-low": "#f1f4f6",
+              "tertiary-container": "#dbe9ff",
+              "on-primary-container": "#505254",
+              "outline-variant": "#abb3b7",
+              "primary-fixed-dim": "#d4d4d7",
+              "on-tertiary": "#f7f9ff",
+              "inverse-surface": "#0c0f10",
+              "on-error": "#fff7f6",
+              "error-dim": "#4e0309",
+              "inverse-on-surface": "#9b9d9e",
+              "on-secondary-fixed-variant": "#445f72",
+              "tertiary-fixed-dim": "#cddbf0",
+              "error-container": "#fe8983",
+              "on-primary-fixed-variant": "#5a5c5e",
+              "outline": "#737c7f",
+              "on-error-container": "#752121",
+              "secondary-fixed-dim": "#bcd8ef",
+              "primary": "#5d5e61",
+              "surface-container": "#eaeff1",
+              "inverse-primary": "#f9f9fc",
+              "surface-variant": "#dbe4e7",
+              "on-surface": "#2b3437",
+              "on-tertiary-container": "#485668",
+              "surface": "#f8f9fa"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Custom scrollbar for dropdown and modal containers */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex">
+<%- include('../partials/admin/layout', { activePage: 'coupons' }) %>
+<!-- Main Content -->
+<main class="ml-0 md:ml-64 pt-16 flex-1 flex flex-col min-h-screen relative bg-background">
+
+<!-- Canvas Body -->
+<div class="p-8 space-y-12 max-w-[1400px] mx-auto w-full">
+<!-- Headline Section -->
+<div class="flex flex-col gap-2">
+<h2 class="text-4xl font-extrabold font-headline tracking-tighter text-on-surface">Coupons &amp; Rewards</h2>
+<p class="text-on-surface-variant max-w-2xl font-body">Manage customer loyalty, seasonal campaigns, and personalized discounts across the global Luxe Tech ecosystem.</p>
+</div>
+
+
+<!-- Coupon Cards Grid -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-headline font-bold tracking-tight">Active Promotions</h3>
+<div class="flex gap-2">
+<button class="text-xs px-3 py-1.5 bg-surface-container-high rounded font-medium hover:bg-surface-dim transition-colors">All Types</button>
+<button class="text-xs px-3 py-1.5 bg-surface-container-lowest shadow-sm rounded font-medium border border-outline-variant/15">Latest</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- New Promotion Card -->
+<div onclick="openCouponModal()" class="border-2 border-dashed border-outline-variant/30 rounded-xl flex flex-col items-center justify-center p-8 text-center hover:bg-surface-container-low transition-all group cursor-pointer h-full min-h-[280px]">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="add">add</span>
+</div>
+<h4 class="font-headline font-bold text-on-surface">Generate New Promotion</h4>
+<p class="text-xs text-on-surface-variant mt-2 px-4">Create limited-time offers, bulk discounts, or loyalty rewards for your customers.</p>
+</div>
+
+<% if (locals.activeCoupons && activeCoupons.length > 0) { %>
+    <% activeCoupons.forEach(coupon => { %>
+        <!-- Coupon Card -->
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10 flex flex-col justify-between group">
+            <div class="space-y-4">
+                <div class="flex justify-between items-start">
+                    <div class="px-2 py-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold uppercase tracking-wider rounded">
+                        <%= coupon.discountType %>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span onclick="openEditCouponModal('<%= coupon._id %>', '<%= coupon.code %>', '<%= coupon.discountType %>', <%= coupon.discountValue %>, <%= coupon.minOrderValue %>, <%= coupon.usageLimit || 'null' %>, '<%= coupon.expiryDate %>', '<%= JSON.stringify(coupon.applicableCategories.map(c => c._id)) %>')" class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="edit">edit</span>
+                        <span onclick="openDeleteConfirm('<%= coupon._id %>', '<%= coupon.code %>')" class="material-symbols-outlined text-on-surface-variant hover:text-error cursor-pointer transition-colors" data-icon="delete">delete</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-2xl font-headline font-extrabold text-on-surface">
+                        <%= coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue.toFixed(2)} OFF` %>
+                    </h4>
+                    <p class="text-sm font-bold font-mono tracking-widest text-secondary mt-1"><%= coupon.code %></p>
+                    <% if (coupon.applicableCategories && coupon.applicableCategories.length > 0) { %>
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            <% coupon.applicableCategories.forEach(cat => { %>
+                                <span class="text-[9px] px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded font-bold uppercase tracking-wider"><%= cat.categoryName %></span>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            <span class="text-[9px] px-1.5 py-0.5 bg-surface-container-high text-on-surface-variant rounded font-bold uppercase tracking-wider">All Categories</span>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[11px] text-on-surface-variant uppercase font-semibold">
+                        <% if (coupon.usageLimit) { %>
+                            <span>Usage (<%= coupon.usedCount %>/<%= coupon.usageLimit %>)</span>
+                            <span><%= Math.round((coupon.usedCount / coupon.usageLimit) * 100) %>%</span>
+                        <% } else { %>
+                            <span>Usage (<%= coupon.usedCount %>/∞)</span>
+                            <span>Recurring</span>
+                        <% } %>
+                    </div>
+                    <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                        <% if (coupon.usageLimit) { %>
+                            <div class="bg-secondary h-full rounded-full" style="width: <%= Math.min(100, (coupon.usedCount / coupon.usageLimit) * 100) %>%;"></div>
+                        <% } else { %>
+                            <div class="bg-primary h-full rounded-full" style="width: 50%;"></div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-outline-variant/10">
+                <div class="text-[10px] text-on-surface-variant uppercase font-medium">
+                    Expires: <%= new Date(coupon.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+<% } %>
+</div>
+</section>
+
+<!-- Inactive & Expired Coupons Section -->
+<section class="space-y-6">
+    <div class="flex items-center justify-between border-t border-outline-variant/15 pt-8">
+        <h3 class="text-xl font-headline font-bold tracking-tight">Inactive &amp; Expired Coupons</h3>
+        <span class="text-xs text-on-surface-variant font-medium">Archive of past promotions</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        
+        <% if (locals.inactiveCoupons && inactiveCoupons.length > 0) { %>
+            <% inactiveCoupons.forEach(coupon => { %>
+                <!-- Inactive Card -->
+                <div class="bg-surface-container-lowest/60 rounded-xl p-6 shadow-sm border border-outline-variant/10 flex flex-col justify-between group opacity-75">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold uppercase tracking-wider rounded">
+                                <%= coupon.discountType %>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-2xl font-headline font-extrabold text-on-surface-variant line-through">
+                                <%= coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue.toFixed(2)} OFF` %>
+                            </h4>
+                            <p class="text-sm font-bold font-mono tracking-widest text-on-surface-variant/70 mt-1"><%= coupon.code %></p>
+                            <% if (coupon.applicableCategories && coupon.applicableCategories.length > 0) { %>
+                                <div class="flex flex-wrap gap-1 mt-1.5 opacity-60">
+                                    <% coupon.applicableCategories.forEach(cat => { %>
+                                        <span class="text-[9px] px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded font-bold uppercase tracking-wider"><%= cat.categoryName %></span>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <div class="flex flex-wrap gap-1 mt-1.5 opacity-60">
+                                    <span class="text-[9px] px-1.5 py-0.5 bg-surface-container-high text-on-surface-variant rounded font-bold uppercase tracking-wider">All Categories</span>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[11px] text-on-surface-variant/70 uppercase font-semibold">
+                                <% if (coupon.usageLimit) { %>
+                                    <span>Usage (<%= coupon.usedCount %>/<%= coupon.usageLimit %>)</span>
+                                <% } else { %>
+                                    <span>Usage (<%= coupon.usedCount %>/∞)</span>
+                                <% } %>
+                                <% if (coupon.isLimitReached) { %>
+                                    <span class="text-error font-bold">LIMIT REACHED</span>
+                                <% } else if (coupon.expiryDate && new Date(coupon.expiryDate) <= new Date()) { %>
+                                    <span class="text-error font-bold">EXPIRED</span>
+                                <% } else { %>
+                                    <span class="text-error font-bold">INACTIVE</span>
+                                <% } %>
+                            </div>
+                            <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                                <% if (coupon.usageLimit) { %>
+                                    <div class="bg-outline h-full rounded-full" style="width: <%= Math.min(100, (coupon.usedCount / coupon.usageLimit) * 100) %>%;"></div>
+                                <% } else { %>
+                                    <div class="bg-outline h-full rounded-full" style="width: 100%;"></div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+                        <div class="text-[10px] text-on-surface-variant/70 uppercase font-medium text-error">
+                            Ended: <%= coupon.expiryDate ? new Date(coupon.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A' %>
+                        </div>
+                        <button class="text-xs font-bold text-outline flex items-center gap-1 cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+                            Locked
+                        </button>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+
+    </div>
+</section>
+
+<!-- Recent Redemptions Table -->
+<section class="space-y-6 pb-12">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-headline font-bold tracking-tight">Recent Redemptions</h3>
+<a class="text-xs font-bold text-secondary hover:underline" href="#">View History Report</a>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">User</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Coupon Code</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Order Value</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Discount</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant text-right">Date</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<% if (typeof recentRedemptions !== 'undefined' && recentRedemptions && recentRedemptions.length > 0) { %>
+    <% recentRedemptions.forEach(function(red) { %>
+        <% 
+          let userName = red.userId ? red.userId.name : 'Unknown User';
+          let initials = userName.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'U';
+        %>
+        <tr class="hover:bg-surface-container-low/30 transition-colors">
+            <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center text-[10px] font-bold">
+                    <%= initials %>
+                    </div>
+                    <span class="text-sm font-medium text-on-surface"><%= userName %></span>
+                </div>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded"><%= red.couponCode %></span>
+            </td>
+            <td class="px-6 py-4 text-sm font-medium">₹<%= red.pricing.subtotal.toFixed(2) %></td>
+            <td class="px-6 py-4 text-sm font-bold text-error">-₹<%= (red.pricing.couponDiscount || red.pricing.discount || 0).toFixed(2) %></td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant text-right">
+                <%= new Date(red.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) %>
+            </td>
+        </tr>
+    <% }) %>
+<% } else { %>
+    <tr>
+        <td colspan="5" class="px-6 py-8 text-center text-sm text-on-surface-variant">
+            No recent coupon redemptions found
+        </td>
+    </tr>
+<% } %>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</main>
+
+<!-- Create Coupon Modal -->
+<div id="createCouponModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
+    <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
+            <h2 id="couponModalTitle" class="text-lg font-bold font-manrope text-on-surface">Generate New Promotion</h2>
+            <button onclick="closeCouponModal()" class="text-outline hover:text-on-surface transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form id="createCouponForm" action="/admin/coupon-management/create" method="POST" class="px-6 py-6 flex flex-col gap-4">
+            <div id="errorAlert" class="<%= locals.errorMessage ? '' : 'hidden' %> flex items-center gap-3 bg-error-container/20 border border-error-container text-on-error-container px-4 py-2.5 rounded-lg text-xs font-medium">
+                <span class="material-symbols-outlined text-sm">error</span>
+                <span id="errorAlertText"><%= locals.errorMessage || '' %></span>
+            </div>
+            
+            <!-- Code -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Coupon Code</label>
+                <input type="text" id="couponCode" name="code" placeholder="e.g. SAVE20" required
+                    class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface uppercase focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+            </div>
+
+            <!-- Discount Type -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Discount Type</label>
+                <select id="discountType" name="discountType" required
+                    class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all">
+                    <option value="fixed">Fixed Amount (₹)</option>
+                    <option value="percentage">Percentage (%)</option>
+                </select>
+            </div>
+
+            <!-- Discount Value & Min Purchase -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label id="discountValueLabel" class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Discount Amount (₹)</label>
+                    <input type="number" id="discountValue" name="discountValue" min="1" step="any" placeholder="e.g. 150" required
+                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Min Purchase</label>
+                    <input type="number" id="minOrderValue" name="minOrderValue" min="0" step="any" placeholder="e.g. 50"
+                        class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                </div>
+            </div>
+
+            <!-- Limit (Usage) -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Limit (Usage)</label>
+                <input type="number" id="usageLimit" name="usageLimit" min="1" placeholder="e.g. 500"
+                    class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+            </div>
+
+            <!-- Applicable Categories (Custom Checkbox Dropdown) -->
+            <div class="flex flex-col gap-1.5 relative">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Applicable Categories</label>
+                <div class="relative">
+                    <button type="button" onclick="toggleCategoryDropdown(event)"
+                        class="w-full bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface flex justify-between items-center focus:outline-none focus:ring-1 focus:ring-secondary transition-all">
+                        <span id="selectedCategoriesLabel" class="truncate max-w-[90%]">Select Categories (All if empty)</span>
+                        <span class="material-symbols-outlined text-sm transition-transform duration-200" id="dropdownArrow">keyboard_arrow_down</span>
+                    </button>
+                    <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 mt-1.5 max-h-40 overflow-y-auto bg-surface-container-high border border-outline-variant/20 rounded-lg shadow-lg z-50 p-2 space-y-1 custom-scrollbar">
+                        <% if (locals.categories && categories.length > 0) { %>
+                            <% categories.forEach(cat => { %>
+                                <label class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-container-highest cursor-pointer text-sm text-on-surface select-none">
+                                    <input type="checkbox" name="applicableCategories" value="<%= cat._id %>" data-name="<%= cat.categoryName %>" onchange="updateSelectedCategoriesLabel()"
+                                        class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-0 cursor-pointer" />
+                                    <span><%= cat.categoryName %></span>
+                                </label>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="px-3 py-2 text-xs text-on-surface-variant">No active categories found</div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiry Date -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Expiry Date</label>
+                <input type="date" id="expiryDate" name="expiryDate" required
+                    class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="closeCouponModal()"
+                    class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-all">
+                    Cancel
+                </button>
+                <button type="submit" id="couponSubmitButton"
+                    class="bg-gradient-to-br from-primary to-secondary text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold hover:-translate-y-0.5 shadow-sm transition-all">
+                    Create Coupon
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden"
+    aria-modal="true" role="dialog">
+    <div class="bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden
+                translate-y-4 opacity-0 transition-all duration-200" id="confirmModalBox">
+
+        <!-- Icon + Header -->
+        <div class="flex flex-col items-center pt-8 pb-4 px-6 gap-3">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center bg-error-container/20">
+                <span class="material-symbols-outlined text-3xl text-on-error-container">delete_forever</span>
+            </div>
+            <h2 id="confirmTitle" class="text-lg font-bold font-manrope text-on-surface text-center">Delete Coupon?</h2>
+            <p id="confirmMessage" class="text-sm text-on-surface-variant text-center leading-relaxed">This action is permanent. The coupon code will be deactivated immediately.</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-center gap-3 px-6 py-5 border-t border-outline-variant/10">
+            <button onclick="closeConfirm()" class="px-5 py-2.5 rounded-md text-sm font-semibold text-on-surface-variant
+                       hover:bg-surface-container-low transition-all">
+                Cancel
+            </button>
+            <button onclick="submitConfirm()" class="bg-error text-on-primary px-5 py-2.5 rounded-md text-sm font-semibold
+                       shadow-sm hover:-translate-y-0.5 transition-all">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Create Coupon Modal Elements
+    let _editingCouponId = null;
+    const couponModal = document.getElementById('createCouponModal');
+    const couponForm = document.getElementById('createCouponForm');
+    const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
+    const dropdownArrow = document.getElementById('dropdownArrow');
+    const selectedCategoriesLabel = document.getElementById('selectedCategoriesLabel');
+
+    function showError(message) {
+        const errorAlert = document.getElementById('errorAlert');
+        const errorAlertText = document.getElementById('errorAlertText');
+        if (errorAlert && errorAlertText) {
+            errorAlertText.textContent = message;
+            errorAlert.classList.remove('hidden');
+        }
+    }
+
+    function clearError() {
+        const errorAlert = document.getElementById('errorAlert');
+        const errorAlertText = document.getElementById('errorAlertText');
+        if (errorAlert && errorAlertText) {
+            errorAlertText.textContent = '';
+            errorAlert.classList.add('hidden');
+        }
+    }
+
+    // Dynamic label and validation updates for discount field
+    const discountTypeSelect = document.getElementById('discountType');
+    const discountValueLabel = document.getElementById('discountValueLabel');
+    const discountValueInput = document.getElementById('discountValue');
+
+    function updateDiscountValueUI() {
+        if (discountTypeSelect.value === 'percentage') {
+            discountValueLabel.textContent = 'Discount Percentage (%)';
+            discountValueInput.placeholder = 'e.g. 20';
+            discountValueInput.max = '100';
+        } else {
+            discountValueLabel.textContent = 'Discount Amount (₹)';
+            discountValueInput.placeholder = 'e.g. 150';
+            discountValueInput.removeAttribute('max');
+        }
+    }
+
+    if (discountTypeSelect) {
+        discountTypeSelect.addEventListener('change', updateDiscountValueUI);
+    }
+
+    function openCouponModal() {
+        _editingCouponId = null;
+        const modalTitle = document.getElementById('couponModalTitle');
+        const submitBtn = document.getElementById('couponSubmitButton');
+        if (modalTitle) modalTitle.textContent = 'Generate New Promotion';
+        if (submitBtn) submitBtn.textContent = 'Create Coupon';
+
+        couponForm.reset();
+        updateDiscountValueUI();
+        clearError();
+        // Reset category dropdown state
+        if (categoryDropdownMenu) {
+            const checkboxes = categoryDropdownMenu.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+        if (selectedCategoriesLabel) {
+            selectedCategoriesLabel.textContent = 'Select Categories (All if empty)';
+        }
+        if (categoryDropdownMenu) {
+            categoryDropdownMenu.classList.add('hidden');
+        }
+        if (dropdownArrow) {
+            dropdownArrow.classList.remove('rotate-180');
+        }
+
+        // Set minimum expiry date to today
+        const today = new Date().toISOString().split('T')[0];
+        const expiryInput = document.getElementById('expiryDate');
+        if (expiryInput) expiryInput.min = today;
+        if (couponModal) couponModal.classList.remove('hidden');
+    }
+
+    function openEditCouponModal(id, code, discountType, discountValue, minOrderValue, usageLimit, expiryDate, applicableCategoriesJson) {
+        _editingCouponId = id;
+        const modalTitle = document.getElementById('couponModalTitle');
+        const submitBtn = document.getElementById('couponSubmitButton');
+        if (modalTitle) modalTitle.textContent = `Edit Coupon: ${code}`;
+        if (submitBtn) submitBtn.textContent = 'Update Coupon';
+
+        clearError();
+
+        // Populate fields
+        document.getElementById('couponCode').value = code;
+        document.getElementById('discountType').value = discountType;
+        updateDiscountValueUI();
+        document.getElementById('discountValue').value = discountValue;
+        document.getElementById('minOrderValue').value = minOrderValue;
+        document.getElementById('usageLimit').value = usageLimit !== null && usageLimit !== undefined ? usageLimit : '';
+        
+        // Format date to YYYY-MM-DD
+        if (expiryDate) {
+            const dateObj = new Date(expiryDate);
+            const formattedDate = dateObj.toISOString().split('T')[0];
+            document.getElementById('expiryDate').value = formattedDate;
+        } else {
+            document.getElementById('expiryDate').value = '';
+        }
+
+        // Populate categories
+        let selectedCategoryIds = [];
+        try {
+            selectedCategoryIds = JSON.parse(applicableCategoriesJson);
+        } catch (e) {
+            console.error('Error parsing categories:', e);
+        }
+
+        if (categoryDropdownMenu) {
+            const checkboxes = categoryDropdownMenu.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = selectedCategoryIds.includes(cb.value);
+            });
+        }
+        updateSelectedCategoriesLabel();
+
+        // Show Modal
+        if (couponModal) couponModal.classList.remove('hidden');
+    }
+
+    function closeCouponModal() {
+        if (couponModal) couponModal.classList.add('hidden');
+        if (categoryDropdownMenu) categoryDropdownMenu.classList.add('hidden');
+        if (dropdownArrow) dropdownArrow.classList.remove('rotate-180');
+    }
+
+    // Toggle dropdown
+    function toggleCategoryDropdown(e) {
+        e.stopPropagation();
+        if (categoryDropdownMenu) {
+            const isHidden = categoryDropdownMenu.classList.contains('hidden');
+            if (isHidden) {
+                categoryDropdownMenu.classList.remove('hidden');
+                if (dropdownArrow) dropdownArrow.classList.add('rotate-180');
+            } else {
+                categoryDropdownMenu.classList.add('hidden');
+                if (dropdownArrow) dropdownArrow.classList.remove('rotate-180');
+            }
+        }
+    }
+
+    function updateSelectedCategoriesLabel() {
+        if (categoryDropdownMenu && selectedCategoriesLabel) {
+            const checkboxes = categoryDropdownMenu.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                selectedCategoriesLabel.textContent = 'Select Categories (All if empty)';
+            } else {
+                const names = Array.from(checkboxes).map(cb => cb.getAttribute('data-name'));
+                selectedCategoriesLabel.textContent = names.join(', ');
+            }
+        }
+    }
+
+    // Close dropdown menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (categoryDropdownMenu && !categoryDropdownMenu.classList.contains('hidden')) {
+            const container = categoryDropdownMenu.parentElement;
+            if (!container.contains(e.target)) {
+                categoryDropdownMenu.classList.add('hidden');
+                if (dropdownArrow) dropdownArrow.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // close on backdrop click
+    if (couponModal) {
+        couponModal.addEventListener('click', (e) => {
+            if (e.target === couponModal) closeCouponModal();
+        });
+    }
+
+    // client side validation and submit
+    if (couponForm) {
+        couponForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const code = document.getElementById('couponCode').value.trim();
+            const value = parseFloat(document.getElementById('discountValue').value);
+            const type = document.getElementById('discountType').value;
+
+            if (!/^[A-Z0-9]+$/i.test(code)) {
+                showError('Coupon Code must contain only alphanumeric characters');
+                return;
+            }
+
+            if (type === 'percentage' && (value <= 0 || value > 100)) {
+                showError('Percentage discount must be between 1 and 100');
+                return;
+            }
+
+            if (type === 'fixed' && value <= 0) {
+                showError('Fixed discount must be greater than 0');
+                return;
+            }
+
+            const checkboxes = categoryDropdownMenu ? categoryDropdownMenu.querySelectorAll('input[type="checkbox"]:checked') : [];
+            const applicableCategories = Array.from(checkboxes).map(cb => cb.value);
+
+            const payload = {
+                code,
+                discountType: type,
+                discountValue: value,
+                minOrderValue: parseFloat(document.getElementById('minOrderValue').value) || 0,
+                usageLimit: parseInt(document.getElementById('usageLimit').value) || null,
+                expiryDate: document.getElementById('expiryDate').value,
+                applicableCategories
+            };
+
+            const url = _editingCouponId 
+                ? `/admin/coupon-management/${_editingCouponId}` 
+                : '/admin/coupon-management/create';
+            const method = _editingCouponId ? 'PATCH' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const successMsg = _editingCouponId ? 'Coupon updated successfully' : 'Coupon created successfully';
+                    window.location.href = `/admin/coupon-management?success=${encodeURIComponent(successMsg)}`;
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showError('An error occurred. Please try again.');
+            });
+        });
+    }
+
+    // Delete Confirmation Modal Elements
+    let _pendingCouponId = null;
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmModalBox = document.getElementById('confirmModalBox');
+
+    function openDeleteConfirm(id, code) {
+        _pendingCouponId = id;
+        const titleEl = document.getElementById('confirmTitle');
+        if (titleEl) titleEl.textContent = `Delete ${code}?`;
+        if (confirmModal) confirmModal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            if (confirmModalBox) confirmModalBox.classList.remove('translate-y-4', 'opacity-0');
+        });
+    }
+
+    function closeConfirm() {
+        if (confirmModalBox) confirmModalBox.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => {
+            if (confirmModal) confirmModal.classList.add('hidden');
+        }, 200);
+        _pendingCouponId = null;
+    }
+
+    function submitConfirm() {
+        if (_pendingCouponId) {
+            fetch(`/admin/coupon-management/${_pendingCouponId}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete coupon: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error deleting coupon');
+            });
+        }
+    }
+
+    // close confirmation modal on backdrop click
+    if (confirmModal) {
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target === confirmModal) closeConfirm();
+        });
+    }
+
+    // Auto-open modal if there's an errorMessage from server
+    <% if (locals.errorMessage) { %>
+        openCouponModal();
+    <% } %>
+</script>
+</body></html>

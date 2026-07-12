@@ -1,4 +1,5 @@
 import categoryModel from '../../model/category.js';
+import productModel from '../../model/product.js';
 
 
 const getCategoryService = async (page, limit, search = '',sort = 'latest') => {
@@ -19,11 +20,23 @@ const getCategoryService = async (page, limit, search = '',sort = 'latest') => {
         .find(query)
         .skip(skip)
         .limit(limit)
-       .sort(sortOption)
+       .sort(sortOption);
+
+    const categoriesWithCount = [];
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const productCount = await productModel.countDocuments({ 
+            category: category._id, 
+            isDeleted: { $ne: true } 
+        });
+        const catObj = category.toObject();
+        catObj.totalProducts = productCount;
+        categoriesWithCount.push(catObj);
+    }
 
     const totalActive = await categoryModel.countDocuments({ status: true });
 
-    return { categories, totalCategories, totalPage, totalActive };
+    return { categories: categoriesWithCount, totalCategories, totalPage, totalActive };
 };
 
 const createCategoryService = async (categoryName, description, status, image, isHidden) => {

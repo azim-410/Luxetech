@@ -4,7 +4,8 @@ import {
     unblockUserService,
     deleteUserService,
     searchUsersService,
-    createUserService    
+    createUserService,
+    getAllUsersNoPaginationService
 } from '../../services/admin/userManagementService.js';
 
 const getUserList = async (req, res) => {
@@ -75,11 +76,22 @@ const createUser = async (req, res) => {
     }
 };
 
+const exportUsers = async (req, res) => {
+    try {
+        const users = await getAllUsersNoPaginationService();
+        return res.json({ success: true, users });
+    } catch (error) {
+        console.error('Export users error:', error.message);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 export {
     getUserList,
     blockUser,
     unblockUser,
     deleteUser,
     searchUsers,
-    createUser
+    createUser,
+    exportUsers
 };

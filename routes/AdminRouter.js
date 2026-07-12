@@ -13,7 +13,8 @@ import {
     unblockUser,
     deleteUser,
     searchUsers,
-    createUser
+    createUser,
+    exportUsers
 } from '../controller/admin/userManagementController.js';
 
 import {
@@ -46,6 +47,7 @@ router.get('/dashboard', isAdminAuthenticated, showDashboard);
 
 
 router.get('/user-management', isAdminAuthenticated, getUserList)
+router.get('/user-management/export', isAdminAuthenticated, exportUsers)
 router.get('/user-management/search', isAdminAuthenticated, searchUsers)
 router.post('/user-management/:userId/block', isAdminAuthenticated, blockUser)
 router.post('/user-management/:userId/unblock', isAdminAuthenticated, unblockUser)

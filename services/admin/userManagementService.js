@@ -83,11 +83,16 @@ const createUserService = async (name, email, password) => {
     return { success: true };
 };
 
+const getAllUsersNoPaginationService = async () => {
+    return await userModel.find({ role: 'user' }).sort({ createdAt: -1 });
+};
+
 export {
     getAllUsersService,
     blockUserService,
     unblockUserService,
     deleteUserService,
     searchUsersService,
-    createUserService  
+    createUserService,
+    getAllUsersNoPaginationService
 };

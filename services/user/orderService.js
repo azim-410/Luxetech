@@ -60,6 +60,7 @@ const cancelOrderService = async (orderId, userId, cancelItemIds, reason, commen
 
                 if (originalPaymentStatus === 'Paid') {
                     refundAmount += item.subtotal;
+                    item.paymentReturned = true;
                 }
 
                 // Restore stock in database

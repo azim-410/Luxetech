@@ -91,6 +91,10 @@ const orderSchema = new mongoose.Schema({
         returnedDate: {
             type: Date,
             required: false
+        },
+        paymentReturned: {
+            type: Boolean,
+            default: false
         }
     }],
     shippingAddress: {
@@ -257,6 +261,7 @@ const orderSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

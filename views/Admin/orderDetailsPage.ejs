@@ -370,6 +370,12 @@
                                                                         <% } %>
                                                                     </div>
                                                                 <% } %>
+                                                                <% if (item.paymentReturned) { %>
+                                                                    <div class="mt-2.5 flex items-center gap-1.5 text-xs text-green-700 font-bold bg-green-50 px-2 py-1 rounded w-fit border border-green-200">
+                                                                        <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                                                                        Refunded to Wallet
+                                                                    </div>
+                                                                <% } %>
                                                     </div>
                                                     <div class="text-right">
                                                         <p

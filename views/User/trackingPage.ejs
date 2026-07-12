@@ -199,7 +199,7 @@
                       <span class="material-symbols-outlined text-sm">support_agent</span>
                       Get Help
                     </button>
-                    <% if (!['Delivered', 'Cancelled' , 'Returned' , 'Replaced' , 'Return Requested' , 'Return Confirmed'
+                    <% if (!['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled' , 'Returned' , 'Replaced' , 'Return Requested' , 'Return Confirmed'
                       , 'Replacement Confirmed' ].includes(order.orderStatus)) { %>
                       <button id="open-cancel-modal-btn"
                         class="flex items-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider hover:bg-error-container/80 transition-all">
@@ -207,8 +207,7 @@
                         Cancel Order
                       </button>
                       <% } %>
-                        <% if (!['Pending', 'Confirmed' , 'Processing' , 'Shipped' , 'Out for Delivery' , 'Cancelled'
-                          ].includes(order.orderStatus)) { %>
+                        <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Returned', 'Replaced', 'Replacement Confirmed'].includes(order.orderStatus) && order.items.some(item => !['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status))) { %>
                           <a href="/orders/return/<%= order._id %>" class="inline-block">
                             <button
                               class="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-all">
@@ -642,7 +641,7 @@
                         <% order.items.forEach(item=> { %>
                           <div class="flex items-center gap-6 group cursor-pointer">
                             <div
-                              class="w-28 h-28 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant/5 <%= (item.status === 'Cancelled') ? 'opacity-40' : '' %>">
+                              class="w-28 h-28 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant/5 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'opacity-40' : '' %>">
                               <img alt="<%= item.name %>"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 src="<%= item.image || 'https://via.placeholder.com/150' %>" />
@@ -651,7 +650,7 @@
                               <h3
                                 class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors flex items-center gap-2 flex-wrap">
                                 <span
-                                  class="inline-block <%= item.status === 'Cancelled' ? 'line-through text-on-surface-variant/60 opacity-50' : '' %>">
+                                  class="inline-block <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'line-through text-on-surface-variant/60 opacity-50' : '' %>">
                                   <%= item.name %>
                                 </span>
                                 <% if (item.status==='Cancelled' ) { %>
@@ -679,12 +678,12 @@
                               </h3>
                               <% if (item.variantName) { %>
                                 <p
-                                  class="text-sm text-on-surface-variant mt-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                  class="text-sm text-on-surface-variant mt-1 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'opacity-50' : '' %>">
                                   <%= item.variantName %>
                                 </p>
                                 <% } %>
                                   <p
-                                    class="text-sm text-on-surface-variant mt-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                    class="text-sm text-on-surface-variant mt-1 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'opacity-50' : '' %>">
                                     Qty: <%= item.quantity %>
                                   </p>
                                   <% if (item.status==='Cancelled' && item.cancellationReason) { %>
@@ -741,11 +740,17 @@
                                                         <% } %>
                                         </div>
                                         <% } %>
-                                           <p class="text-base font-extrabold mt-3 <%= (item.status === 'Cancelled') ? 'line-through opacity-50' : 'text-on-surface' %>">
+                                            <% if (item.paymentReturned) { %>
+                                              <div class="mt-2.5 flex items-center gap-1.5 text-xs text-green-700 font-bold bg-green-50 px-2 py-1 rounded w-fit border border-green-200">
+                                                <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                                                Refunded to Wallet
+                                              </div>
+                                            <% } %>
+                                            <p class="text-base font-extrabold mt-3 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'line-through opacity-50' : 'text-on-surface' %>">
                                              ₹<%= item.price.toFixed(2) %>
                                            </p>
                                            <% if (item.quantity > 1) { %>
-                                             <p class="text-xs text-on-surface-variant font-semibold mt-1 <%= (item.status === 'Cancelled') ? 'line-through opacity-50' : '' %>">
+                                             <p class="text-xs text-on-surface-variant font-semibold mt-1 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'line-through opacity-50' : '' %>">
                                                ₹<%= item.subtotal.toFixed(2) %> total
                                              </p>
                                            <% } %>

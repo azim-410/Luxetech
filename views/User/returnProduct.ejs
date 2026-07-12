@@ -133,7 +133,7 @@
                 <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col md:flex-row gap-6 items-center border border-outline-variant/15 mb-4 hover:border-outline-variant/30 transition-colors">
                 <!-- Checkbox Selection -->
                 <div class="flex items-center justify-center shrink-0 md:pr-2">
-                  <input type="checkbox" name="selectedItems" value="<%= item._id %>" checked class="w-5 h-5 rounded text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" />
+                  <input type="checkbox" name="selectedItems" value="<%= item._id %>" data-subtotal="<%= item.subtotal %>" checked class="w-5 h-5 rounded text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" />
                 </div>
 
                 <div class="w-full md:w-32 aspect-square bg-surface-container rounded-lg overflow-hidden flex items-center justify-center border border-outline-variant/10 shrink-0">
@@ -204,9 +204,15 @@
                 <span class="ml-4 font-headline font-semibold">Replacement</span>
                 <span class="ml-auto text-xs font-bold uppercase text-on-surface-variant tracking-tighter">Recommended</span>
               </label>
-              <label class="flex items-center p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
-                <input class="w-5 h-5 text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" name="resolution" type="radio" value="Refund" />
-                <span class="ml-4 font-headline font-semibold">Refund</span>
+              <label class="relative flex flex-col p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                <div class="flex items-center">
+                  <input class="w-5 h-5 text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" name="resolution" type="radio" value="Refund" />
+                  <span class="ml-4 font-headline font-semibold">Refund</span>
+                </div>
+                <div class="ml-9 mt-2 text-xs text-on-surface-variant flex items-start gap-1.5 leading-relaxed">
+                  <span class="material-symbols-outlined text-sm text-primary mt-0.5" data-icon="info">info</span>
+                  <span>Refunded money will go directly to your Luxe Tech <strong>Wallet</strong> (please note that tax and shipping charges are non-refundable).</span>
+                </div>
               </label>
             </div>
           </section>
@@ -270,7 +276,8 @@
             <div class="pt-6 border-t border-outline-variant/30 flex justify-between items-end">
               <div class="space-y-1">
                 <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Estimated Refund</p>
-                <p class="text-3xl font-headline font-black tracking-tighter">₹<%= order.pricing.grandTotal.toFixed(2) %></p>
+                <% const totalEligibleRefund = returnableItems.reduce((sum, item) => sum + item.subtotal, 0) %>
+                <p id="estimatedRefundAmount" class="text-3xl font-headline font-black tracking-tighter">₹<%= totalEligibleRefund.toFixed(2) %></p>
               </div>
             </div>
             <div class="space-y-4">
@@ -305,6 +312,26 @@
         input.addEventListener('change', () => {
           if (summaryResolution) summaryResolution.textContent = input.value;
         });
+      });
+
+      // Dynamic updates to Estimated Refund based on checkbox selection
+      const itemCheckboxes = document.querySelectorAll('input[name="selectedItems"]');
+      const estimatedRefundText = document.getElementById('estimatedRefundAmount');
+
+      function updateEstimatedRefund() {
+        let total = 0;
+        itemCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            total += parseFloat(cb.getAttribute('data-subtotal')) || 0;
+          }
+        });
+        if (estimatedRefundText) {
+          estimatedRefundText.textContent = '₹' + total.toFixed(2);
+        }
+      }
+
+      itemCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateEstimatedRefund);
       });
 
       // Clear inline errors when selections change

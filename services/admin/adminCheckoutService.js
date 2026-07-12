@@ -97,7 +97,8 @@ const updateOrderStatusService = async (orderId, status) => {
         order.deliveredDate = new Date();
     } else if (status === 'Cancelled') {
         order.cancelledDate = new Date();
-        if (order.paymentStatus === 'Paid') {
+        const isPaid = order.paymentStatus === 'Paid';
+        if (isPaid) {
             order.paymentStatus = 'Refunded';
             const refundAmount = order.pricing.grandTotal;
             if (refundAmount > 0) {
@@ -114,6 +115,17 @@ const updateOrderStatusService = async (orderId, status) => {
                 });
             }
         }
+        // Mark all items as Cancelled and set paymentReturned = true if paid
+        order.items.forEach(item => {
+            if (item.status !== 'Cancelled') {
+                item.status = 'Cancelled';
+                item.cancelledDate = new Date();
+                item.cancellationReason = 'Cancelled by Administrator';
+                if (isPaid) {
+                    item.paymentReturned = true;
+                }
+            }
+        });
     }
 
     // Save to DB
@@ -157,6 +169,7 @@ const processAdminItemActionService = async (orderId, itemId, action) => {
         }
         if (action === 'Return') {
             item.status = 'Return Confirmed';
+            item.paymentReturned = true;
             // Credit refund to user's wallet
             const refundAmount = item.subtotal;
             await User.findByIdAndUpdate(order.userId, {
@@ -244,6 +257,11 @@ const processAdminItemActionService = async (orderId, itemId, action) => {
                 order.returnRequestDate = new Date();
             }
         }
+    }
+
+    const hasActiveItems = order.items.some(i => !['Cancelled', 'Returned', 'Return Confirmed'].includes(i.status));
+    if (!hasActiveItems) {
+        order.paymentStatus = 'Refunded';
     }
 
     await order.save();

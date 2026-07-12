@@ -2,12 +2,13 @@ import { getCouponsService, createCouponService, deleteCouponService, updateCoup
 
 const getCouponList = async (req, res) => {
     try {
-        const { activeCoupons, inactiveCoupons, categories, recentRedemptions } = await getCouponsService();
+        const { activeCoupons, inactiveCoupons, categories, recentRedemptions, allRedemptions } = await getCouponsService();
         res.render('Admin/couponManagement', {
             activeCoupons,
             inactiveCoupons,
             categories,
             recentRedemptions,
+            allRedemptions,
             successMessage: req.query.success || null,
             errorMessage: req.query.error || null
         });

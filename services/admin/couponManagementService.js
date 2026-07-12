@@ -28,9 +28,13 @@ const getCouponsService = async () => {
     const recentRedemptions = await Order.find({ couponCode: { $ne: null, $exists: true } })
         .populate('userId', 'name email')
         .sort({ createdAt: -1 })
-        .limit(10);
+        .limit(5);
 
-    return { activeCoupons, inactiveCoupons, categories, recentRedemptions };
+    const allRedemptions = await Order.find({ couponCode: { $ne: null, $exists: true } })
+        .populate('userId', 'name email')
+        .sort({ createdAt: -1 });
+
+    return { activeCoupons, inactiveCoupons, categories, recentRedemptions, allRedemptions };
 };
 
 const createCouponService = async (couponData) => {

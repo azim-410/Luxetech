@@ -6,6 +6,8 @@ import cartModal from '../../model/cart.js';
 import Order from '../../model/order.js';
 import { getCartService } from './cartService.js';
 import couponModel from '../../model/coupon.js';
+import razorpay from '../../config/razorpay.js';
+import crypto from 'crypto';
 
 const getCheckoutAddressDataService = async (userId) => {
     if (!userId) {
@@ -219,6 +221,21 @@ const placeOrderService = async (userId, query, body) => {
     // Generate unique order ID
     const orderId = `LX-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    let razorpayOrderId = null;
+    if (paymentMethod === 'Razorpay') {
+        try {
+            const rzpOrder = await razorpay.orders.create({
+                amount: Math.round(finalGrandTotal * 100), // in paise
+                currency: 'INR',
+                receipt: orderId
+            });
+            razorpayOrderId = rzpOrder.id;
+        } catch (error) {
+            console.error("Razorpay order creation error:", error);
+            throw new Error("Failed to initiate online payment transaction with Razorpay. " + (error.message || ''));
+        }
+    }
+
     const order = await Order.create({
         userId,
         orderId,
@@ -255,13 +272,17 @@ const placeOrderService = async (userId, query, body) => {
         },
         couponCode: coupon ? coupon.code : undefined,
         coupon: coupon ? coupon._id : undefined,
+        razorpayOrderId: razorpayOrderId,
         paymentMethod: paymentMethod || 'COD',
         shippingMethod: shippingMethod || 'standard',
         paymentStatus: 'Pending',
         orderStatus: 'Pending'
     });
 
-    // Reduce variant stock
+    // Reduce variant stock, increment coupon count, and clear cart ONLY for non-Razorpay (e.g. COD) orders initially.
+    // Razorpay orders will defer these actions until payment verification is successful.
+    if (paymentMethod !== 'Razorpay') {
+        // Reduce variant stock
         for (const item of cart.items) {
             if (item.variantId) {
                 await variantModel.findByIdAndUpdate(item.variantId, {
@@ -270,24 +291,25 @@ const placeOrderService = async (userId, query, body) => {
             }
         }
 
-    // Increment coupon usage count
-    if (coupon) {
-        const updatedCoupon = await couponModel.findByIdAndUpdate(
-            coupon._id,
-            { $inc: { usedCount: 1 } },
-            { new: true }
-        );
-        if (updatedCoupon.usageLimit && updatedCoupon.usedCount >= updatedCoupon.usageLimit) {
-            await couponModel.findByIdAndUpdate(coupon._id, {
-                status: false,
-                isLimitReached: true
-            });
+        // Increment coupon usage count
+        if (coupon) {
+            const updatedCoupon = await couponModel.findByIdAndUpdate(
+                coupon._id,
+                { $inc: { usedCount: 1 } },
+                { new: true }
+            );
+            if (updatedCoupon.usageLimit && updatedCoupon.usedCount >= updatedCoupon.usageLimit) {
+                await couponModel.findByIdAndUpdate(coupon._id, {
+                    status: false,
+                    isLimitReached: true
+                });
+            }
         }
-    }
 
-    // Clear cart if this was checking out the full cart
-    if (!query.productId) {
-        await cartModal.deleteOne({ userId });
+        // Clear cart if this was checking out the full cart
+        if (!query.productId) {
+            await cartModal.deleteOne({ userId });
+        }
     }
 
     return order;
@@ -297,10 +319,76 @@ const getOrderConfirmationService = async (orderId) => {
     return await Order.findOne({ orderId });
 };
 
+const verifyPaymentService = async (userId, query, payload) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = payload;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        throw new Error('Invalid payment parameters.');
+    }
+
+    // Verify signature
+    const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+    hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+    const generatedSignature = hmac.digest('hex');
+
+    if (generatedSignature !== razorpay_signature) {
+        throw new Error('Payment verification failed: Signature mismatch.');
+    }
+
+    // Find the order
+    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+    if (!order) {
+        throw new Error('Order not found.');
+    }
+
+    // If order was already processed/paid, just return it (idempotency)
+    if (order.paymentStatus === 'Paid') {
+        return order;
+    }
+
+    // Update payment details
+    order.paymentStatus = 'Paid';
+    order.razorpayPaymentId = razorpay_payment_id;
+    order.razorpaySignature = razorpay_signature;
+    await order.save();
+
+    // Side effects: Reduce stock
+    for (const item of order.items) {
+        if (item.variantId) {
+            await variantModel.findByIdAndUpdate(item.variantId, {
+                $inc: { stock: -item.quantity }
+            });
+        }
+    }
+
+    // Side effects: Coupon usage
+    if (order.coupon) {
+        const updatedCoupon = await couponModel.findByIdAndUpdate(
+            order.coupon,
+            { $inc: { usedCount: 1 } },
+            { new: true }
+        );
+        if (updatedCoupon && updatedCoupon.usageLimit && updatedCoupon.usedCount >= updatedCoupon.usageLimit) {
+            await couponModel.findByIdAndUpdate(order.coupon, {
+                status: false,
+                isLimitReached: true
+            });
+        }
+    }
+
+    // Side effects: Clear cart (if NOT a single-product purchase)
+    if (!query.productId) {
+        await cartModal.deleteOne({ userId });
+    }
+
+    return order;
+};
+
 export {
     getCheckoutAddressDataService,
     getCheckoutCartDataService,
     getCheckoutPageDataService,
     placeOrderService,
-    getOrderConfirmationService
+    getOrderConfirmationService,
+    verifyPaymentService
 };

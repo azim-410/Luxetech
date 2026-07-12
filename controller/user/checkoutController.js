@@ -3,7 +3,8 @@ import {
     getCheckoutAddressDataService,
     placeOrderService,
     getOrderConfirmationService,
-    getCheckoutCartDataService
+    getCheckoutCartDataService,
+    verifyPaymentService
 } from '../../services/user/checkoutService.js';
 import { editAddressService, addAddressService } from '../../services/user/addressService.js';
 import { getCartService } from '../../services/user/cartService.js';
@@ -161,14 +162,34 @@ const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
         if (!userId) {
+            if (req.body.paymentMethod === 'Razorpay') {
+                return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+            }
             return res.redirect('/login');
         }
 
         const order = await placeOrderService(userId, req.query, req.body);
 
+        if (req.body.paymentMethod === 'Razorpay') {
+            return res.status(200).json({
+                success: true,
+                paymentMethod: 'Razorpay',
+                razorpayOrderId: order.razorpayOrderId,
+                amount: Math.round(order.pricing.grandTotal * 100),
+                currency: 'INR',
+                razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+                orderId: order.orderId
+            });
+        }
+
         return res.redirect(`/order/success?orderId=${order.orderId}`);
     } catch (error) {
         console.error("placeOrder Error:", error);
+
+        if (req.body.paymentMethod === 'Razorpay') {
+            return res.status(400).json({ success: false, message: error.message });
+        }
+
         // Validation errors (blocked product / out of stock) — re-render checkout page with error
         if (error.message) {
             try {
@@ -227,10 +248,33 @@ const getOrderConfirmation = async (req, res) => {
     }
 };
 
+const verifyPayment = async (req, res) => {
+    try {
+        const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+        }
+
+        const order = await verifyPaymentService(userId, req.query, req.body);
+
+        return res.status(200).json({
+            success: true,
+            orderId: order.orderId
+        });
+    } catch (error) {
+        console.error("verifyPayment Error:", error);
+        return res.status(400).json({
+            success: false,
+            message: error.message || 'Payment verification failed.'
+        });
+    }
+};
+
 export {
     getCheckout,
     editAddress,
     addAddress,
     placeOrder,
-    getOrderConfirmation
+    getOrderConfirmation,
+    verifyPayment
 }

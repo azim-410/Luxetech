@@ -19,8 +19,11 @@ import {
     editAddress,
     addAddress,
     placeOrder,
-    getOrderConfirmation
+    getOrderConfirmation,
+    verifyPayment
 } from '../controller/user/checkoutController.js';
+
+import { getOrdersPage, getTrackingPage, cancelOrder, getReturnPage, processReturn } from '../controller/user/orderController.js';
 
 const router = express.Router();
 
@@ -50,8 +53,16 @@ router.get('/checkout', isAuthenticated, checkIfBlocked, getCheckout);
 router.post('/checkout/address/add', isAuthenticated, checkIfBlocked, addAddress);
 router.post('/checkout/address/edit/:addressId', isAuthenticated, checkIfBlocked, editAddress);
 router.post('/checkout/place-order', isAuthenticated, checkIfBlocked, placeOrder);
+router.post('/checkout/verify-payment', isAuthenticated, checkIfBlocked, verifyPayment);
 router.get('/order/success', isAuthenticated, checkIfBlocked, getOrderConfirmation);
 router.post('/order/success', isAuthenticated, checkIfBlocked, getOrderConfirmation);
+
+// User Orders Page
+router.get('/orders', isAuthenticated, checkIfBlocked, getOrdersPage);
+router.get('/orders/track/:orderId', isAuthenticated, checkIfBlocked, getTrackingPage);
+router.post('/orders/cancel/:orderId', isAuthenticated, checkIfBlocked, cancelOrder);
+router.get('/orders/return/:orderId', isAuthenticated, checkIfBlocked, getReturnPage);
+router.post('/orders/return/:orderId', isAuthenticated, checkIfBlocked, processReturn);
 
 
 export default router;

@@ -57,6 +57,7 @@ const getCheckoutCartDataService = async (userId, query) => {
 
         const items = [{
             productId: product._id,
+            categoryId: product.category ? (product.category._id || product.category) : null,
             variantId: variant ? variant._id : null,
             name: product.name,
             variantName: variant ? `${variant.groupName}: ${variant.option}` : '',
@@ -179,11 +180,28 @@ const placeOrderService = async (userId, query, body) => {
             throw new Error('This coupon has reached its usage limit');
         }
 
+        // Validate coupon applicable categories on backend
+        if (coupon.applicableCategories && coupon.applicableCategories.length > 0) {
+            const applicableCategoryIds = coupon.applicableCategories.map(cat => cat.toString());
+            const invalidItems = [];
+
+            for (const item of cart.items) {
+                const product = await productModel.findById(item.productId);
+                const itemCategoryId = product && product.category ? product.category.toString() : null;
+
+                if (!itemCategoryId || !applicableCategoryIds.includes(itemCategoryId)) {
+                    invalidItems.push(item.name);
+                }
+            }
+
+            if (invalidItems.length > 0) {
+                const namesStr = invalidItems.join(', ');
+                throw new Error(`This coupon cannot be used for the following products in your checkout: (${namesStr}). Please remove them to proceed with this coupon.`);
+            }
+        }
+
         if (coupon.discountType === 'percentage') {
             couponDiscount = Math.round(cart.subtotal * (coupon.discountValue / 100));
-            if (coupon.maxDiscount && couponDiscount > coupon.maxDiscount) {
-                couponDiscount = coupon.maxDiscount;
-            }
         } else if (coupon.discountType === 'fixed') {
             couponDiscount = coupon.discountValue;
         }
@@ -228,6 +246,8 @@ const placeOrderService = async (userId, query, body) => {
         pricing: {
             originalTotal: cart.originalTotal,
             discount: finalDiscount,
+            productDiscount: cart.discount || 0,
+            couponDiscount: couponDiscount,
             subtotal: cart.subtotal,
             tax: cart.tax,
             shipping: shippingCost,
@@ -252,9 +272,17 @@ const placeOrderService = async (userId, query, body) => {
 
     // Increment coupon usage count
     if (coupon) {
-        await couponModel.findByIdAndUpdate(coupon._id, {
-            $inc: { usedCount: 1 }
-        });
+        const updatedCoupon = await couponModel.findByIdAndUpdate(
+            coupon._id,
+            { $inc: { usedCount: 1 } },
+            { new: true }
+        );
+        if (updatedCoupon.usageLimit && updatedCoupon.usedCount >= updatedCoupon.usageLimit) {
+            await couponModel.findByIdAndUpdate(coupon._id, {
+                status: false,
+                isLimitReached: true
+            });
+        }
     }
 
     // Clear cart if this was checking out the full cart

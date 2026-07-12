@@ -46,6 +46,51 @@ const orderSchema = new mongoose.Schema({
         image: {
             type: String,
             default: ''
+        },
+        status: {
+            type: String,
+            enum: ['Ordered', 'Delivered', 'Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'],
+            default: 'Ordered'
+        },
+        returnReason: {
+            type: String,
+            required: false
+        },
+        returnComments: {
+            type: String,
+            required: false
+        },
+        returnResolution: {
+            type: String,
+            required: false
+        },
+        returnMethod: {
+            type: String,
+            required: false
+        },
+        cancellationReason: {
+            type: String,
+            required: false
+        },
+        cancellationComments: {
+            type: String,
+            required: false
+        },
+        cancelledDate: {
+            type: Date,
+            required: false
+        },
+        returnRequestDate: {
+            type: Date,
+            required: false
+        },
+        returnConfirmedDate: {
+            type: Date,
+            required: false
+        },
+        returnedDate: {
+            type: Date,
+            required: false
         }
     }],
     shippingAddress: {
@@ -96,6 +141,14 @@ const orderSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
+        productDiscount: {
+            type: Number,
+            default: 0
+        },
+        couponDiscount: {
+            type: Number,
+            default: 0
+        },
         subtotal: {
             type: Number,
             required: true
@@ -113,9 +166,17 @@ const orderSchema = new mongoose.Schema({
             required: true
         }
     },
+    couponCode: {
+        type: String,
+        required: false
+    },
+    coupon: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'coupon',
+        required: false
+    },
     paymentMethod: {
         type: String,
-       
         default: 'COD',
         required: true
     },
@@ -133,7 +194,7 @@ const orderSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned'],
+        enum: ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'],
         default: 'Pending',
         required: true
     },
@@ -158,6 +219,26 @@ const orderSchema = new mongoose.Schema({
         required: false
     },
     cancelledDate: {
+        type: Date,
+        required: false
+    },
+    cancellationReason: {
+        type: String,
+        required: false
+    },
+    cancellationComments: {
+        type: String,
+        required: false
+    },
+    returnRequestDate: {
+        type: Date,
+        required: false
+    },
+    returnConfirmedDate: {
+        type: Date,
+        required: false
+    },
+    returnedDate: {
         type: Date,
         required: false
     }

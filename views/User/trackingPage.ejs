@@ -750,17 +750,45 @@
                           <% }) %>
                       </div>
                       <div class="mt-10 pt-8 border-t border-outline-variant/10">
+                        <% 
+                          let couponCodeToShow = order.couponCode || null;
+                          let couponDiscountAmt = 0;
+                          let productDiscountAmt = 0;
+
+                          if (typeof order.pricing.couponDiscount !== 'undefined') {
+                              couponDiscountAmt = order.pricing.couponDiscount;
+                              productDiscountAmt = order.pricing.productDiscount || 0;
+                          } else if (couponCodeToShow) {
+                              couponDiscountAmt = order.pricing.discount || 0;
+                              productDiscountAmt = 0;
+                          } else {
+                              productDiscountAmt = order.pricing.discount || 0;
+                          }
+                        %>
+
                         <div class="flex justify-between items-center mb-4">
                           <span class="text-base font-medium text-on-surface-variant">Subtotal</span>
                           <span class="text-lg font-semibold">₹<%= order.pricing.subtotal.toFixed(2) %></span>
                         </div>
-                        <% if (order.pricing.discount> 0) { %>
+
+                        <% if (productDiscountAmt > 0) { %>
                           <div class="flex justify-between items-center mb-4">
-                            <span class="text-base font-medium text-on-surface-variant">Discount</span>
-                            <span class="text-lg font-semibold text-green-600">-₹<%= order.pricing.discount.toFixed(2)
-                                %></span>
+                            <span class="text-base font-medium text-on-surface-variant">Offer Discount</span>
+                            <span class="text-lg font-semibold text-green-600">-₹<%= productDiscountAmt.toFixed(2) %></span>
                           </div>
-                          <% } %>
+                        <% } %>
+
+                        <% if (couponCodeToShow) { %>
+                          <div class="flex justify-between items-center mb-4">
+                            <span class="text-base font-medium text-on-surface-variant">Coupon Redeemed</span>
+                            <span class="text-lg font-semibold text-primary"><%= couponCodeToShow %></span>
+                          </div>
+                          <div class="flex justify-between items-center mb-4">
+                            <span class="text-base font-medium text-on-surface-variant">Coupon Discount</span>
+                            <span class="text-lg font-semibold text-green-600">-₹<%= couponDiscountAmt.toFixed(2) %></span>
+                          </div>
+                        <% } %>
+
                             <div class="flex justify-between items-center mb-4">
                               <span class="text-base font-medium text-on-surface-variant">Tax</span>
                               <span class="text-lg font-semibold">₹<%= order.pricing.tax.toFixed(2) %></span>

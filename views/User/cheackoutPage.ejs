@@ -978,6 +978,50 @@
         </div>
     </div>
 
+    <!-- Wallet Payment Confirmation Modal -->
+    <div id="wallet-confirm-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div id="wallet-confirm-backdrop"
+            class="absolute inset-0 bg-[#0D1B2A]/40 backdrop-blur-sm transition-opacity duration-300"></div>
+        <!-- Modal Card -->
+        <div
+            class="relative bg-white rounded-2xl max-w-sm w-full mx-4 p-8 shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
+                    <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+                </div>
+                <h3 class="text-lg font-bold font-headline text-[#0D1B2A] mb-4">Confirm Wallet Payment</h3>
+                
+                <div class="w-full bg-slate-50 p-4 rounded-xl mb-6 space-y-3 text-left">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-500 font-medium">Your Wallet Balance:</span>
+                        <span class="text-[#0D1B2A] font-extrabold" id="wallet-balance-val">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-500 font-medium">Order Grand Total:</span>
+                        <span class="text-red-600 font-extrabold" id="wallet-order-total-val">₹0.00</span>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 flex justify-between items-center text-xs">
+                        <span class="text-slate-500 font-medium">Remaining Balance:</span>
+                        <span class="text-green-600 font-extrabold" id="wallet-remaining-val">₹0.00</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 w-full">
+                    <button id="wallet-cancel-btn"
+                        class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button id="wallet-confirm-submit-btn"
+                        class="flex-1 py-3 bg-[#0D1B2A] hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-colors">
+                        Confirm & Pay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const cartItems = <%- JSON.stringify(cart ? cart.items.map(item => ({ name: item.name, categoryId: String(item.categoryId) })) : []) %>;
         // Addresses data
@@ -1267,6 +1311,38 @@
             });
         }
 
+        // Wallet Confirmation Modal Controls
+        const walletConfirmModal = document.getElementById('wallet-confirm-modal');
+        const walletCancelBtn = document.getElementById('wallet-cancel-btn');
+        const walletConfirmBackdrop = document.getElementById('wallet-confirm-backdrop');
+
+        function openWalletConfirmModal() {
+            if (walletConfirmModal) {
+                walletConfirmModal.classList.remove('hidden');
+                setTimeout(() => {
+                    walletConfirmModal.classList.remove('opacity-0');
+                    walletConfirmModal.querySelector('.relative').classList.remove('scale-95');
+                }, 10);
+            }
+        }
+
+        function closeWalletConfirmModal() {
+            if (walletConfirmModal) {
+                walletConfirmModal.classList.add('opacity-0');
+                walletConfirmModal.querySelector('.relative').classList.add('scale-95');
+                setTimeout(() => {
+                    walletConfirmModal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        if (walletCancelBtn) {
+            walletCancelBtn.addEventListener('click', closeWalletConfirmModal);
+        }
+        if (walletConfirmBackdrop) {
+            walletConfirmBackdrop.addEventListener('click', closeWalletConfirmModal);
+        }
+
         let activePaymentMethod = 'COD';
 
         function selectPaymentMethod(method) {
@@ -1354,15 +1430,54 @@
                 }
 
                 if (activePaymentMethod === 'Wallet') {
+                    e.preventDefault();
                     const grandTotalText = document.getElementById('summary-grand-total').textContent.replace(/[^\d.]/g, '');
                     const grandTotal = parseFloat(grandTotalText) || 0;
                     const walletBalance = <%= (user && user.wallet) || 0 %>;
                     
                     if (walletBalance < grandTotal) {
-                        e.preventDefault();
                         showAlert('Your wallet balance is insufficient to place this order.', 'Insufficient Funds');
                         return;
                     }
+
+                    document.getElementById('wallet-balance-val').textContent = '₹' + walletBalance.toFixed(2);
+                    document.getElementById('wallet-order-total-val').textContent = '₹' + grandTotal.toFixed(2);
+                    document.getElementById('wallet-remaining-val').textContent = '₹' + (walletBalance - grandTotal).toFixed(2);
+                    
+                    openWalletConfirmModal();
+                    
+                    const confirmBtn = document.getElementById('wallet-confirm-submit-btn');
+                    confirmBtn.onclick = function() {
+                        closeWalletConfirmModal();
+                        
+                        const addressInput = document.createElement('input');
+                        addressInput.type = 'hidden';
+                        addressInput.name = 'addressId';
+                        addressInput.value = addressId;
+                        placeOrderForm.appendChild(addressInput);
+
+                        const shippingInput = document.createElement('input');
+                        shippingInput.type = 'hidden';
+                        shippingInput.name = 'shippingMethod';
+                        shippingInput.value = shippingMethod;
+                        placeOrderForm.appendChild(shippingInput);
+
+                        const paymentInput = document.createElement('input');
+                        paymentInput.type = 'hidden';
+                        paymentInput.name = 'paymentMethod';
+                        paymentInput.value = 'Wallet';
+                        placeOrderForm.appendChild(paymentInput);
+
+                        const couponInput = document.createElement('input');
+                        couponInput.type = 'hidden';
+                        couponInput.name = 'couponId';
+                        couponInput.value = couponSelect ? couponSelect.value : '';
+                        placeOrderForm.appendChild(couponInput);
+
+                        placeOrderForm.action = `/checkout/place-order${window.location.search}`;
+                        placeOrderForm.submit();
+                    };
+                    return;
                 }
 
                 if (activePaymentMethod === 'Razorpay') {

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Return Center | Luxe Tech</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link href="/User/css/main-global.css" rel="stylesheet" />
+  <link href="/User/css/profile.css" rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#e0e3e6",
+            "on-surface-variant": "#44474c",
+            "on-tertiary-fixed-variant": "#7a3000",
+            "surface-container-high": "#e6e8eb",
+            "surface": "#f7f9fc",
+            "primary-container": "#001945",
+            "on-tertiary-fixed": "#341100",
+            "on-secondary-fixed": "#021f29",
+            "outline-variant": "#c4c6cc",
+            "outline": "#74777d",
+            "secondary-fixed": "#cbe7f5",
+            "error": "#ba1a1a",
+            "secondary": "#48626e",
+            "on-primary": "#ffffff",
+            "secondary-fixed-dim": "#afcbd8",
+            "inverse-primary": "#b0c6ff",
+            "primary-fixed": "#d9e2ff",
+            "on-tertiary": "#ffffff",
+            "tertiary": "#000000",
+            "surface-container-low": "#f2f4f7",
+            "inverse-on-surface": "#eff1f4",
+            "error-container": "#ffdad6",
+            "surface-container": "#eceef1",
+            "on-error-container": "#93000a",
+            "on-primary-fixed-variant": "#00429c",
+            "on-primary-fixed": "#001945",
+            "surface-container-highest": "#e0e3e6",
+            "surface-bright": "#f7f9fc",
+            "background": "#f7f9fc",
+            "on-primary-container": "#5781de",
+            "tertiary-fixed-dim": "#ffb692",
+            "surface-dim": "#d8dadd",
+            "tertiary-fixed": "#ffdbcb",
+            "primary": "#000000",
+            "on-background": "#191c1e",
+            "inverse-surface": "#2d3133",
+            "surface-tint": "#2b5bb5",
+            "on-secondary": "#ffffff",
+            "primary-fixed-dim": "#b0c6ff",
+            "on-tertiary-container": "#dc5d00",
+            "surface-container-lowest": "#ffffff",
+            "secondary-container": "#cbe7f5",
+            "on-secondary-fixed-variant": "#304a55",
+            "on-secondary-container": "#4e6874",
+            "tertiary-container": "#341100",
+            "on-error": "#ffffff",
+            "on-surface": "#191c1e"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .bg-primary-gradient {
+      background: linear-gradient(135deg, #000000 0%, #001945 100%);
+    }
+  </style>
+</head>
+
+<body class="bg-surface font-body text-on-surface">
+  <%- include('../partials/user/main-header', { user }) %>
+
+  <main class="min-h-screen">
+    <!-- Return Policy Banner -->
+    <div class="bg-primary text-on-primary py-3 px-6 lg:px-12 flex justify-center items-center gap-3">
+      <span class="material-symbols-outlined text-sm">info</span>
+      <p class="font-headline font-semibold text-sm tracking-wide">Return Policy: Items can only be returned within 7 days of delivery.</p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+      <!-- Back to Orders Navigation Link -->
+      <div class="mb-8">
+        <a href="/orders" class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-sm">chevron_left</span>
+          Back to Orders
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <!-- Main Flow -->
+        <div class="lg:col-span-8 space-y-16">
+          <!-- Section 1: Confirm Item -->
+          <section class="space-y-6">
+            <div class="flex items-center gap-4">
+              <span class="bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center font-headline font-bold">1</span>
+              <h2 class="text-2xl font-headline font-extrabold tracking-tight">Confirm Items</h2>
+            </div>
+            
+            <% const returnableItems = order.items.filter(item => !['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) %>
+            <% if (returnableItems.length === 0) { %>
+              <div class="bg-error-container/10 border border-error-container/30 p-8 rounded-xl text-center space-y-4">
+                <span class="material-symbols-outlined text-4xl text-error">warning</span>
+                <h3 class="text-lg font-headline font-bold text-on-surface">No Returnable Items</h3>
+                <p class="text-sm text-on-surface-variant max-w-md mx-auto">All items in this order have already been returned, replaced, or cancelled. You cannot submit another return request for this order.</p>
+                <a href="/orders/track/<%= order._id %>" class="inline-block mt-4 px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-colors">
+                  View Order Status
+                </a>
+              </div>
+            <% } else { %>
+              <% returnableItems.forEach(item => { %>
+                <div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col md:flex-row gap-6 items-center border border-outline-variant/15 mb-4 hover:border-outline-variant/30 transition-colors">
+                <!-- Checkbox Selection -->
+                <div class="flex items-center justify-center shrink-0 md:pr-2">
+                  <input type="checkbox" name="selectedItems" value="<%= item._id %>" checked class="w-5 h-5 rounded text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" />
+                </div>
+
+                <div class="w-full md:w-32 aspect-square bg-surface-container rounded-lg overflow-hidden flex items-center justify-center border border-outline-variant/10 shrink-0">
+                  <img alt="<%= item.name %>" class="w-full h-full object-cover" src="<%= item.image || 'https://via.placeholder.com/150' %>" />
+                </div>
+                <div class="flex-grow space-y-2 text-center md:text-left">
+                  <h3 class="text-xl font-headline font-bold"><%= item.name %></h3>
+                  <% if (item.variantName) { %>
+                    <p class="text-on-surface-variant text-sm"><%= item.variantName %></p>
+                  <% } %>
+                  <div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span>
+                    Eligible for return
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <p class="text-xl font-headline font-bold">₹<%= item.price.toFixed(2) %></p>
+                  <p class="text-xs text-on-surface-variant mt-1">Qty: <%= item.quantity %></p>
+                </div>
+              </div>
+            <% }) %>
+            <% } %>
+          </section>
+
+          <!-- Section 2: Reason for Return -->
+          <section class="space-y-6">
+            <div class="flex items-center gap-4">
+              <span class="bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center font-headline font-bold">2</span>
+              <h2 class="text-2xl font-headline font-extrabold tracking-tight">Reason for Return</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label class="relative flex flex-col p-5 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:border-surface-tint transition-all group">
+                <input checked class="sr-only peer" name="reason" type="radio" value="Defective" />
+                <div class="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:border-surface-tint peer-checked:bg-surface-tint transition-all mb-4 self-end"></div>
+                <span class="font-headline font-bold">Defective</span>
+                <span class="text-xs text-on-surface-variant mt-1">Hardware or software issues</span>
+              </label>
+              <label class="relative flex flex-col p-5 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:border-surface-tint transition-all group">
+                <input class="sr-only peer" name="reason" type="radio" value="Style not expected" />
+                <div class="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:border-surface-tint peer-checked:bg-surface-tint transition-all mb-4 self-end"></div>
+                <span class="font-headline font-bold">Style not as expected</span>
+                <span class="text-xs text-on-surface-variant mt-1">Visual preference</span>
+              </label>
+              <label class="relative flex flex-col p-5 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:border-surface-tint transition-all group">
+                <input class="sr-only peer" name="reason" type="radio" value="Performance issues" />
+                <div class="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:border-surface-tint peer-checked:bg-surface-tint transition-all mb-4 self-end"></div>
+                <span class="font-headline font-bold">Performance issues</span>
+                <span class="text-xs text-on-surface-variant mt-1">Audio quality or battery</span>
+              </label>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-bold uppercase tracking-wider text-on-surface-variant">Additional Comments</label>
+              <textarea id="comments"
+                class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-sm focus:ring-2 focus:ring-surface-tint focus:border-transparent p-4 body-md outline-none transition-all"
+                placeholder="Tell us more about the issue..." rows="4"></textarea>
+            </div>
+          </section>
+
+          <!-- Section 3: Resolution Type -->
+          <section class="space-y-6">
+            <div class="flex items-center gap-4">
+              <span class="bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center font-headline font-bold">3</span>
+              <h2 class="text-2xl font-headline font-extrabold tracking-tight">Resolution Type</h2>
+            </div>
+            <div class="space-y-4">
+              <label class="flex items-center p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                <input checked class="w-5 h-5 text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" name="resolution" type="radio" value="Replacement" />
+                <span class="ml-4 font-headline font-semibold">Replacement</span>
+                <span class="ml-auto text-xs font-bold uppercase text-on-surface-variant tracking-tighter">Recommended</span>
+              </label>
+              <label class="flex items-center p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                <input class="w-5 h-5 text-surface-tint border-outline-variant focus:ring-surface-tint cursor-pointer" name="resolution" type="radio" value="Refund" />
+                <span class="ml-4 font-headline font-semibold">Refund</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Section 4: Return Method -->
+          <section class="space-y-6">
+            <div class="flex items-center gap-4">
+              <span class="bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center font-headline font-bold">4</span>
+              <h2 class="text-2xl font-headline font-extrabold tracking-tight">Return Method</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <label class="relative group cursor-pointer">
+                <input checked class="sr-only peer" name="method" type="radio" value="Carrier Pickup" />
+                <div class="p-8 bg-surface-container-lowest border border-outline-variant/30 rounded-xl transition-all peer-checked:border-surface-tint peer-checked:ring-2 peer-checked:ring-surface-tint/20 flex flex-col items-center text-center gap-4">
+                  <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-on-primary">
+                    <span class="material-symbols-outlined text-4xl">local_shipping</span>
+                  </div>
+                  <div>
+                    <p class="font-headline font-bold text-lg">Carrier Pickup</p>
+                    <p class="text-sm text-on-surface-variant mt-1">Free pickup from your address within 3-5 days.</p>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Drop off (Coming Soon Overlay) -->
+              <div class="relative rounded-xl overflow-hidden border border-outline-variant/30 bg-surface-container-lowest/80 p-8 flex flex-col items-center text-center gap-4 min-h-[220px]">
+                <div class="absolute inset-0 bg-white/20 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center gap-3">
+                  <span class="material-symbols-outlined text-4xl text-primary animate-spin" style="animation-duration: 3s;">hourglass_empty</span>
+                  <span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-wider rounded">Coming Soon...</span>
+                </div>
+                <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant">
+                  <span class="material-symbols-outlined text-4xl">store</span>
+                </div>
+                <div>
+                  <p class="font-headline font-bold text-lg">Drop off</p>
+                  <p class="text-sm text-on-surface-variant mt-1">Drop off at any authorized Luxe Tech service partner location.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Sidebar: Return Summary -->
+        <div class="lg:col-span-4">
+          <div class="sticky top-32 bg-surface-container-low p-8 rounded-2xl space-y-8 border border-outline-variant/10 shadow-sm">
+            <h2 class="text-xl font-headline font-extrabold tracking-tight border-b border-outline-variant/30 pb-4">Return Summary</h2>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant font-medium">Resolution Type</span>
+                <span class="font-bold" id="summaryResolution">Replacement</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant font-medium">Return Method</span>
+                <span class="font-bold" id="summaryMethod">Carrier Pickup</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant font-medium">Return Fee</span>
+                <span class="font-bold text-on-primary-fixed-variant">FREE</span>
+              </div>
+            </div>
+            <div class="pt-6 border-t border-outline-variant/30 flex justify-between items-end">
+              <div class="space-y-1">
+                <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Estimated Refund</p>
+                <p class="text-3xl font-headline font-black tracking-tighter">₹<%= order.pricing.grandTotal.toFixed(2) %></p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <!-- Error message container -->
+              <div id="error-message" class="hidden bg-error-container/20 border border-error-container/30 text-error font-bold text-xs p-3 rounded-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm text-error">error</span>
+                <span id="error-text"></span>
+              </div>
+
+              <button id="confirmReturnBtn" <%= returnableItems.length === 0 ? 'disabled' : '' %> class="w-full bg-primary-gradient py-5 rounded-lg text-on-primary font-headline font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 <%= returnableItems.length === 0 ? 'opacity-50 cursor-not-allowed' : '' %>">
+                CONFIRM RETURN
+              </button>
+              <p class="text-[10px] text-center text-on-surface-variant leading-relaxed">By confirming, you agree to Luxe Tech's Return Policy and Terms of Service. A prepaid shipping label will be sent to your registered email.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/user/profile-mobile-nav') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dynamic updates to Return Summary sidebar fields
+      const resolutionInputs = document.querySelectorAll('input[name="resolution"]');
+      const methodInputs = document.querySelectorAll('input[name="method"]');
+      const summaryResolution = document.getElementById('summaryResolution');
+      const summaryMethod = document.getElementById('summaryMethod');
+
+      resolutionInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          if (summaryResolution) summaryResolution.textContent = input.value;
+        });
+      });
+
+      // Clear inline errors when selections change
+      const allInputs = document.querySelectorAll('input, textarea');
+      allInputs.forEach(input => {
+        input.addEventListener('input', () => {
+          const errorDiv = document.getElementById('error-message');
+          if (errorDiv) errorDiv.classList.add('hidden');
+        });
+        input.addEventListener('change', () => {
+          const errorDiv = document.getElementById('error-message');
+          if (errorDiv) errorDiv.classList.add('hidden');
+        });
+      });
+
+      methodInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          if (summaryMethod) summaryMethod.textContent = input.value;
+        });
+      });
+
+      // Form submission
+      const confirmReturnBtn = document.getElementById('confirmReturnBtn');
+      if (confirmReturnBtn) {
+        confirmReturnBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+
+          const errorDiv = document.getElementById('error-message');
+          const errorText = document.getElementById('error-text');
+          if (errorDiv) errorDiv.classList.add('hidden');
+
+          const selectedCheckboxes = document.querySelectorAll('input[name="selectedItems"]:checked');
+          const selectedItems = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+          const reasonRadio = document.querySelector('input[name="reason"]:checked');
+          const reason = reasonRadio ? reasonRadio.value : '';
+
+          const comments = document.getElementById('comments')?.value || '';
+
+          const resolutionRadio = document.querySelector('input[name="resolution"]:checked');
+          const resolution = resolutionRadio ? resolutionRadio.value : '';
+
+          const methodRadio = document.querySelector('input[name="method"]:checked');
+          const method = methodRadio ? methodRadio.value : '';
+
+          try {
+            const response = await fetch('/orders/return/<%= order._id %>', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                selectedItems,
+                reason,
+                comments,
+                resolution,
+                method
+              })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              window.location.href = '/orders';
+            } else {
+              if (errorDiv && errorText) {
+                errorText.textContent = data.message || 'Failed to submit return request';
+                errorDiv.classList.remove('hidden');
+              }
+            }
+          } catch (error) {
+            console.error('Error submitting return request:', error);
+            if (errorDiv && errorText) {
+              errorText.textContent = 'An error occurred. Please try again.';
+              errorDiv.classList.remove('hidden');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

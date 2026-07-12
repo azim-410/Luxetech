@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Order Tracking | Luxe Tech</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link href="/User/css/main-global.css" rel="stylesheet" />
+  <link href="/User/css/profile.css" rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-background": "#191c1e",
+            "background": "#f7f9fc",
+            "surface": "#f7f9fc",
+            "secondary-fixed-dim": "#afcbd8",
+            "tertiary-fixed": "#ffdbcb",
+            "outline-variant": "#c4c6cc",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#cbe7f5",
+            "primary-fixed": "#d9e2ff",
+            "surface-container-high": "#e6e8eb",
+            "surface-container": "#eceef1",
+            "tertiary": "#000000",
+            "secondary-container": "#cbe7f5",
+            "error-container": "#ffdad6",
+            "surface-dim": "#d8dadd",
+            "primary-fixed-dim": "#b0c6ff",
+            "on-tertiary-container": "#dc5d00",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb692",
+            "surface-container-low": "#f2f4f7",
+            "on-secondary-fixed": "#021f29",
+            "error": "#ba1a1a",
+            "inverse-on-surface": "#eff1f4",
+            "on-secondary-container": "#4e6874",
+            "surface-tint": "#2b5bb5",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#5781de",
+            "inverse-primary": "#b0c6ff",
+            "secondary": "#48626e",
+            "on-secondary-fixed-variant": "#304a55",
+            "primary": "#000000",
+            "on-surface-variant": "#44474c",
+            "surface-bright": "#f7f9fc",
+            "primary-container": "#001945",
+            "on-primary-fixed-variant": "#00429c",
+            "on-tertiary-fixed": "#341100",
+            "surface-container-lowest": "#ffffff",
+            "outline": "#74777d",
+            "tertiary-container": "#341100",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#e0e3e6",
+            "on-surface": "#191c1e",
+            "surface-variant": "#e0e3e6",
+            "on-primary-fixed": "#001945",
+            "on-tertiary-fixed-variant": "#7a3000",
+            "on-secondary": "#ffffff",
+            "inverse-surface": "#2d3133"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+        },
+      },
+    }
+  </script>
+</head>
+
+<body class="text-on-surface bg-background">
+  <%- include('../partials/user/main-header', { user }) %>
+
+    <% const
+      dummyImgUrl='https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0'
+      ; %>
+
+      <% const statusSteps=['Pending', 'Confirmed' , 'Processing' , 'Shipped' , 'Out for Delivery' , 'Delivered'
+        , 'Returned', 'Replaced' ]; const returnStatuses=['Returned', 'Replaced', 'Return Requested' , 'Return Confirmed'
+        , 'Replacement Confirmed' ]; const currentStatusIndex=statusSteps.indexOf(order.orderStatus); const
+        isStepCompleted=(stepName)=> {
+        if (order.orderStatus === 'Cancelled') {
+        if (stepName === 'Placed') return true;
+        if (stepName === 'Processing') return !!order.processingDate;
+        if (stepName === 'Shipped') return !!order.shippedDate;
+        if (stepName === 'Out for Delivery') return !!order.outForDeliveryDate;
+        if (stepName === 'Delivered') return !!order.deliveredDate;
+        return false;
+        }
+        if (returnStatuses.includes(order.orderStatus)) {
+        return true;
+        }
+        if (stepName === 'Placed') return currentStatusIndex >= 0;
+        if (stepName === 'Processing') return currentStatusIndex >= 1; // Confirmed or Processing
+        if (stepName === 'Shipped') return currentStatusIndex >= 3; // Shipped
+        if (stepName === 'Out for Delivery') return currentStatusIndex >= 4; // Out for Delivery
+        if (stepName === 'Delivered') return currentStatusIndex >= 5; // Delivered
+        return false;
+        };
+
+        const getProgressBarWidth = () => {
+        if (order.orderStatus === 'Cancelled') {
+        if (order.deliveredDate) return '100%';
+        if (order.outForDeliveryDate) return '75%';
+        if (order.shippedDate) return '50%';
+        if (order.processingDate) return '25%';
+        return '0%';
+        }
+        if (['Returned', 'Replaced', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed'].includes(order.orderStatus))
+        return '100%';
+        if (order.orderStatus === 'Pending') return '0%';
+        if (order.orderStatus === 'Confirmed' || order.orderStatus === 'Processing') return '25%';
+        if (order.orderStatus === 'Shipped') return '50%';
+        if (order.orderStatus === 'Out for Delivery') return '75%';
+        if (order.orderStatus === 'Delivered') return '100%';
+        return '0%';
+        };
+
+        const formatDate = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        };
+
+        %>
+
+        <div class="flex min-h-screen">
+          <%- include('../partials/user/profile-sidebar', { user, dummyImgUrl }) %>
+
+            <!-- Main Content Area -->
+            <main class="profile-main flex-1 lg:ml-64 p-6 md:p-12">
+              <div class="w-full">
+                <!-- Breadcrumbs -->
+                <nav
+                  class="flex items-center gap-2 mb-8 text-[11px] text-on-surface-variant font-label tracking-widest uppercase">
+                  <a class="hover:text-primary transition-colors" href="/profile">Home</a>
+                  <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                  <a class="hover:text-primary transition-colors" href="/profile">Account</a>
+                  <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                  <a class="hover:text-primary transition-colors" href="/orders">Orders</a>
+                  <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                  <span class="text-primary font-bold">Order #<%= order.orderId %></span>
+                </nav>
+
+                <!-- 1. Hero Order Info (AT THE VERY TOP) -->
+                <div class="w-full flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+                  <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Order #<%= order.orderId %>
+                    </h1>
+                    <div class="flex items-center gap-3">
+                      <% if (order.orderStatus==='Delivered' ) { %>
+                        <span
+                          class="px-3 py-1 bg-green-50 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Delivered</span>
+                        <% } else if (order.orderStatus==='Cancelled' ) { %>
+                          <span
+                            class="px-3 py-1 bg-red-50 text-red-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Cancelled</span>
+                          <% } else if (order.orderStatus==='Return Requested' ) { %>
+                            <span
+                              class="px-3 py-1 bg-amber-50 text-amber-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Return
+                              Requested</span>
+                            <% } else if (order.orderStatus==='Return Confirmed' ) { %>
+                              <span
+                                class="px-3 py-1 bg-orange-50 text-orange-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Return
+                                Confirmed</span>
+                              <% } else if (order.orderStatus==='Replacement Confirmed' ) { %>
+                                <span
+                                  class="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Replacement
+                                  Confirmed</span>
+                                 <% } else if (order.orderStatus==='Returned' ) { %>
+                                  <span
+                                    class="px-3 py-1 bg-green-50 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Returned</span>
+                                <% } else if (order.orderStatus==='Replaced' ) { %>
+                                  <span
+                                    class="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-wider">Replaced</span>
+                                  <% } else { %>
+                                    <span
+                                      class="px-3 py-1 bg-black text-white rounded-md text-[10px] font-bold uppercase tracking-wider">In
+                                      Transit</span>
+                                    <% } %>
+                                      <span class="text-sm text-on-surface-variant font-medium">
+                                        Estimated arrival: <span class="text-on-surface font-bold"></span>
+                                      </span>
+                    </div>
+                  </div>
+                  <div class="flex gap-3 flex-wrap">
+                    <button
+                      class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
+                      <span class="material-symbols-outlined text-sm">support_agent</span>
+                      Get Help
+                    </button>
+                    <% if (!['Delivered', 'Cancelled' , 'Returned' , 'Replaced' , 'Return Requested' , 'Return Confirmed'
+                      , 'Replacement Confirmed' ].includes(order.orderStatus)) { %>
+                      <button id="open-cancel-modal-btn"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider hover:bg-error-container/80 transition-all">
+                        <span class="material-symbols-outlined text-sm">cancel</span>
+                        Cancel Order
+                      </button>
+                      <% } %>
+                        <% if (!['Pending', 'Confirmed' , 'Processing' , 'Shipped' , 'Out for Delivery' , 'Cancelled'
+                          ].includes(order.orderStatus)) { %>
+                          <a href="/orders/return/<%= order._id %>" class="inline-block">
+                            <button
+                              class="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                              <span class="material-symbols-outlined text-sm">assignment_return</span>
+                              Return Product
+                            </button>
+                          </a>
+                          <% } %>
+                  </div>
+                </div>
+
+                <!-- 2. Visual Progress Bar (TAKES FULL WIDTH, BEFORE GRID) -->
+                <div class="bg-surface-container-high p-6 md:p-8 rounded-xl relative overflow-hidden mb-8">
+                  <div class="absolute top-0 right-0 p-6 opacity-5">
+                    <span class="material-symbols-outlined text-[100px]">local_shipping</span>
+                  </div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-center relative">
+                      <!-- Progress Line Background -->
+                      <div
+                        class="absolute top-5 left-0 w-full h-1 bg-surface-container-highest -translate-y-1/2 rounded-full">
+                      </div>
+                      <!-- Active Progress Line -->
+                      <div
+                        class="absolute top-5 left-0 w-[<%= getProgressBarWidth() %>] h-1 bg-black -translate-y-1/2 rounded-full transition-all duration-1000">
+                      </div>
+
+                      <!-- Steps -->
+                      <div class="relative flex flex-col items-center gap-2">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center ring-8 ring-surface-container-high z-20 <%= isStepCompleted('Placed') ? 'bg-black text-white' : 'bg-surface-container-highest text-on-surface-variant' %>">
+                          <span class="material-symbols-outlined text-sm">check</span>
+                        </div>
+                        <span
+                          class="text-[9px] font-bold uppercase tracking-tight <%= isStepCompleted('Placed') ? 'text-on-surface' : 'text-on-surface-variant' %>">Placed</span>
+                      </div>
+                      <div class="relative flex flex-col items-center gap-2">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center ring-8 ring-surface-container-high z-20 <%= isStepCompleted('Processing') ? 'bg-black text-white' : 'bg-surface-container-highest text-on-surface-variant' %>">
+                          <span class="material-symbols-outlined text-sm">
+                            <%= isStepCompleted('Processing') ? 'check' : 'precision_manufacturing' %>
+                          </span>
+                        </div>
+                        <span
+                          class="text-[9px] font-bold uppercase tracking-tight <%= isStepCompleted('Processing') ? 'text-on-surface' : 'text-on-surface-variant' %>">Processing</span>
+                      </div>
+                      <div class="relative flex flex-col items-center gap-2">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center ring-8 ring-surface-container-high z-20 <%= isStepCompleted('Shipped') ? 'bg-black text-white' : 'bg-surface-container-highest text-on-surface-variant' %>">
+                          <span class="material-symbols-outlined text-sm">local_shipping</span>
+                        </div>
+                        <span
+                          class="text-[9px] font-bold uppercase tracking-tight <%= isStepCompleted('Shipped') ? 'text-on-surface' : 'text-on-surface-variant' %>">Shipped</span>
+                      </div>
+                      <div class="relative flex flex-col items-center gap-2">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center ring-8 ring-surface-container-high z-20 <%= isStepCompleted('Out for Delivery') ? 'bg-black text-white' : 'bg-surface-container-highest text-on-surface-variant' %>">
+                          <span class="material-symbols-outlined text-sm">near_me</span>
+                        </div>
+                        <span
+                          class="text-[9px] font-bold uppercase tracking-tight <%= isStepCompleted('Out for Delivery') ? 'text-on-surface' : 'text-on-surface-variant' %>">Out
+                          for Delivery</span>
+                      </div>
+                      <div class="relative flex flex-col items-center gap-2">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center ring-8 ring-surface-container-high z-20 <%= isStepCompleted('Delivered') ? 'bg-green-600 text-white' : 'bg-surface-container-highest text-on-surface-variant' %>">
+                          <span class="material-symbols-outlined text-sm">inventory_2</span>
+                        </div>
+                        <span
+                          class="text-[9px] font-bold uppercase tracking-tight <%= isStepCompleted('Delivered') ? 'text-green-700' : 'text-on-surface-variant' %>">Delivered</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Bento Layout Grid (Details is wider: lg:col-span-9, Sidebar is narrower: lg:col-span-3) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  <!-- Left Content Area (lg:col-span-8 - increases the details boxes width) -->
+                  <div class="lg:col-span-8 space-y-8">
+
+                    <!-- Customer, Delivery & Payment Details Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                      <!-- Customer Details Card -->
+                      <div
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-[350px]">
+                        <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
+                          <span class="material-symbols-outlined text-primary text-base">person</span>
+                          Customer Details
+                        </h2>
+                        <div class="flex-grow flex flex-col justify-around">
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Name
+                            </p>
+                            <p class="text-base font-semibold text-on-surface">
+                              <%= order.shippingAddress.fullName %>
+                            </p>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Email</p>
+                            <p class="text-base font-semibold text-on-surface">
+                              <%= user.email %>
+                            </p>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Phone</p>
+                            <p class="text-base font-semibold text-on-surface">
+                              <%= order.shippingAddress.phoneNumber %>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Delivery Address Card -->
+                      <div
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm border-l-4 border-l-black flex flex-col min-h-[350px]">
+                        <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
+                          <span class="material-symbols-outlined text-primary text-base">location_on</span>
+                          Delivery Address
+                        </h2>
+                        <div class="flex-grow flex flex-col justify-around">
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Recipient</p>
+                            <p class="text-base font-bold text-on-surface">
+                              <%= order.shippingAddress.fullName %>
+                            </p>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Street Address</p>
+                            <p class="text-base text-on-surface font-semibold">
+                              <%= order.shippingAddress.streetAddress %>
+                            </p>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Location</p>
+                            <p class="text-base text-on-surface font-semibold">
+                              <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
+                                  <%= order.shippingAddress.zipCode %>
+                            </p>
+                            <p class="text-sm text-on-surface-variant font-medium mt-1">
+                              <%= order.shippingAddress.country %>
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          class="mt-4 pt-4 border-t border-outline-variant/10 flex items-center gap-2 text-[10px] font-semibold text-black">
+                          <span class="material-symbols-outlined text-xs">info</span>
+                          Signature Required
+                        </div>
+                      </div>
+
+                      <!-- Payment Details Card -->
+                      <div
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-[350px]">
+                        <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
+                          <span class="material-symbols-outlined text-primary text-base">payments</span>
+                          Payment Details
+                        </h2>
+                        <div class="flex-grow flex flex-col justify-around">
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Payment Method</p>
+                            <p class="text-base font-semibold text-on-surface uppercase">
+                              <%= order.paymentMethod %>
+                            </p>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                              Payment Status</p>
+                            <div class="flex items-center gap-2 mt-1">
+                              <% if (order.paymentStatus==='Paid' ) { %>
+                                <span
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700">
+                                  <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Paid
+                                </span>
+                                <% } else if (order.paymentStatus==='Refunded' ) { %>
+                                  <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Refunded
+                                  </span>
+                                  <% } else if (order.paymentStatus==='Failed' ) { %>
+                                    <span
+                                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700">
+                                      <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> Failed
+                                    </span>
+                                    <% } else { %>
+                                      <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Unpaid
+                                      </span>
+                                      <% } %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Tracking History -->
+                    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10 shadow-sm">
+                      <h2 class="text-xl font-bold tracking-tight mb-10">Tracking History</h2>
+                      <div class="space-y-10 relative">
+                        <!-- Vertical line -->
+                        <div class="absolute top-0 left-[7px] w-0.5 h-full bg-surface-container-high"></div>
+
+                        <% if (order.orderStatus==='Returned' || order.orderStatus==='Replaced') { %>
+                           <div class="relative pl-10">
+                             <div
+                               class="absolute top-1 left-0 w-4 h-4 rounded-full bg-orange-600 ring-4 ring-white z-10">
+                             </div>
+                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                               <div>
+                                 <p class="text-sm font-bold text-on-surface"><%= order.orderStatus==='Returned' ? 'Product Returned' : 'Product Replaced' %></p>
+                                 <p class="text-xs text-on-surface-variant">The return request has been processed and
+                                   completed.</p>
+                               </div>
+                               <p class="text-xs font-medium text-on-surface-variant">
+                                 <%= formatDate(order.returnedDate || order.updatedAt) %>
+                               </p>
+                             </div>
+                           </div>
+                           <% } %>
+
+                             <% if (order.orderStatus==='Return Confirmed' || (order.orderStatus==='Returned' &&
+                               order.paymentStatus==='Refunded' )) { %>
+                               <div class="relative pl-10">
+                                 <div
+                                   class="absolute top-1 left-0 w-4 h-4 rounded-full bg-orange-600 ring-4 ring-white z-10">
+                                 </div>
+                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                   <div>
+                                     <p class="text-sm font-bold text-on-surface">Return Confirmed</p>
+                                     <p class="text-xs text-on-surface-variant">The return request has been approved and
+                                       a refund has been processed.</p>
+                                   </div>
+                                   <p class="text-xs font-medium text-on-surface-variant">
+                                     <%= formatDate(order.returnConfirmedDate || order.updatedAt) %>
+                                   </p>
+                                 </div>
+                               </div>
+                               <% } %>
+
+                                 <% if (order.orderStatus==='Replacement Confirmed' || order.orderStatus==='Replaced' || (order.orderStatus==='Returned' &&
+                                   order.paymentStatus!=='Refunded' )) { %>
+                                   <div class="relative pl-10">
+                                     <div
+                                       class="absolute top-1 left-0 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-white z-10">
+                                     </div>
+                                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                       <div>
+                                         <p class="text-sm font-bold text-on-surface">Replacement Confirmed</p>
+                                         <p class="text-xs text-on-surface-variant">The replacement request has been
+                                           approved and a new item will be shipped.</p>
+                                       </div>
+                                       <p class="text-xs font-medium text-on-surface-variant">
+                                         <%= formatDate(order.returnConfirmedDate || order.updatedAt) %>
+                                       </p>
+                                     </div>
+                                   </div>
+                                   <% } %>
+
+                                     <% if (['Return Requested', 'Return Confirmed' , 'Replacement Confirmed'
+                                       , 'Returned', 'Replaced' ].includes(order.orderStatus)) { %>
+                                      <div class="relative pl-10">
+                                        <div
+                                          class="absolute top-1 left-0 w-4 h-4 rounded-full bg-amber-600 ring-4 ring-white z-10">
+                                        </div>
+                                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                          <div>
+                                            <p class="text-sm font-bold text-on-surface">Return Requested</p>
+                                            <p class="text-xs text-on-surface-variant">A return/replacement request has
+                                              been registered.</p>
+                                          </div>
+                                          <p class="text-xs font-medium text-on-surface-variant">
+                                            <%= formatDate(order.returnRequestDate || order.updatedAt) %>
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <% } %>
+
+                                        <% if (order.orderStatus==='Cancelled' ) { %>
+                                          <div class="relative pl-10">
+                                            <div
+                                              class="absolute top-1 left-0 w-4 h-4 rounded-full bg-red-600 ring-4 ring-white z-10">
+                                            </div>
+                                            <div
+                                              class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                              <div>
+                                                <p class="text-sm font-bold text-on-surface">Order Cancelled</p>
+                                                <p class="text-xs text-on-surface-variant">The order has been cancelled
+                                                  and a refund
+                                                  has been initiated if applicable.</p>
+                                              </div>
+                                              <p class="text-xs font-medium text-on-surface-variant">
+                                                <%= formatDate(order.cancelledDate || order.updatedAt) %>
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <% } %>
+
+                                            <% if (['Delivered', 'Return Requested' , 'Return Confirmed'
+                                              , 'Replacement Confirmed' , 'Returned', 'Replaced' ].includes(order.orderStatus) ||
+                                              order.deliveredDate) { %>
+                                              <div class="relative pl-10">
+                                                <div
+                                                  class="absolute top-1 left-0 w-4 h-4 rounded-full bg-green-600 ring-4 ring-white z-10">
+                                                </div>
+                                                <div
+                                                  class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                  <div>
+                                                    <p class="text-sm font-bold text-on-surface">Package Delivered</p>
+                                                    <p class="text-xs text-on-surface-variant">Delivered to your
+                                                      doorstep. Signature
+                                                      confirmed.</p>
+                                                  </div>
+                                                  <p class="text-xs font-medium text-on-surface-variant">
+                                                    <%= formatDate(order.deliveredDate || order.updatedAt) %>
+                                                  </p>
+                                                </div>
+                                              </div>
+                                              <% } %>
+
+                                                <% if (['Delivered', 'Out for Delivery' , 'Return Requested'
+                                                  , 'Return Confirmed' , 'Replacement Confirmed' , 'Returned', 'Replaced'
+                                                  ].includes(order.orderStatus) || order.outForDeliveryDate) { %>
+                                                  <div class="relative pl-10">
+                                                    <div
+                                                      class="absolute top-1 left-0 w-4 h-4 rounded-full bg-black ring-4 ring-white z-10">
+                                                    </div>
+                                                    <div
+                                                      class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                      <div>
+                                                        <p class="text-sm font-bold text-on-surface">Out for Delivery
+                                                        </p>
+                                                        <p class="text-xs text-on-surface-variant">Courier is en route
+                                                          to your
+                                                          delivery location.</p>
+                                                      </div>
+                                                      <p class="text-xs font-medium text-on-surface-variant">
+                                                        <%= formatDate(order.outForDeliveryDate || new Date(new
+                                                          Date(order.createdAt).getTime() + 48 * 60 * 60 * 1000)) %>
+                                                      </p>
+                                                    </div>
+                                                  </div>
+                                                  <% } %>
+
+                                                    <% if (['Delivered', 'Out for Delivery' , 'Shipped'
+                                                      , 'Return Requested' , 'Return Confirmed'
+                                                      , 'Replacement Confirmed' , 'Returned', 'Replaced'
+                                                      ].includes(order.orderStatus) || order.shippedDate) { %>
+                                                      <div class="relative pl-10">
+                                                        <div
+                                                          class="absolute top-1 left-0 w-4 h-4 rounded-full bg-black ring-4 ring-white z-10">
+                                                        </div>
+                                                        <div
+                                                          class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                          <div>
+                                                            <p class="text-sm font-bold text-on-surface">Departed
+                                                              Sorting Center</p>
+                                                            <p class="text-xs text-on-surface-variant">In transit
+                                                              through the
+                                                              logistics hub network.</p>
+                                                          </div>
+                                                          <p class="text-xs font-medium text-on-surface-variant">
+                                                            <%= formatDate(order.shippedDate || new Date(new
+                                                              Date(order.createdAt).getTime() + 24 * 60 * 60 * 1000)) %>
+                                                          </p>
+                                                        </div>
+                                                      </div>
+                                                      <% } %>
+
+                                                        <% if (['Delivered', 'Out for Delivery' , 'Shipped'
+                                                          , 'Processing' , 'Confirmed' , 'Return Requested'
+                                                          , 'Return Confirmed' , 'Replacement Confirmed' , 'Returned', 'Replaced'
+                                                          ].includes(order.orderStatus) || order.processingDate) { %>
+                                                          <div class="relative pl-10">
+                                                            <div
+                                                              class="absolute top-1 left-0 w-4 h-4 rounded-full bg-black ring-4 ring-white z-10">
+                                                            </div>
+                                                            <div
+                                                              class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                              <div>
+                                                                <p class="text-sm font-bold text-on-surface">Processing
+                                                                  Order</p>
+                                                                <p class="text-xs text-on-surface-variant">Order
+                                                                  confirmed and
+                                                                  packaging is underway at our main warehouse.</p>
+                                                              </div>
+                                                              <p class="text-xs font-medium text-on-surface-variant">
+                                                                <%= formatDate(order.processingDate || new Date(new
+                                                                  Date(order.createdAt).getTime() + 2 * 60 * 60 * 1000))
+                                                                  %>
+                                                              </p>
+                                                            </div>
+                                                          </div>
+                                                          <% } %>
+
+                                                            <div class="relative pl-10">
+                                                              <div
+                                                                class="absolute top-1 left-0 w-4 h-4 rounded-full bg-black ring-4 ring-white z-10">
+                                                              </div>
+                                                              <div
+                                                                class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                                <div>
+                                                                  <p class="text-sm font-bold text-on-surface">Order
+                                                                    Placed
+                                                                    Successfully</p>
+                                                                  <p class="text-xs text-on-surface-variant">We have
+                                                                    received your
+                                                                    order request.</p>
+                                                                </div>
+                                                                <p class="text-xs font-medium text-on-surface-variant">
+                                                                  <%= formatDate(order.createdAt) %>
+                                                                </p>
+                                                              </div>
+                                                            </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Sidebar: Package Contents (lg:col-span-4 - moves it more to the right) -->
+                  <div class="lg:col-span-4 space-y-8">
+                    <div
+                      class="w-full bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10 shadow-sm sticky top-24">
+                      <h2 class="text-2xl font-bold tracking-tight mb-8">Package Contents</h2>
+                      <div class="space-y-6">
+                        <% order.items.forEach(item=> { %>
+                          <div class="flex items-center gap-6 group cursor-pointer">
+                            <div
+                              class="w-28 h-28 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant/5 <%= (item.status === 'Cancelled') ? 'opacity-40' : '' %>">
+                              <img alt="<%= item.name %>"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                src="<%= item.image || 'https://via.placeholder.com/150' %>" />
+                            </div>
+                            <div>
+                              <h3
+                                class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors flex items-center gap-2 flex-wrap">
+                                <span
+                                  class="inline-block <%= item.status === 'Cancelled' ? 'line-through text-on-surface-variant/60 opacity-50' : '' %>">
+                                  <%= item.name %>
+                                </span>
+                                <% if (item.status==='Cancelled' ) { %>
+                                  <span
+                                    class="inline-block bg-red-50 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-red-200">Cancelled</span>
+                                  <% } else if (item.status==='Return Requested' ) { %>
+                                    <span
+                                      class="inline-block bg-amber-50 text-amber-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-amber-200">Return
+                                      Requested</span>
+                                    <% } else if (item.status==='Return Confirmed' ) { %>
+                                      <span
+                                        class="inline-block bg-orange-50 text-orange-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-orange-200">Return
+                                        Confirmed</span>
+                                      <% } else if (item.status==='Replacement Confirmed' ) { %>
+                                        <span
+                                          class="inline-block bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-blue-200">Replacement
+                                          Confirmed</span>
+                                        <% } else if (item.status==='Returned' ) { %>
+                                          <span
+                                            class="inline-block bg-green-50 text-green-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-green-200">Returned</span>
+                                          <% } else if (item.status==='Replaced' ) { %>
+                                            <span
+                                              class="inline-block bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-blue-200">Replaced</span>
+                                           <% } %>
+                              </h3>
+                              <% if (item.variantName) { %>
+                                <p
+                                  class="text-sm text-on-surface-variant mt-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                  <%= item.variantName %>
+                                </p>
+                                <% } %>
+                                  <p
+                                    class="text-sm text-on-surface-variant mt-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                    Qty: <%= item.quantity %>
+                                  </p>
+                                  <% if (item.status==='Cancelled' && item.cancellationReason) { %>
+                                    <div
+                                      class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                      <span class="font-semibold text-outline text-red-600">Cancellation Reason: <span
+                                          class="text-on-surface">
+                                          <%= item.cancellationReason %>
+                                        </span></span>
+                                      <% if (item.cancellationComments) { %>
+                                        <span class="font-semibold text-outline text-[11px] italic">Comments: "<%=
+                                            item.cancellationComments %>"</span>
+                                        <% } %>
+                                          <% if (item.cancelledDate) { %>
+                                            <span class="font-semibold text-outline">Cancelled On: <span
+                                                class="text-on-surface">
+                                                <%= formatDate(item.cancelledDate) %>
+                                              </span></span>
+                                            <% } %>
+                                    </div>
+                                    <% } %>
+                                      <% if (item.returnReason) { %>
+                                        <div
+                                          class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1 <%= (item.status === 'Cancelled') ? 'opacity-50' : '' %>">
+                                          <span class="font-semibold text-outline text-amber-600">Return Reason: <span
+                                              class="text-on-surface">
+                                              <%= item.returnReason %>
+                                            </span></span>
+                                          <span class="font-semibold text-outline">Resolution: <span
+                                              class="text-on-surface">
+                                              <%= item.returnResolution %>
+                                            </span></span>
+                                          <% if (item.returnComments) { %>
+                                            <span class="font-semibold text-outline text-[11px] italic">Comments: "<%=
+                                                item.returnComments %>"</span>
+                                            <% } %>
+                                              <% if (item.returnRequestDate) { %>
+                                                <span class="font-semibold text-outline">Requested On: <span
+                                                    class="text-on-surface">
+                                                    <%= formatDate(item.returnRequestDate) %>
+                                                  </span></span>
+                                                <% } %>
+                                                  <% if (item.returnConfirmedDate && ['Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) { %>
+                                                    <span class="font-semibold text-outline">Approved On: <span
+                                                        class="text-on-surface">
+                                                        <%= formatDate(item.returnConfirmedDate) %>
+                                                      </span></span>
+                                                    <% } %>
+                                                      <% if (item.returnedDate && (item.status==='Returned' || item.status==='Replaced')) { %>
+                                                        <span class="font-semibold text-outline">Completed On: <span
+                                                            class="text-on-surface">
+                                                            <%= formatDate(item.returnedDate) %>
+                                                          </span></span>
+                                                        <% } %>
+                                        </div>
+                                        <% } %>
+                                           <p
+                                            class="text-base font-extrabold mt-3 <%= (item.status === 'Cancelled') ? 'opacity-50' : 'text-on-surface' %>">
+                                            ₹<%= item.price.toFixed(2) %>
+                                          </p>
+                            </div>
+                          </div>
+                          <% }) %>
+                      </div>
+                      <div class="mt-10 pt-8 border-t border-outline-variant/10">
+                        <div class="flex justify-between items-center mb-4">
+                          <span class="text-base font-medium text-on-surface-variant">Subtotal</span>
+                          <span class="text-lg font-semibold">₹<%= order.pricing.subtotal.toFixed(2) %></span>
+                        </div>
+                        <% if (order.pricing.discount> 0) { %>
+                          <div class="flex justify-between items-center mb-4">
+                            <span class="text-base font-medium text-on-surface-variant">Discount</span>
+                            <span class="text-lg font-semibold text-green-600">-₹<%= order.pricing.discount.toFixed(2)
+                                %></span>
+                          </div>
+                          <% } %>
+                            <div class="flex justify-between items-center mb-4">
+                              <span class="text-base font-medium text-on-surface-variant">Tax</span>
+                              <span class="text-lg font-semibold">₹<%= order.pricing.tax.toFixed(2) %></span>
+                            </div>
+                            <div class="flex justify-between items-center mb-6">
+                              <span class="text-base font-medium text-on-surface-variant">Shipping</span>
+                              <span class="text-lg font-semibold text-black">
+                                <%= order.pricing.shipping> 0 ? '₹' + order.pricing.shipping.toFixed(2) : 'FREE' %>
+                              </span>
+                            </div>
+                            <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                              <span class="text-lg font-bold">Total Charged</span>
+                              <span class="text-2xl font-black">₹<%= order.pricing.grandTotal.toFixed(2) %></span>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+        </div>
+
+        <!-- Cancel Order Modal -->
+        <div id="cancel-order-modal"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+          <!-- Modal Card -->
+          <div
+            class="relative w-full max-w-lg bg-surface-container-lowest border border-outline-variant/15 rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300"
+            id="cancel-order-modal-card">
+
+            <!-- Close Button -->
+            <button id="close-cancel-modal-btn"
+              class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-full hover:bg-surface-container-low">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <!-- Header -->
+            <div class="mb-6">
+              <h3 class="text-xl md:text-2xl font-extrabold font-headline tracking-tight text-on-surface">Cancel Order
+              </h3>
+              <p class="text-xs md:text-sm text-on-surface-variant mt-1.5">Select the products you wish to cancel and
+                choose your reason below.</p>
+            </div>
+
+            <!-- Form -->
+            <form id="cancel-order-form" onsubmit="event.preventDefault();" class="space-y-6">
+
+              <!-- 1. Product Selection -->
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Select
+                  Items to Cancel</label>
+                <div class="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                  <% order.items.forEach((item, index)=> { %>
+                    <label
+                      class="flex items-center gap-4 p-3 bg-surface-container-low/50 hover:bg-surface-container-low border border-outline-variant/10 rounded-xl transition-colors group <%= (['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' %>">
+                      <input type="checkbox" name="cancelItems" value="<%= item._id || item.productId %>"
+                        <%=(['Cancelled', 'Return Requested' , 'Return Confirmed' , 'Replacement Confirmed' , 'Returned', 'Replaced'
+                        ].includes(item.status)) ? 'disabled' : 'checked' %> class="w-4.5 h-4.5 rounded
+                      border-outline-variant/30 text-black focus:ring-black cursor-pointer <%=
+                        (['Cancelled', 'Return Requested' , 'Return Confirmed' , 'Replacement Confirmed' , 'Returned', 'Replaced'
+                        ].includes(item.status)) ? 'pointer-events-none' : '' %>" />
+                        <div
+                          class="w-12 h-12 bg-white rounded-md overflow-hidden flex-shrink-0 border border-outline-variant/10">
+                          <img src="<%= item.image || 'https://via.placeholder.com/150' %>" alt="<%= item.name %>"
+                            class="w-full h-full object-cover" />
+                        </div>
+                        <div class="flex-grow min-w-0">
+                          <h4
+                            class="text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors flex items-center gap-2">
+                            <span
+                              class="<%= (['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) ? 'line-through' : '' %>">
+                              <%= item.name %>
+                            </span>
+                            <% if (item.status==='Cancelled' ) { %>
+                              <span class="text-[9px] text-red-600 font-bold uppercase">Cancelled</span>
+                              <% } else if (item.status==='Return Requested' ) { %>
+                                <span class="text-[9px] text-orange-600 font-bold uppercase font-sans">Return
+                                  Requested</span>
+                                <% } else if (item.status==='Return Confirmed' ) { %>
+                                  <span class="text-[9px] text-orange-600 font-bold uppercase font-sans">Return
+                                    Confirmed</span>
+                                  <% } else if (item.status==='Replacement Confirmed' ) { %>
+                                    <span class="text-[9px] text-blue-600 font-bold uppercase font-sans">Replacement
+                                      Confirmed</span>
+                                    <% } else if (item.status==='Returned' ) { %>
+                                      <span
+                                        class="text-[9px] text-green-600 font-bold uppercase font-sans">Returned</span>
+                                    <% } else if (item.status==='Replaced' ) { %>
+                                      <span
+                                        class="text-[9px] text-blue-600 font-bold uppercase font-sans">Replaced</span>
+                                      <% } %>
+                          </h4>
+                          <p
+                            class="text-xs text-on-surface-variant mt-0.5 <%= (['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) ? 'line-through' : '' %>">
+                            Qty: <%= item.quantity %> • ₹<%= item.price.toFixed(2) %>
+                          </p>
+                        </div>
+                    </label>
+                    <% }) %>
+                </div>
+              </div>
+
+              <!-- 2. Reason for Cancellation -->
+              <div>
+                <label for="cancel-reason"
+                  class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Reason for
+                  Cancellation</label>
+                <select id="cancel-reason"
+                  class="w-full bg-surface-container-low text-on-surface border border-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:border-black focus:ring-1 focus:ring-black outline-none transition-all">
+                  <option value="" disabled selected>Choose a reason...</option>
+                  <option value="Incorrect Item Ordered">Incorrect Item Ordered</option>
+                  <option value="Changed My Mind">Changed My Mind</option>
+                  <option value="Found Better Price">Found Better Price</option>
+                  <option value="Shipping Speed too Slow">Shipping Speed too Slow</option>
+                  <option value="Incorrect Delivery Address">Incorrect Delivery Address</option>
+                  <option value="Other">Other (Please specify below)</option>
+                </select>
+              </div>
+
+              <!-- 3. Additional Details -->
+              <div>
+                <label for="cancel-details"
+                  class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Additional
+                  Comments (Optional)</label>
+                <textarea id="cancel-details" rows="3" placeholder="Tell us more about why you're cancelling..."
+                  class="w-full bg-surface-container-low text-on-surface border border-outline-variant/20 rounded-lg p-4 text-sm focus:border-black focus:ring-1 focus:ring-black outline-none transition-all resize-none"></textarea>
+              </div>
+
+              <!-- Error Message Container (Hidden by default) -->
+              <div id="cancel-error-message"
+                class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+              <!-- Actions -->
+              <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" id="dismiss-cancel-modal-btn"
+                  class="px-5 py-2.5 bg-surface-container-low text-on-surface hover:bg-surface-container-high rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                  Go Back
+                </button>
+                <button type="button" id="submit-cancel-request-btn"
+                  class="px-5 py-2.5 bg-error-container text-on-error-container hover:bg-error-container/80 rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                  Confirm Cancel
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const openBtn = document.getElementById('open-cancel-modal-btn');
+            const closeBtn = document.getElementById('close-cancel-modal-btn');
+            const dismissBtn = document.getElementById('dismiss-cancel-modal-btn');
+            const submitBtn = document.getElementById('submit-cancel-request-btn');
+            const modal = document.getElementById('cancel-order-modal');
+            const card = document.getElementById('cancel-order-modal-card');
+
+            // Helper to display error inside the modal
+            const showError = (msg) => {
+              const errDiv = document.getElementById('cancel-error-message');
+              if (errDiv) {
+                errDiv.textContent = msg;
+                errDiv.classList.remove('hidden');
+              }
+            };
+
+            const clearError = () => {
+              const errDiv = document.getElementById('cancel-error-message');
+              if (errDiv) {
+                errDiv.textContent = '';
+                errDiv.classList.add('hidden');
+              }
+            };
+
+            const openModal = () => {
+              clearError();
+              modal.classList.remove('opacity-0', 'pointer-events-none');
+              modal.classList.add('opacity-100');
+              card.classList.remove('scale-95', 'opacity-0');
+              card.classList.add('scale-100', 'opacity-100');
+              document.body.style.overflow = 'hidden';
+            };
+
+            const closeModal = () => {
+              clearError();
+              modal.classList.remove('opacity-100');
+              modal.classList.add('opacity-0', 'pointer-events-none');
+              card.classList.remove('scale-100', 'opacity-100');
+              card.classList.add('scale-95', 'opacity-0');
+              document.body.style.overflow = '';
+            };
+
+            if (openBtn) openBtn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
+
+            // Close modal on click outside card
+            modal.addEventListener('click', (e) => {
+              if (e.target === modal) closeModal();
+            });
+
+            // Submit Cancellation Request
+            if (submitBtn) {
+              submitBtn.addEventListener('click', async () => {
+                clearError();
+
+                const checkedCheckboxes = document.querySelectorAll('input[name="cancelItems"]:checked');
+                if (checkedCheckboxes.length === 0) {
+                  showError('Please select at least one item to cancel.');
+                  return;
+                }
+
+                const cancelItems = Array.from(checkedCheckboxes).map(cb => cb.value);
+                const reason = document.getElementById('cancel-reason').value;
+                const comments = document.getElementById('cancel-details').value;
+
+                if (!reason) {
+                  showError('Please select a reason for cancellation.');
+                  return;
+                }
+
+                try {
+                  submitBtn.disabled = true;
+                  submitBtn.textContent = 'Processing...';
+
+                  const response = await fetch('/orders/cancel/<%= order._id %>', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      cancelItems,
+                      reason,
+                      comments
+                    })
+                  });
+
+                  const result = await response.json();
+                  if (result.success) {
+                    // Success: directly reload the page without showing any alert popup
+                    location.reload();
+                  } else {
+                    showError(result.message || 'Failed to cancel items.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Confirm Cancel';
+                  }
+                } catch (error) {
+                  console.error('Error cancelling items:', error);
+                  showError('An error occurred. Please try again.');
+                  submitBtn.disabled = false;
+                  submitBtn.textContent = 'Confirm Cancel';
+                }
+              });
+            }
+          });
+        </script>
+
+        <%- include('../partials/user/profile-mobile-nav') %>
+</body>
+
+</html>

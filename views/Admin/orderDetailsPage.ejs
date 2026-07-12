@@ -430,6 +430,12 @@
                                                 <span class="font-semibold">₹<%= order.pricing.subtotal.toFixed(2) %>
                                                 </span>
                                             </div>
+                                            <% if (order.pricing.discount > 0) { %>
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-on-surface-variant">Discount</span>
+                                                <span class="font-semibold text-green-600">-₹<%= order.pricing.discount.toFixed(2) %></span>
+                                            </div>
+                                            <% } %>
                                             <div class="flex justify-between text-sm">
                                                 <span class="text-on-surface-variant">Shipping</span>
                                                 <span class="font-semibold text-secondary">

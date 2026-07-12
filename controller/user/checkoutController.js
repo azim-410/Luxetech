@@ -2,7 +2,8 @@ import {
     getCheckoutPageDataService,
     getCheckoutAddressDataService,
     placeOrderService,
-    getOrderConfirmationService
+    getOrderConfirmationService,
+    getCheckoutCartDataService
 } from '../../services/user/checkoutService.js';
 import { editAddressService, addAddressService } from '../../services/user/addressService.js';
 import { getCartService } from '../../services/user/cartService.js';
@@ -175,7 +176,12 @@ const placeOrder = async (req, res) => {
                 // Fetch addresses and raw cart separately to AVOID re-triggering
                 // the blocking validation inside getCheckoutCartDataService
                 const { addresses, defaultAddress } = await getCheckoutAddressDataService(userId);
-                const cart = await getCartService(userId);
+                let cart;
+                if (req.query.productId) {
+                    cart = await getCheckoutCartDataService(userId, req.query);
+                } else {
+                    cart = await getCartService(userId);
+                }
                 const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
                 return res.render('User/cheackoutPage.ejs', {
                     addresses,

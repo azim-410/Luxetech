@@ -264,12 +264,12 @@
 
                                                         <!-- Orders — placeholder until order model is ready -->
                                                         <td class="px-6 py-5">
-                                                            <p class="text-sm font-medium text-on-surface">—</p>
+                                                            <p class="text-sm font-medium text-on-surface"><%= user.ordersCount || 0 %></p>
                                                         </td>
 
                                                         <!-- Total Spent — placeholder -->
                                                         <td class="px-6 py-5">
-                                                            <p class="text-sm font-semibold text-on-surface">—</p>
+                                                            <p class="text-sm font-semibold text-on-surface">₹<%= (user.totalSpend || 0).toFixed(2) %></p>
                                                         </td>
 
                                                         <!-- Status -->

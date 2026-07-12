@@ -59,6 +59,14 @@ const userSchema = new mongoose.Schema(
         wallet: {
             type: Number,
             default: 0
+        },
+        ordersCount: {
+            type: Number,
+            default: 0
+        },
+        totalSpend: {
+            type: Number,
+            default: 0
         }
     },
     {

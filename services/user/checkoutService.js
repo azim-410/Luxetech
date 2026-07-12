@@ -333,6 +333,14 @@ const placeOrderService = async (userId, query, body) => {
                 status: 'completed'
             });
         }
+
+        // Increment user order count and total spend
+        await userModel.findByIdAndUpdate(userId, {
+            $inc: { 
+                ordersCount: 1,
+                totalSpend: finalGrandTotal
+            }
+        });
     }
 
     return order;
@@ -403,6 +411,14 @@ const verifyPaymentService = async (userId, query, payload) => {
     if (!query.productId) {
         await cartModal.deleteOne({ userId });
     }
+
+    // Increment user order count and total spend
+    await userModel.findByIdAndUpdate(userId, {
+        $inc: { 
+            ordersCount: 1,
+            totalSpend: order.pricing.grandTotal
+        }
+    });
 
     return order;
 };

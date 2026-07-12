@@ -21,88 +21,135 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #eef0f4;
-      color: #111;
+      background: #f8fafc;
+      color: #0f172a;
       font-size: 13px
     }
 
-
-
     /* ── PAGE ── */
     .page {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 36px 32px 80px
+      padding: 48px 24px 100px
     }
 
     /* ── HEADER ── */
     .header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px
+      margin-bottom: 36px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 24px;
     }
 
     .header h1 {
-      font-size: 26px;
-      font-weight: 700;
-      color: #111;
-      letter-spacing: -0.02em;
-      margin-bottom: 10px
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px
     }
 
     .header-desc {
-      font-size: 12px;
-      color: #666;
-      max-width: 340px;
-      line-height: 1.65
+      font-size: 13px;
+      color: #64748b;
+      max-width: 500px;
+      line-height: 1.6
     }
 
     .items-count {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #999;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      border: 1px solid #e2e8f0;
       white-space: nowrap;
-      margin-top: 6px;
     }
 
     /* ── FEATURED CARD ── */
     .featured {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
-      min-height: 180px;
-      margin-bottom: 20px;
+      min-height: 200px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .featured:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
     }
 
     .feat-img {
-      width: 210px;
+      width: 240px;
       flex-shrink: 0;
-      background: #b8c8d8;
+      background: #f1f5f9;
       position: relative;
+      overflow: hidden;
     }
 
-    .badge-instock {
+    .feat-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .featured:hover .feat-img img {
+      transform: scale(1.06);
+    }
+
+    /* ── STATUS BADGES ── */
+    .badge-status {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 8px;
+      top: 14px;
+      left: 14px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      background: #1a1a1a;
-      color: #fff;
-      padding: 3px 8px;
-      border-radius: 2px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+    
+    .badge-instock {
+      background: rgba(34, 197, 94, 0.1);
+      color: #166534;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .badge-lowstock {
+      background: rgba(245, 158, 11, 0.1);
+      color: #92400e;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-stockout {
+      background: rgba(234, 88, 12, 0.1);
+      color: #9a3412;
+      border: 1px solid rgba(234, 88, 12, 0.2);
+    }
+
+    .badge-unavailable {
+      background: rgba(239, 68, 68, 0.1);
+      color: #991b1b;
+      border: 1px solid rgba(239, 68, 68, 0.2);
     }
 
     .feat-body {
       flex: 1;
-      padding: 22px 22px 18px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -111,264 +158,201 @@
     .feat-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start
+      align-items: flex-start;
+      margin-bottom: 8px;
     }
 
     .feat-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #111;
-      letter-spacing: -0.01em;
-      margin-bottom: 8px
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+    }
+    
+    .feat-name.line-through {
+      color: #94a3b8;
+      text-decoration: line-through;
     }
 
     .feat-desc {
-      font-size: 11.5px;
-      color: #888;
-      line-height: 1.6;
-      margin-bottom: 14px;
-      max-width: 270px
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.65;
+      margin-bottom: 16px;
+      max-width: 600px;
     }
 
     .feat-price {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
-      color: #111;
-      margin-bottom: 18px
+      color: #0f172a;
+      letter-spacing: -0.02em;
     }
 
     .icon-del {
-      background: none;
+      background: #f1f5f9;
+      color: #64748b;
       border: none;
-      cursor: pointer;
-      color: #ccc;
-      font-size: 15px;
-      padding: 0;
-      line-height: 1
-    }
-
-    .icon-del:hover {
-      color: #ef4444
-    }
-
-    .btn-add {
-      background: #7c3408;
-      color: #fff;
-      border: none;
-      padding: 11px 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 3px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      width: 100%;
-      transition: background 0.2s;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .btn-add:hover {
-      background: #5c2408
+    .icon-del:hover {
+      background: #fee2e2;
+      color: #ef4444;
+      transform: scale(1.05);
+    }
+    
+    .icon-del .material-symbols-outlined {
+      font-size: 18px;
     }
 
-    /* ── PINK DIVIDER ── */
-    .divider {
-      width: 34px;
-      height: 3px;
-      background: linear-gradient(90deg, #f43f5e, #ec4899);
-      border-radius: 2px;
-      margin: 8px auto 20px;
-    }
-
-    /* ── MINI GRID ── */
-    .mini-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* ── CARD ACTIONS & BUTTONS ── */
+    .feat-actions {
+      display: flex;
       gap: 12px;
-      margin-bottom: 20px;
+      width: 100%;
     }
 
-    .mini-card {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      display: flex;
-      align-items: stretch;
-      overflow: hidden;
-      min-height: 150px;
-      transition: box-shadow 0.2s;
-    }
-
-    .mini-card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09)
-    }
-
-    .mini-img {
-      width: 150px;
-      flex-shrink: 0
-    }
-
-    .mi1 {
-      background: #ddd
-    }
-
-    .mi2 {
-      background: #b8c4cc
-    }
-
-    .mi3 {
-      background: #d8d2c4
-    }
-
-    .mi4 {
-      background: #1a1a1a
-    }
-
-    .mini-body {
-      flex: 1;
-      padding: 12px 14px
-    }
-
-    .mini-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 2px
-    }
-
-    .mini-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: #111;
-      letter-spacing: -0.01em
-    }
-
-    .mini-sub {
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #bbb;
-      margin-bottom: 10px
-    }
-
-    .mini-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between
-    }
-
-    .mini-price {
-      font-size: 13px;
-      font-weight: 800;
-      color: #111
-    }
-
-    .btn-buy {
-      background: #111;
-      color: #fff;
-      border: none;
-      padding: 5px 13px;
+    .btn-add {
       font-family: 'Inter', sans-serif;
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      padding: 12px 24px;
+      flex: 1;
     }
 
-    .btn-buy:hover {
-      background: #333
+    .btn-add.btn-primary {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .btn-add.btn-primary:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-add.btn-secondary {
+      background: transparent;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-add.btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+
+    .btn-add.btn-disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* ── LOW STOCK ALERT ── */
+    .low-stock-alert {
+      color: #d97706;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      width: 100%;
+      margin: 40px 0;
     }
 
     /* ── SUMMARY ── */
     .summary {
       display: flex;
       justify-content: flex-end;
-      padding-top: 24px;
-      border-top: 1px solid #e0e0e0;
+      padding-top: 8px;
     }
 
     .summary-box {
-      width: 260px
+      width: 320px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
     }
 
     .sum-row {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .sum-label {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #aaa
+      color: #64748b
     }
 
     .sum-total {
       font-size: 24px;
       font-weight: 800;
-      color: #111
+      color: #0f172a;
+      letter-spacing: -0.02em;
     }
 
     .btn-move {
       width: 100%;
-      background: #111;
-      color: #fff;
+      background: #0f172a;
+      color: #ffffff;
       border: none;
       padding: 14px;
       font-family: 'Inter', sans-serif;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
-      border-radius: 3px;
-      margin-bottom: 11px;
-      transition: background 0.2s;
+      border-radius: 8px;
+      transition: all 0.2s ease;
     }
 
-    .btn-move:hover {
-      background: #333
+    .btn-move:hover:not(:disabled) {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     }
 
-    .btn-share {
-      background: none;
-      border: none;
-      width: 100%;
-      text-align: center;
-      font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #bbb;
-      cursor: pointer;
-      padding: 3px;
-      transition: color 0.2s;
-    }
-
-    .btn-share:hover {
-      color: #111
+    .btn-move:disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
     }
 
     /* ── RESPONSIVE ── */
     @media(max-width:900px) {
       .page {
-        padding: 24px 16px 60px
-      }
-
-      .mini-grid {
-        grid-template-columns: 1fr
+        padding: 32px 16px 80px
       }
 
       .featured {
@@ -377,7 +361,7 @@
 
       .feat-img {
         width: 100%;
-        height: 200px
+        height: 220px
       }
 
       .summary {
@@ -389,46 +373,31 @@
       }
 
       .header h1 {
-        font-size: 20px
+        font-size: 24px
       }
     }
 
     @media(max-width:640px) {
-      nav {
-        padding: 0 16px
-      }
-
-      .nav-links {
-        display: none
-      }
-
-      .search-box {
-        display: none
-      }
-
       .header {
         flex-direction: column;
-        gap: 8px
+        align-items: flex-start;
+        gap: 16px
       }
 
       .feat-img {
-        height: 160px
-      }
-
-      .mini-img {
-        width: 110px
+        height: 180px
       }
 
       .feat-name {
-        font-size: 15px
-      }
-
-      .feat-price {
         font-size: 17px
       }
 
+      .feat-price {
+        font-size: 18px
+      }
+
       .sum-total {
-        font-size: 20px
+        font-size: 22px
       }
     }
 
@@ -439,7 +408,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(15, 23, 42, 0.3);
       backdrop-filter: blur(4px);
       display: none;
       align-items: center;
@@ -455,12 +424,12 @@
 
     .modal-container {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 16px;
       width: 90%;
       max-width: 400px;
-      padding: 24px;
+      padding: 28px;
       transform: scale(0.95);
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -485,15 +454,15 @@
       font-family: 'Inter', sans-serif;
       font-size: 16px;
       font-weight: 700;
-      color: #111827;
+      color: #0f172a;
       margin: 0;
     }
 
     .modal-message {
       font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #4b5563;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #475569;
       margin: 0 0 24px 0;
     }
 
@@ -511,28 +480,80 @@
       letter-spacing: 0.08em;
       padding: 10px 20px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       transition: background 0.2s, color 0.2s;
     }
 
     .btn-secondary {
-      background: #f3f4f6;
-      color: #4b5563;
+      background: #f1f5f9;
+      color: #475569;
     }
 
     .btn-secondary:hover {
-      background: #e5e7eb;
-      color: #1f2937;
+      background: #e2e8f0;
+      color: #0f172a;
     }
 
     .btn-danger {
-      background: #dc2626;
+      background: #ef4444;
       color: #ffffff;
     }
 
     .btn-danger:hover {
-      background: #b91c1c;
+      background: #dc2626;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 80px 24px;
+      text-align: center;
+      margin: 40px auto;
+      max-width: 500px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+    }
+    .empty-state .material-symbols-outlined {
+      font-size: 56px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+    .empty-state h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    .empty-state p {
+      font-size: 13.5px;
+      color: #64748b;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .btn-shop {
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      padding: 12px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+    .btn-shop:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     }
   </style>
 </head>
@@ -556,11 +577,11 @@
 
       <% if (wishlistItems.length === 0) { %>
         <!-- Empty State -->
-        <div style="background: #fff; border: 1px dashed #ccc; border-radius: 6px; padding: 60px 20px; text-align: center; margin: 40px 0;">
-          <span class="material-symbols-outlined" style="font-size: 48px; color: #aaa; margin-bottom: 16px;">favorite</span>
-          <h2 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 8px;">Your Wishlist is Empty</h2>
-          <p style="font-size: 12px; color: #666; margin-bottom: 24px;">Explore our catalog and save your favorite gear for later.</p>
-          <a href="/shop" class="btn-buy" style="text-decoration: none; padding: 10px 24px; font-size: 11px; display: inline-block;">Go to Shop</a>
+        <div class="empty-state">
+          <span class="material-symbols-outlined">favorite</span>
+          <h2>Your Wishlist is Empty</h2>
+          <p>Explore our catalog and save your favorite gear for later.</p>
+          <a href="/shop" class="btn-shop">Go to Shop</a>
         </div>
       <% } else { %>
         <%
@@ -573,110 +594,62 @@
                   hasInvalidItems = true;
               }
           }
-          const firstItem = wishlistItems[0];
         %>
 
-        <!-- FEATURED CARD (First Item) -->
-        <div class="featured">
-          <div class="feat-img" style="display: flex; align-items: center; justify-content: center; background: #b8c8d8; overflow: hidden; position: relative;">
-            <% if (firstItem.firstImage) { %>
-              <img src="<%= firstItem.firstImage %>" alt="<%= firstItem.name %>" style="width: 100%; height: 100%; object-fit: cover;" />
-            <% } %>
-            <% if (firstItem.isUnavailable) { %>
-              <span class="badge-instock" style="background: #ef4444; border: 1px solid #fca5a5;">Unavailable</span>
-            <% } else if (firstItem.isStockout) { %>
-              <span class="badge-instock" style="background: #ea580c; border: 1px solid #fdba74;">Stockout</span>
-            <% } else if (firstItem.isLowStock) { %>
-              <span class="badge-instock" style="background: #f59e0b; border: 1px solid #fcd34d;">Low Stock</span>
-            <% } else { %>
-              <span class="badge-instock" style="background: #22c55e; border: 1px solid #86efac;">In Stock</span>
-            <% } %>
-          </div>
-          <div class="feat-body">
-            <div>
-              <div class="feat-top">
-                <div class="feat-name" <%= firstItem.isUnavailable ? 'style="color: #94a3b8; text-decoration: line-through;"' : '' %>><%= firstItem.name %></div>
-                <button onclick="removeFromFavorite('<%= firstItem.productId %>', '<%= firstItem.variantId || '' %>')" class="icon-del" title="Remove">&#128465;</button>
-              </div>
-              <div class="feat-desc"><%= firstItem.description %></div>
-              <% if (firstItem.isUnavailable) { %>
-                <div class="feat-price" style="color: #ef4444; font-size: 15px;">Product Unavailable</div>
-              <% } else { %>
-                <div class="feat-price">₹<%= firstItem.displayPrice %></div>
-                <% if (firstItem.isLowStock) { %>
-                  <p style="color: #d97706; font-size: 11px; font-weight: 600; margin-top: 4px;">Only <%= firstItem.stock %> units remaining! Order soon.</p>
+        <!-- WISHLIST ITEMS LIST -->
+        <div class="wishlist-list" style="display: flex; flex-direction: column; gap: 24px;">
+          <% wishlistItems.forEach(item => { %>
+            <div class="featured">
+              <div class="feat-img">
+                <% if (item.firstImage) { %>
+                  <img src="<%= item.firstImage %>" alt="<%= item.name %>" />
                 <% } %>
-              <% } %>
-            </div>
-            <% if (firstItem.isUnavailable) { %>
-              <button class="btn-add" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Unavailable</button>
-            <% } else if (firstItem.isStockout) { %>
-              <button class="btn-add" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Stockout</button>
-            <% } else { %>
-              <div style="display: flex; gap: 8px; width: 100%;">
-                <button class="btn-add" style="flex: 1;" onclick="singleAddToCart('<%= firstItem.productId %>', '<%= firstItem.variantId || '' %>')">&#128722; Add to Cart</button>
-                <button class="btn-add" style="flex: 1; background: #111; color: #fff;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#111'" onclick="window.location.href='/product-details?id=<%= firstItem.productId %><%= firstItem.variantId ? '&variantId=' + firstItem.variantId : '' %>'">View Details</button>
+                <% if (item.isUnavailable) { %>
+                  <span class="badge-status badge-unavailable">Unavailable</span>
+                <% } else if (item.isStockout) { %>
+                  <span class="badge-status badge-stockout">Stockout</span>
+                <% } else if (item.isLowStock) { %>
+                  <span class="badge-status badge-lowstock">Low Stock</span>
+                <% } else { %>
+                  <span class="badge-status badge-instock">In Stock</span>
+                <% } %>
               </div>
-            <% } %>
-          </div>
-        </div>
-
-        <% if (wishlistItems.length > 1) { %>
-          <!-- DIVIDER -->
-          <div class="divider"></div>
-
-          <!-- MINI GRID (Remaining Items) -->
-          <div class="mini-grid">
-            <% for (let i = 1; i < wishlistItems.length; i++) { %>
-              <% const item = wishlistItems[i]; %>
-              <div class="mini-card">
-                <div class="mini-img" style="display: flex; align-items: center; justify-content: center; background: #ddd; overflow: hidden; width: 150px; flex-shrink: 0; position: relative;">
-                  <% if (item.firstImage) { %>
-                    <img src="<%= item.firstImage %>" alt="<%= item.name %>" style="width: 100%; height: 100%; object-fit: cover;" />
-                  <% } %>
+              <div class="feat-body">
+                <div>
+                  <div class="feat-top">
+                    <div class="feat-name <%= item.isUnavailable ? 'line-through' : '' %>"><%= item.name %></div>
+                    <button onclick="removeFromFavorite('<%= item.productId %>', '<%= item.variantId || '' %>')" class="icon-del" title="Remove">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                  <div class="feat-desc"><%= item.description %></div>
                   <% if (item.isUnavailable) { %>
-                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 2px;">Unavailable</span>
-                  <% } else if (item.isStockout) { %>
-                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #ea580c; color: #fff; padding: 2px 6px; border-radius: 2px;">Stockout</span>
-                  <% } else if (item.isLowStock) { %>
-                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #f59e0b; color: #fff; padding: 2px 6px; border-radius: 2px;">Low Stock</span>
+                    <div class="feat-price" style="color: #ef4444; font-size: 15px;">Product Unavailable</div>
                   <% } else { %>
-                    <span style="position: absolute; top: 8px; left: 8px; font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #22c55e; color: #fff; padding: 2px 6px; border-radius: 2px;">In Stock</span>
+                    <div class="feat-price">₹<%= item.displayPrice %></div>
+                    <% if (item.isLowStock) { %>
+                      <p class="low-stock-alert">Only <%= item.stock %> units remaining! Order soon.</p>
+                    <% } %>
                   <% } %>
                 </div>
-                <div class="mini-body" style="display: flex; flex-direction: column; justify-content: space-between;">
-                  <div>
-                    <div class="mini-top-row">
-                      <div class="mini-name" <%= item.isUnavailable ? 'style="color: #94a3b8; text-decoration: line-through;"' : '' %>><%= item.name %></div>
-                      <button onclick="removeFromFavorite('<%= item.productId %>', '<%= item.variantId || '' %>')" class="icon-del">&#128465;</button>
-                    </div>
-                    <div class="mini-sub">Luxe Tech Saved Item</div>
+                <% if (item.isUnavailable) { %>
+                  <button class="btn-add btn-disabled" disabled>Unavailable</button>
+                <% } else if (item.isStockout) { %>
+                  <button class="btn-add btn-disabled" disabled>Stockout</button>
+                <% } else { %>
+                  <div class="feat-actions">
+                    <button class="btn-add btn-primary" onclick="singleAddToCart('<%= item.productId %>', '<%= item.variantId || '' %>')">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">shopping_cart</span> Add to Cart
+                    </button>
+                    <button class="btn-add btn-secondary" onclick="window.location.href='/product-details?id=<%= item.productId %><%= item.variantId ? '&variantId=' + item.variantId : '' %>'">
+                      View Details
+                    </button>
                   </div>
-                  <div class="mini-foot">
-                    <% if (item.isUnavailable) { %>
-                      <span class="mini-price" style="color: #ef4444; font-size: 11px;">Unavailable</span>
-                      <button class="btn-buy" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Unavailable</button>
-                    <% } else if (item.isStockout) { %>
-                      <span class="mini-price">₹<%= item.displayPrice %></span>
-                      <button class="btn-buy" style="background: #cbd5e1; color: #94a3b8; cursor: not-allowed;" disabled>Stockout</button>
-                    <% } else { %>
-                      <div style="display: flex; flex-direction: column;">
-                        <span class="mini-price">₹<%= item.displayPrice %></span>
-                        <% if (item.isLowStock) { %>
-                          <p style="color: #d97706; font-size: 9px; font-weight: 600; margin-top: 2px; margin-bottom: 0;">Only <%= item.stock %> left!</p>
-                        <% } %>
-                      </div>
-                      <div style="display: flex; gap: 6px; align-items: center;">
-                        <button onclick="singleAddToCart('<%= item.productId %>', '<%= item.variantId || '' %>')" class="btn-buy" style="background: #7c3408;" onmouseover="this.style.background='#5c2408'" onmouseout="this.style.background='#7c3408'">Add to Cart</button>
-                        <button onclick="window.location.href='/product-details?id=<%= item.productId %><%= item.variantId ? '&variantId=' + item.variantId : '' %>'" class="btn-buy">Details</button>
-                      </div>
-                    <% } %>
-                  </div>
-                </div>
+                <% } %>
               </div>
-            <% } %>
-          </div><!-- /mini-grid -->
-        <% } %>
+            </div>
+          <% }) %>
+        </div>
 
         <!-- DIVIDER -->
         <div class="divider"></div>

@@ -469,18 +469,34 @@
                             <label
                                 class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 font-label">Coupon</label>
                             <div class="relative">
-                                <select id="coupon-select"
+                                 <select id="coupon-select"
                                     class="w-full bg-surface-container-lowest bg-none border border-slate-200 focus:border-primary focus:ring-0 rounded-sm py-4 px-5 pr-12 text-xs font-bold uppercase tracking-widest text-[#0D1B2A] appearance-none cursor-pointer transition-all">
-                                    <option value="" data-type="" data-value="0" data-min="0" data-max="0">Select a Coupon</option>
+                                    <option value="" data-type="" data-value="0" data-min="0" data-categories="">Select a Coupon</option>
                                     <% if (locals.coupons && coupons.length > 0) { %>
+                                        <% 
+                                          const cartProductCategoryIds = (cart && cart.items) ? cart.items.map(item => String(item.categoryId)) : [];
+                                        %>
                                         <% coupons.forEach(function(coupon) { %>
+                                            <% 
+                                              const isApplicable = (coupon.applicableCategories.length === 0) || 
+                                                  coupon.applicableCategories.some(cat => cartProductCategoryIds.includes(String(cat._id || cat)));
+                                            %>
                                             <option value="<%= coupon._id %>"
                                                 data-code="<%= coupon.code %>"
                                                 data-type="<%= coupon.discountType %>"
                                                 data-value="<%= coupon.discountValue %>"
                                                 data-min="<%= coupon.minOrderValue %>"
-                                                data-max="<%= coupon.maxDiscount || '' %>">
-                                                <%= coupon.code %> — <%= coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '₹' + coupon.discountValue %> OFF
+                                                data-categories="<%= coupon.applicableCategories.map(c => String(c._id || c)).join(',') %>"
+                                                <% if (!isApplicable) { %>
+                                                    disabled
+                                                    style="opacity: 0.5; color: #94a3b8;"
+                                                <% } %>
+                                            >
+                                                <% if (!isApplicable) { %>
+                                                    <%= coupon.code %> — Only applicable for <%= coupon.applicableCategories.map(c => c.categoryName).join(', ') %>
+                                                <% } else { %>
+                                                    <%= coupon.code %> — <%= coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '₹' + coupon.discountValue %> OFF
+                                                <% } %>
                                             </option>
                                         <% }); %>
                                     <% } else { %>
@@ -772,7 +788,31 @@
                 </div>
             </div>
     </main>
+
+    <!-- Beautiful Tailwind Alert/Error Modal -->
+    <div id="alert-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div id="alert-modal-backdrop" class="absolute inset-0 bg-[#0D1B2A]/40 backdrop-blur-sm transition-opacity duration-300"></div>
+        <!-- Modal Card -->
+        <div
+            class="relative bg-white rounded-2xl max-w-sm w-full mx-4 p-8 shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4">
+                    <span class="material-symbols-outlined text-3xl">warning</span>
+                </div>
+                <h3 class="text-lg font-bold font-headline text-[#0D1B2A] mb-2">Status Notice</h3>
+                <p id="alert-modal-message" class="text-slate-600 text-sm leading-relaxed mb-6"></p>
+                <button id="alert-close-btn"
+                    class="w-full py-3 bg-[#0D1B2A] hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-colors">
+                    GOT IT
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const cartItems = <%- JSON.stringify(cart ? cart.items.map(item => ({ name: item.name, categoryId: String(item.categoryId) })) : []) %>;
         // Addresses data
         const addresses = {
             <% addresses.forEach(function (addr) { %>
@@ -975,7 +1015,6 @@
                 const type = selectedOption.getAttribute('data-type');
                 const value = parseFloat(selectedOption.getAttribute('data-value')) || 0;
                 const minVal = parseFloat(selectedOption.getAttribute('data-min')) || 0;
-                const maxVal = parseFloat(selectedOption.getAttribute('data-max')) || null;
 
                 if (baseSubtotal < minVal) {
                     couponMessage.textContent = `Minimum order of ₹${minVal.toFixed(2)} required for coupon ${code}`;
@@ -985,9 +1024,6 @@
                 } else {
                     if (type === 'percentage') {
                         couponDiscount = Math.round(baseSubtotal * (value / 100));
-                        if (maxVal && couponDiscount > maxVal) {
-                            couponDiscount = maxVal;
-                        }
                     } else if (type === 'fixed') {
                         couponDiscount = value;
                     }
@@ -1021,6 +1057,49 @@
             couponSelect.addEventListener('change', updateTotals);
         }
 
+        updateTotals();
+
+        // Function to show custom alert modal
+        const showAlert = (message, title = "Status Notice") => {
+            const modal = document.getElementById('alert-modal');
+            if (modal) {
+                document.getElementById('alert-modal-message').innerText = message;
+                modal.querySelector('h3').innerText = title;
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('.relative').classList.remove('scale-95');
+                }, 10);
+            }
+        };
+
+        const closeAlertModal = () => {
+            const modal = document.getElementById('alert-modal');
+            if (modal) {
+                modal.classList.add('opacity-0');
+                modal.querySelector('.relative').classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        };
+
+        const alertCloseBtn = document.getElementById('alert-close-btn');
+        if (alertCloseBtn) {
+            alertCloseBtn.addEventListener('click', closeAlertModal);
+        }
+
+        const alertModal = document.getElementById('alert-modal');
+        const alertModalBackdrop = document.getElementById('alert-modal-backdrop');
+        if (alertModal) {
+            alertModal.addEventListener('click', (e) => {
+                if (e.target === alertModal || e.target === alertModalBackdrop) {
+                    closeAlertModal();
+                }
+            });
+        }
+
         const placeOrderForm = document.getElementById('place-order-form');
         if (placeOrderForm) {
             placeOrderForm.addEventListener('submit', (e) => {
@@ -1029,8 +1108,34 @@
 
                 if (!addressId) {
                     e.preventDefault();
-                    alert('Please add or select a delivery address first.');
+                    showAlert('Please add or select a delivery address first.', 'Address Required');
                     return;
+                }
+
+                // Validate coupon category compatibility on checkout form submission
+                if (couponSelect && couponSelect.value) {
+                    const selectedOption = couponSelect.options[couponSelect.selectedIndex];
+                    const dataCategories = selectedOption.getAttribute('data-categories') || '';
+                    
+                    if (dataCategories) {
+                        const allowedCategoryIds = dataCategories.split(',');
+                        const invalidProducts = [];
+                        
+                        for (const item of cartItems) {
+                            if (!item.categoryId || !allowedCategoryIds.includes(item.categoryId)) {
+                                invalidProducts.push(item.name);
+                            }
+                        }
+                        
+                        if (invalidProducts.length > 0) {
+                            e.preventDefault();
+                            showAlert(
+                                `This coupon cannot be used for the following products in your checkout: (${invalidProducts.join(', ')}). Please remove them to proceed with this coupon.`,
+                                "Status Notice"
+                            );
+                            return;
+                        }
+                    }
                 }
 
                 let shippingMethod = 'standard';

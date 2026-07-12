@@ -32,7 +32,7 @@ const getCheckout = async (req, res) => {
             return res.redirect('/shop');
         }
 
-        const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+        const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
 
         res.render('User/cheackoutPage.ejs', {
             ...checkoutData,
@@ -81,7 +81,7 @@ const editAddress = async (req, res) => {
                 const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
-                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
 
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
@@ -133,7 +133,7 @@ const addAddress = async (req, res) => {
                 const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
                 const checkoutData = await getCheckoutPageDataService(userId, req.query);
 
-                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
 
                 return res.render('User/cheackoutPage.ejs', {
                     ...checkoutData,
@@ -182,7 +182,7 @@ const placeOrder = async (req, res) => {
                 } else {
                     cart = await getCartService(userId);
                 }
-                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } });
+                const coupons = await couponModel.find({ status: true, expiryDate: { $gt: new Date() } }).populate('applicableCategories');
                 return res.render('User/cheackoutPage.ejs', {
                     addresses,
                     defaultAddress,

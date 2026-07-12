@@ -26,8 +26,11 @@ const addToCartService = async (userId, productId, variantId, quantityInput) => 
             if (!variant || variant.productId.toString() !== productId.toString()) {
                 return { success: false, message: 'Selected product variant not found.' };
             }
-        } else if (product.hasVariants) {
-            return { success: false, message: 'Please select a variant for this product.' };
+        } else {
+            variant = await variantModel.findOne({ productId: productId });
+            if (!variant) {
+                return { success: false, message: 'Product variant not found.' };
+            }
         }
 
         // Check stock
@@ -57,10 +60,16 @@ const addToCartService = async (userId, productId, variantId, quantityInput) => 
             };
         }
 
-        if (quantity > stockAvailable) {
+        if (newQty > stockAvailable) {
+            if (stockAvailable === 0) {
+                return {
+                    success: false,
+                    message: 'This product is out of stock.'
+                };
+            }
             return { 
                 success: false, 
-                message: `Cannot add ${quantity} unit(s). Only ${stockAvailable} unit(s) left in stock.` 
+                message: `Cannot add more units. Only ${stockAvailable} unit(s) available in stock, and you already have ${currentQty} in your cart.` 
             };
         }
 
@@ -72,12 +81,6 @@ const addToCartService = async (userId, productId, variantId, quantityInput) => 
                 variantId: variantId || null,
                 quantity: quantity
             });
-        }
-
-        // Deduct stock in DB
-        if (variant) {
-            variant.stock -= quantity;
-            await variant.save();
         }
 
         await cart.save();
@@ -127,10 +130,11 @@ const getCartService = async (userId) => {
                     firstImage = variant.images[0];
                 }
 
-                const totalStockForUser = (variant ? variant.stock : 0) + item.quantity;
+                const totalStockForUser = variant ? variant.stock : 0;
 
                 cartItems.push({
                     productId: product ? product._id : item.productId,
+                    categoryId: product ? (product.category ? (product.category._id || product.category) : null) : null,
                     variantId: variant ? variant._id : item.variantId,
                     name: product ? product.name : 'Unknown Product',
                     variantName: variant ? `${variant.groupName}: ${variant.option}` : '',
@@ -202,27 +206,13 @@ const updateCartQuantityService = async (userId, productId, variantId, newQuanti
         const currentQty = cartItem.quantity;
         const diff = newQuantity - currentQty;
 
-        if (diff > 0) {
-            // Check stock available in DB
-            if (variantId) {
-                const variant = await variantModel.findById(variantId);
-                if (!variant) {
-                    return { success: false, message: 'Product variant not found.' };
-                }
-                if (variant.stock < diff) {
-                    return { success: false, message: `Cannot increase quantity. Only ${variant.stock} more unit(s) available in stock.` };
-                }
-                variant.stock -= diff;
-                await variant.save();
+        if (variantId) {
+            const variant = await variantModel.findById(variantId);
+            if (!variant) {
+                return { success: false, message: 'Product variant not found.' };
             }
-        } else if (diff < 0) {
-            // Restore stock to DB
-            if (variantId) {
-                const variant = await variantModel.findById(variantId);
-                if (variant) {
-                    variant.stock += Math.abs(diff);
-                    await variant.save();
-                }
+            if (variant.stock < newQuantity) {
+                return { success: false, message: `Cannot set quantity to ${newQuantity}. Only ${variant.stock} unit(s) available in stock.` };
             }
         }
 
@@ -250,13 +240,7 @@ const removeFromCartService = async (userId, productId, variantId) => {
             return sameProduct && sameVariant;
         });
 
-        if (itemToRemove && variantId) {
-            const variant = await variantModel.findById(variantId);
-            if (variant) {
-                variant.stock += itemToRemove.quantity;
-                await variant.save();
-            }
-        }
+
 
         cart.items = cart.items.filter(item => {
             const sameProduct = item.productId.toString() === productId.toString();

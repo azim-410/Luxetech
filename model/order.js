@@ -175,6 +175,18 @@ const orderSchema = new mongoose.Schema({
         ref: 'coupon',
         required: false
     },
+    razorpayOrderId: {
+        type: String,
+        required: false
+    },
+    razorpayPaymentId: {
+        type: String,
+        required: false
+    },
+    razorpaySignature: {
+        type: String,
+        required: false
+    },
     paymentMethod: {
         type: String,
         default: 'COD',

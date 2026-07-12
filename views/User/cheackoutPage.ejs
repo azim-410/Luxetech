@@ -391,31 +391,28 @@
                     </div>
                     <div class="space-y-4">
                         <!-- Payment Tabs / Options -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                            <button disabled type="button"
-                                class="flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant/40 rounded-sm border-2 border-transparent opacity-50 cursor-not-allowed">
-                                <span class="material-symbols-outlined text-on-surface-variant/40" data-icon="credit_card">credit_card</span>
-                                <span class="text-[10px] font-bold uppercase tracking-widest">Card</span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <!-- UPI (Razorpay) Tab Button -->
+                            <button type="button" id="payBtn-Razorpay" onclick="selectPaymentMethod('Razorpay')"
+                                class="flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant rounded-sm border-2 border-transparent hover:bg-surface-container transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">UPI (Razorpay)</span>
                             </button>
-                            <button disabled type="button"
-                                class="flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant/40 rounded-sm border-2 border-transparent opacity-50 cursor-not-allowed">
-                                <span class="material-symbols-outlined text-on-surface-variant/40" data-icon="payments">payments</span>
-                                <span class="text-[10px] font-bold uppercase tracking-widest">UPI</span>
-                            </button>
-                            <button disabled type="button"
-                                class="flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant/40 rounded-sm border-2 border-transparent opacity-50 cursor-not-allowed">
-                                <span class="material-symbols-outlined text-on-surface-variant/40"
-                                    data-icon="account_balance_wallet">account_balance_wallet</span>
+                            <!-- Wallet Tab Button -->
+                            <button type="button" id="payBtn-Wallet" onclick="selectPaymentMethod('Wallet')"
+                                class="flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant rounded-sm border-2 border-transparent hover:bg-surface-container transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-primary" data-icon="account_balance_wallet">account_balance_wallet</span>
                                 <span class="text-[10px] font-bold uppercase tracking-widest">Wallet</span>
                             </button>
-                            <button type="button"
-                                class="flex flex-col items-center justify-center gap-2 p-4 bg-primary text-white rounded-sm border-2 border-primary cursor-default">
+                            <!-- COD Tab Button -->
+                            <button type="button" id="payBtn-COD" onclick="selectPaymentMethod('COD')"
+                                class="flex flex-col items-center justify-center gap-2 p-4 bg-primary text-white rounded-sm border-2 border-primary cursor-pointer">
                                 <span class="material-symbols-outlined text-white" data-icon="local_shipping">local_shipping</span>
                                 <span class="text-[10px] font-bold uppercase tracking-widest">COD</span>
                             </button>
                         </div>
                         <!-- Cash on Delivery Notice (Active) -->
-                        <div class="bg-surface-container-lowest rounded-sm p-6 border-2 border-primary text-left">
+                        <div id="payPanel-COD" class="payment-panel bg-surface-container-lowest rounded-sm p-6 border-2 border-primary text-left">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
                                     <span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
@@ -425,6 +422,32 @@
                             </div>
                             <p class="text-xs text-on-surface-variant leading-relaxed">
                                 Pay with cash or scan-and-pay digital methods upon delivery. Please ensure someone is available at the address to receive the package and complete the payment.
+                            </p>
+                        </div>
+                        <!-- Razorpay Payment Notice (Hidden initially) -->
+                        <div id="payPanel-Razorpay" class="payment-panel bg-surface-container-lowest rounded-sm p-6 border border-outline-variant/15 text-left hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+                                    <span class="text-sm font-bold font-headline uppercase tracking-tight text-primary">UPI & Online Payment (Razorpay)</span>
+                                </div>
+                                <span class="bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-blue-100">Fast & Secure</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Secure online transaction via Razorpay. Pay instantly with UPI, Cards, Netbanking, or Wallets.
+                            </p>
+                        </div>
+                        <!-- Wallet Payment Notice (Hidden initially) -->
+                        <div id="payPanel-Wallet" class="payment-panel bg-surface-container-lowest rounded-sm p-6 border border-outline-variant/15 text-left hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary" data-icon="account_balance_wallet">account_balance_wallet</span>
+                                    <span class="text-sm font-bold font-headline uppercase tracking-tight text-primary">Luxe Wallet Payment</span>
+                                </div>
+                                <span class="bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-amber-100">Instant</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Pay directly from your Luxe Tech wallet balance. Ensure your wallet has sufficient funds before placing the order.
                             </p>
                         </div>
                     </div>
@@ -1100,6 +1123,48 @@
             });
         }
 
+        let activePaymentMethod = 'COD';
+
+        function selectPaymentMethod(method) {
+            activePaymentMethod = method;
+
+            // Reset all buttons to inactive styles
+            const methods = ['Razorpay', 'Wallet', 'COD'];
+            methods.forEach(m => {
+                const btn = document.getElementById(`payBtn-${m}`);
+                const panel = document.getElementById(`payPanel-${m}`);
+                
+                if (btn) {
+                    btn.className = "flex flex-col items-center justify-center gap-2 p-4 bg-surface-container/50 text-on-surface-variant rounded-sm border-2 border-transparent hover:bg-surface-container transition-all cursor-pointer";
+                    // Reset icon color
+                    const icon = btn.querySelector('.material-symbols-outlined');
+                    if (icon) {
+                        icon.className = "material-symbols-outlined text-primary";
+                    }
+                }
+                if (panel) {
+                    panel.classList.add('hidden');
+                    panel.classList.remove('border-primary');
+                }
+            });
+
+            // Set active button styles
+            const activeBtn = document.getElementById(`payBtn-${method}`);
+            const activePanel = document.getElementById(`payPanel-${method}`);
+
+            if (activeBtn) {
+                activeBtn.className = "flex flex-col items-center justify-center gap-2 p-4 bg-primary text-white rounded-sm border-2 border-primary cursor-default";
+                const icon = activeBtn.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.className = "material-symbols-outlined text-white";
+                }
+            }
+            if (activePanel) {
+                activePanel.classList.remove('hidden');
+                activePanel.classList.add('border-primary');
+            }
+        }
+
         const placeOrderForm = document.getElementById('place-order-form');
         if (placeOrderForm) {
             placeOrderForm.addEventListener('submit', (e) => {
@@ -1159,7 +1224,7 @@
                 const paymentInput = document.createElement('input');
                 paymentInput.type = 'hidden';
                 paymentInput.name = 'paymentMethod';
-                paymentInput.value = 'COD';
+                paymentInput.value = activePaymentMethod;
                 placeOrderForm.appendChild(paymentInput);
 
                 const couponInput = document.createElement('input');

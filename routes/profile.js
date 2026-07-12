@@ -15,7 +15,8 @@ import {
     showCurrentOtpPage,
     verifyCurrentOtp,
     resendCurrentOtp,
-    getWallet
+    getWallet,
+    getWalletHistory
  } from '../controller/user/profileController.js';  
 
  import {
@@ -55,5 +56,6 @@ router.post('/address/edit/:addressId', isAuthenticated, checkIfBlocked, editAdd
 router.post('/address/delete/:addressId', isAuthenticated, checkIfBlocked, deleteAddress);
 
 router.get('/wallet', isAuthenticated, checkIfBlocked, getWallet);
+router.get('/wallet/history', isAuthenticated, checkIfBlocked, getWalletHistory);
 
 export default router;  

@@ -344,12 +344,49 @@ const getWallet = async (req, res) => {
 
     if (!user) return res.redirect('/login');
 
-    const transactions = await Transaction.find({ userId: req.session.user.id }).sort({ createdAt: -1 });
+    const showAll = req.query.showAll === 'true';
+    const sortBy = req.query.sortBy || 'date_desc';
 
-    return res.render('User/wallet', { user, transactions });
+    let sortOption = {};
+    if (sortBy === 'date_asc') {
+      sortOption = { createdAt: 1 };
+    } else if (sortBy === 'amount_desc') {
+      sortOption = { amount: -1 };
+    } else if (sortBy === 'amount_asc') {
+      sortOption = { amount: 1 };
+    } else {
+      sortOption = { createdAt: -1 }; // default
+    }
+
+    let query = Transaction.find({ userId: req.session.user.id }).sort(sortOption);
+
+    if (!showAll) {
+      query = query.limit(5);
+    }
+
+    const transactions = await query;
+    const totalTransactions = await Transaction.countDocuments({ userId: req.session.user.id });
+
+    return res.render('User/wallet', { 
+      user, 
+      transactions, 
+      showAll, 
+      sortBy, 
+      totalTransactions 
+    });
   } catch (error) {
     console.error('Wallet error:', error);
     return res.status(500).send('Server error');
+  }
+}
+
+const getWalletHistory = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ userId: req.session.user.id }).sort({ createdAt: -1 });
+    return res.status(200).json({ success: true, transactions });
+  } catch (error) {
+    console.error('Wallet history API error:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 }
 
@@ -368,5 +405,6 @@ export {
   verifyCurrentOtp,
   resendCurrentOtp,
   getAddresses,
-  getWallet
+  getWallet,
+  getWalletHistory
 }

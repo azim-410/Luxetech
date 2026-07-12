@@ -6,6 +6,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Luxe Tech | Wallet</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
     rel="stylesheet" />
@@ -153,7 +154,7 @@
         <div class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm flex flex-col justify-center gap-6 border border-outline-variant/10">
           <h3 class="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">Asset Management</h3>
           <div class="grid grid-cols-1 gap-4">
-            <button class="flex items-center justify-between p-4 bg-surface-container-low text-primary rounded-xl font-bold transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <button onclick="exportWalletPDF()" class="flex items-center justify-between p-4 bg-surface-container-low text-primary rounded-xl font-bold transition-transform hover:scale-[1.02] active:scale-[0.98]">
               <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined">receipt_long</span>
                 <span>Export Report</span>
@@ -259,6 +260,123 @@
           row.style.display = 'none';
         }
       });
+    }
+
+    async function exportWalletPDF() {
+      const exportBtn = document.querySelector('button[onclick="exportWalletPDF()"]');
+      const originalText = exportBtn.innerHTML;
+      exportBtn.disabled = true;
+      exportBtn.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined animate-spin">sync</span>
+          <span>Generating...</span>
+        </div>
+      `;
+
+      try {
+        const response = await fetch('/wallet/history');
+        const data = await response.json();
+        
+        if (!data.success) {
+          alert(data.message || 'Failed to fetch transaction history.');
+          return;
+        }
+
+        const transactions = data.transactions;
+        if (transactions.length === 0) {
+          alert('No transactions found to export.');
+          return;
+        }
+
+        // Create virtual element for PDF rendering
+        const container = document.createElement('div');
+        container.style.fontFamily = "'Inter', sans-serif";
+        container.style.color = '#334155';
+        container.style.padding = '40px';
+        container.style.backgroundColor = '#ffffff';
+
+        container.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
+            <div>
+              <h1 style="font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 855; color: #0f172a; margin: 0; letter-spacing: -0.02em;">LUXE TECH</h1>
+              <p style="font-size: 9px; text-transform: uppercase; tracking-wider; color: #64748b; margin: 4px 0 0 0; font-weight: 600;">Official Wallet Statement</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="font-size: 11px; font-weight: 700; color: #0f172a; margin: 0;">Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+              <p style="font-size: 9px; color: #64748b; margin: 4px 0 0 0;">Statement ID: #LTW-${Math.floor(100000 + Math.random() * 900000)}</p>
+            </div>
+          </div>
+
+          <div style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 20px; margin-bottom: 30px; display: flex; justify-content: space-between;">
+            <div>
+              <span style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Account Holder</span>
+              <span style="font-size: 14px; font-weight: 700; color: #0f172a;"><%= user.name %></span>
+              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;"><%= user.email %></span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Wallet Balance</span>
+              <span style="font-size: 20px; font-weight: 900; color: #0f172a;">₹<%= (user.wallet || 0).toFixed(2) %></span>
+            </div>
+          </div>
+
+          <h3 style="font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 800; color: #0f172a; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 0.05em;">Transaction History</h3>
+          
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                <th style="padding: 10px 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #475569;">Date</th>
+                <th style="padding: 10px 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #475569;">Description</th>
+                <th style="padding: 10px 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #475569; text-align: center;">Status</th>
+                <th style="padding: 10px 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #475569; text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${transactions.map(tx => `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px; font-size: 10px; color: #64748b;">
+                    ${new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </td>
+                  <td style="padding: 12px;">
+                    <div style="font-size: 11px; font-weight: 700; color: #0f172a;">${tx.description}</div>
+                    ${tx.orderId ? `<div style="font-size: 9px; color: #64748b; font-family: monospace; margin-top: 2px;">Order #${tx.orderId}</div>` : ''}
+                  </td>
+                  <td style="padding: 12px; text-align: center;">
+                    <span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 8px; font-weight: 700; text-transform: uppercase; 
+                      ${tx.status === 'completed' ? 'background-color: #dcfce7; color: #15803d;' : tx.status === 'failed' ? 'background-color: #fee2e2; color: #b91c1c;' : 'background-color: #fef3c7; color: #b45309;'}">
+                      ${tx.status}
+                    </span>
+                  </td>
+                  <td style="padding: 12px; text-align: right; font-size: 10px; font-weight: 700; ${tx.type === 'credit' ? 'color: #16a34a;' : 'color: #dc2626;'}">
+                    ${tx.type === 'credit' ? '+' : '-'}₹${tx.amount.toFixed(2)}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div style="margin-top: 40px; border-top: 1px dashed #cbd5e1; padding-top: 20px; text-align: center;">
+            <p style="font-size: 9px; color: #94a3b8; margin: 0;">This is a system generated report and does not require a physical signature.</p>
+            <p style="font-size: 9px; color: #94a3b8; margin: 4px 0 0 0;">Luxe Tech Support: support@luxetech.com | © ${new Date().getFullYear()} Luxe Tech Inc.</p>
+          </div>
+        `;
+
+        const opt = {
+          margin:       [15, 15, 20, 15],
+          filename:     'LuxeTech_Wallet_Statement.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        await html2pdf().set(opt).from(container).save();
+
+      } catch (err) {
+        console.error('Error generating PDF:', err);
+        alert('An error occurred while generating the statement PDF.');
+      } finally {
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = originalText;
+      }
     }
   </script>
 

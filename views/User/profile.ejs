@@ -168,18 +168,14 @@
                   </div>
                   <div>
                     <h2 class="text-xl font-bold tracking-tight">Wallet Balance</h2>
-                    <div class="text-2xl font-black text-[#0D1B2A]">$1,240.00</div>
+                    <div class="text-2xl font-black text-[#0D1B2A]">₹<%= (user && user.wallet || 0).toFixed(2) %></div>
                   </div>
                 </div>
                 <div class="flex gap-3">
-                  <button
-                    class="px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 transition-all flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">add_circle</span> Top Up
-                  </button>
-                  <button
+                  <a href="/wallet"
                     class="px-6 py-2.5 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-50 transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">history</span> History
-                  </button>
+                  </a>
                 </div>
               </div>
             </section>

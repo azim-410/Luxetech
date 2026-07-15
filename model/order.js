@@ -168,6 +168,10 @@ const orderSchema = new mongoose.Schema({
         grandTotal: {
             type: Number,
             required: true
+        },
+        refundedAmount: {
+            type: Number,
+            default: 0
         }
     },
     couponCode: {

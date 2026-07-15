@@ -138,9 +138,10 @@
                                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
                                 <input id="order-search-input"
                                     class="w-full pl-12 pr-10 py-3 bg-surface-container-highest rounded-lg text-sm border-none focus:ring-1 focus:ring-secondary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline/60"
-                                    placeholder="Search orders, customers, or SKUs..." type="text" />
+                                    placeholder="Search orders, customers, or SKUs..." type="text"
+                                    value="<%= search %>" />
                                 <button id="clear-search"
-                                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
+                                    class="<%= search ? '' : 'hidden' %> absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">close</span>
                                 </button>
                             </div>
@@ -162,6 +163,7 @@
                                                     class="block text-[10px] font-bold text-outline uppercase mb-1">Start
                                                     Date</label>
                                                 <input type="date" id="start-date-input"
+                                                    value="<%= startDate %>"
                                                     class="w-full px-3 py-2 text-xs font-semibold rounded border border-outline-variant/20 bg-white text-on-surface focus:ring-1 focus:ring-secondary/20 outline-none" />
                                             </div>
                                             <div>
@@ -169,6 +171,7 @@
                                                     class="block text-[10px] font-bold text-outline uppercase mb-1">End
                                                     Date</label>
                                                 <input type="date" id="end-date-input"
+                                                    value="<%= endDate %>"
                                                     class="w-full px-3 py-2 text-xs font-semibold rounded border border-outline-variant/20 bg-white text-on-surface focus:ring-1 focus:ring-secondary/20 outline-none" />
                                             </div>
                                             <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/10">
@@ -189,33 +192,33 @@
                                     <div id="sort-dropdown"
                                         class="hidden absolute right-0 mt-2 py-2 w-52 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-50 border border-outline-variant/10">
                                         <div class="flex flex-col">
-                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=date-desc"
+                                            <a href="javascript:void(0)" onclick="applyFilters({ sort: 'date-desc' })"
                                                 class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'date-desc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
                                                 <span>Date: Newest to Oldest</span>
-                                                <% if (sort === 'date-desc') { %>
+                                                <% if (sort==='date-desc' ) { %>
                                                     <span class="material-symbols-outlined text-[14px]">check</span>
-                                                <% } %>
+                                                    <% } %>
                                             </a>
-                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=date-asc"
+                                            <a href="javascript:void(0)" onclick="applyFilters({ sort: 'date-asc' })"
                                                 class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'date-asc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
                                                 <span>Date: Oldest to Newest</span>
-                                                <% if (sort === 'date-asc') { %>
+                                                <% if (sort==='date-asc' ) { %>
                                                     <span class="material-symbols-outlined text-[14px]">check</span>
-                                                <% } %>
+                                                    <% } %>
                                             </a>
-                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=price-desc"
+                                            <a href="javascript:void(0)" onclick="applyFilters({ sort: 'price-desc' })"
                                                 class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'price-desc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
                                                 <span>Price: High to Low</span>
-                                                <% if (sort === 'price-desc') { %>
+                                                <% if (sort==='price-desc' ) { %>
                                                     <span class="material-symbols-outlined text-[14px]">check</span>
-                                                <% } %>
+                                                    <% } %>
                                             </a>
-                                            <a href="/admin/order-management?page=<%= currentPage %>&sort=price-asc"
+                                            <a href="javascript:void(0)" onclick="applyFilters({ sort: 'price-asc' })"
                                                 class="px-4 py-2.5 text-xs font-semibold hover:bg-surface-container transition-colors flex items-center justify-between <%= sort === 'price-asc' ? 'text-secondary bg-surface-container/50' : 'text-on-surface' %>">
                                                 <span>Price: Low to High</span>
-                                                <% if (sort === 'price-asc') { %>
+                                                <% if (sort==='price-asc' ) { %>
                                                     <span class="material-symbols-outlined text-[14px]">check</span>
-                                                <% } %>
+                                                    <% } %>
                                             </a>
                                         </div>
                                     </div>
@@ -224,25 +227,27 @@
                         </div>
                         <!-- Status Tabs -->
                         <div class="flex items-center gap-8 border-b border-outline-variant/10">
-                            <button
-                                class="status-tab pb-4 text-sm font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]">All
+                            <button onclick="applyFilters({ status: 'all' })"
+                                class="status-tab pb-4 text-sm <%= status === 'all' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">All
                                 Orders</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Pending</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Processing</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Shipped</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Delivered</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Cancelled</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Returned</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Return Requested</button>
-                            <button
-                                class="status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors">Return Confirmed</button>
+                            <button onclick="applyFilters({ status: 'Pending' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Pending' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Pending</button>
+                            <button onclick="applyFilters({ status: 'Processing' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Processing' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Processing</button>
+                            <button onclick="applyFilters({ status: 'Shipped' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Shipped' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Shipped</button>
+                            <button onclick="applyFilters({ status: 'Delivered' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Delivered' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Delivered</button>
+                            <button onclick="applyFilters({ status: 'Cancelled' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Cancelled' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Cancelled</button>
+                            <button onclick="applyFilters({ status: 'Returned' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Returned' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Returned</button>
+                            <button onclick="applyFilters({ status: 'Return Requested' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Return Requested' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Return
+                                Requested</button>
+                            <button onclick="applyFilters({ status: 'Return Confirmed' })"
+                                class="status-tab pb-4 text-sm <%= status === 'Return Confirmed' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">Return
+                                Confirmed</button>
                         </div>
                     </div>
                     <!-- Table -->
@@ -268,96 +273,112 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-outline-variant/5">
-                                <% let count = 0; %>
-                                <% if (orders && orders.length> 0) { %>
-                                    <% orders.forEach(function(order) { %>
-                                        <% count++; %>
-                                        <tr class="group hover:bg-surface-container-low/30 transition-colors">
-                                            <td class="px-6 py-5">
-                                                <a href="/admin/order-management/details/<%= order._id %>" class="text-sm font-semibold text-on-surface hover:text-secondary">#<%= order.orderId %></a>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <div class="flex flex-col">
-                                                    <span class="text-sm font-medium text-on-surface">
-                                                        <%= order.shippingAddress.fullName %>
-                                                    </span>
-                                                    <span class="text-xs text-outline font-body">
-                                                        <%= order.userId ? order.userId.email : "" %>
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-5 text-sm text-outline">
-                                                <%= new Date(order.createdAt).toLocaleDateString('en-US', {
-                                                    month: 'short' , day: 'numeric' , year: 'numeric' }) %>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <% if (order.paymentStatus==='Paid' ) { %>
-                                                    <span
-                                                        class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Paid</span>
-                                                    <% } else if (order.paymentStatus==='Pending' ) { %>
-                                                        <span
-                                                            class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-surface-variant text-on-surface-variant">Pending</span>
-                                                        <% } else if (order.paymentStatus==='Failed' ||
-                                                            order.paymentStatus==='Refunded' ) { %>
-                                                            <span
-                                                                class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-error-container/20 text-on-error-container">
-                                                                <%= order.paymentStatus %>
+                                <% let count=0; %>
+                                    <% if (orders && orders.length> 0) { %>
+                                        <% orders.forEach(function(order) { %>
+                                            <% count++; 
+                                                let oRefunded = 0;
+                                                order.items.forEach(function(item) {
+                                                    if (item.status === 'Cancelled' || item.status === 'Return Confirmed' || item.status === 'Returned') {
+                                                        oRefunded += item.subtotal;
+                                                    }
+                                                });
+                                                let finalGrandTotal = order.pricing.grandTotal - oRefunded;
+                                             %>
+                                                <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                                                    <td class="px-6 py-5">
+                                                        <a href="/admin/order-management/details/<%= order._id %>"
+                                                            class="text-sm font-semibold text-on-surface hover:text-secondary">#
+                                                            <%= order.orderId %></a>
+                                                    </td>
+                                                    <td class="px-6 py-5">
+                                                        <div class="flex flex-col">
+                                                            <span class="text-sm font-medium text-on-surface">
+                                                                <%= order.shippingAddress.fullName %>
                                                             </span>
-                                                            <% } else { %>
+                                                            <span class="text-xs text-outline font-body">
+                                                                <%= order.userId ? order.userId.email : "" %>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-5 text-sm text-outline">
+                                                        <%= new Date(order.createdAt).toLocaleDateString('en-US', {
+                                                            month: 'short' , day: 'numeric' , year: 'numeric' }) %>
+                                                    </td>
+                                                    <td class="px-6 py-5">
+                                                        <% if (order.paymentStatus==='Paid' ) { %>
+                                                            <span
+                                                                class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container">Paid</span>
+                                                            <% } else if (order.paymentStatus==='Pending' ) { %>
                                                                 <span
-                                                                    class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-surface-variant text-on-surface-variant">
-                                                                    <%= order.paymentStatus %>
-                                                                </span>
-                                                                <% } %>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <% let dotColor='bg-outline' ; let textColor='text-outline' ; 
-                                                    if (['Shipped', 'Delivered'].includes(order.orderStatus)) {
-                                                        dotColor='bg-secondary' ; textColor='text-on-secondary-container' ;
-                                                    } else if (['Cancelled', 'Returned', 'Return Confirmed'].includes(order.orderStatus)) {
-                                                        dotColor='bg-error' ; textColor='text-error' ; 
-                                                    } else if (order.orderStatus === 'Return Requested') {
-                                                        dotColor='bg-amber-500' ; textColor='text-amber-700' ;
-                                                    } else if (order.orderStatus === 'Replacement Confirmed') {
-                                                        dotColor='bg-blue-500' ; textColor='text-blue-700' ;
-                                                    } %>
-                                                    <span
-                                                        class="flex items-center gap-1.5 text-sm <%= textColor %> font-medium">
-                                                        <span class="w-2 h-2 rounded-full <%= dotColor %>"></span>
-                                                        <%= order.orderStatus %>
-                                                    </span>
-                                            </td>
-                                            <td class="px-6 py-5 text-sm font-semibold text-on-surface">₹<%=
-                                                    order.pricing.grandTotal.toFixed(2) %>
-                                            </td>
-                                            <td class="px-6 py-5 text-right">
-                                                <a href="/admin/order-management/details/<%= order._id %>"
-                                                    class="p-2 hover:bg-surface-container-highest rounded transition-colors inline-block">
-                                                    <span
-                                                        class="material-symbols-outlined text-[20px] text-outline">visibility</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <% }); %>
-                                            <% } else { %>
-                                                <tr>
-                                                    <td colspan="7"
-                                                        class="px-6 py-10 text-center text-sm text-outline font-medium">
-                                                        No orders found in the database.
+                                                                    class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-surface-variant text-on-surface-variant">Pending</span>
+                                                                <% } else if (order.paymentStatus==='Failed' ||
+                                                                    order.paymentStatus==='Refunded' ) { %>
+                                                                    <span
+                                                                        class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-error-container/20 text-on-error-container">
+                                                                        <%= order.paymentStatus %>
+                                                                    </span>
+                                                                    <% } else { %>
+                                                                        <span
+                                                                            class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-surface-variant text-on-surface-variant">
+                                                                            <%= order.paymentStatus %>
+                                                                        </span>
+                                                                        <% } %>
+                                                    </td>
+                                                    <td class="px-6 py-5">
+                                                        <% let dotColor='bg-outline' ; let textColor='text-outline' ; if
+                                                            (['Shipped', 'Delivered' ].includes(order.orderStatus)) {
+                                                            dotColor='bg-secondary' ;
+                                                            textColor='text-on-secondary-container' ; } else if
+                                                            (['Cancelled', 'Returned' , 'Return Confirmed'
+                                                            ].includes(order.orderStatus)) { dotColor='bg-error' ;
+                                                            textColor='text-error' ; } else if
+                                                            (order.orderStatus==='Return Requested' ) {
+                                                            dotColor='bg-amber-500' ; textColor='text-amber-700' ; }
+                                                            else if (order.orderStatus==='Replacement Confirmed' ) {
+                                                            dotColor='bg-blue-500' ; textColor='text-blue-700' ; } %>
+                                                            <span
+                                                                class="flex items-center gap-1.5 text-sm <%= textColor %> font-medium">
+                                                                <span
+                                                                    class="w-2 h-2 rounded-full <%= dotColor %>"></span>
+                                                                <%= order.orderStatus %>
+                                                            </span>
+                                                    </td>
+                                                    <td class="px-6 py-5 text-sm font-semibold text-on-surface">₹<%=
+                                                            finalGrandTotal.toFixed(2) %>
+                                                    </td>
+                                                    <td class="px-6 py-5 text-right">
+                                                        <a href="/admin/order-management/details/<%= order._id %>"
+                                                            class="p-2 hover:bg-surface-container-highest rounded transition-colors inline-block">
+                                                            <span
+                                                                class="material-symbols-outlined text-[20px] text-outline">visibility</span>
+                                                        </a>
                                                     </td>
                                                 </tr>
-                                                <% } %>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="7"
+                                                                class="px-6 py-10 text-center text-sm text-outline font-medium">
+                                                                No orders found in the database.
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
                             </tbody>
                         </table>
                     </div>
                     <!-- Pagination -->
                     <div class="px-6 py-6 border-t border-outline-variant/10 flex items-center justify-between">
                         <p class="text-[10px] sm:text-xs text-outline font-medium uppercase tracking-wider">
-                            Showing <span id="visible-count" class="text-on-surface font-bold"><%= count %></span> of <span id="total-count" class="text-on-surface font-bold"><%= totalOrders || 0 %></span> results
+                            Showing <span id="visible-count" class="text-on-surface font-bold">
+                                <%= count %>
+                            </span> of <span id="total-count" class="text-on-surface font-bold">
+                                <%= totalOrders || 0 %>
+                            </span> results
                         </p>
                         <div class="flex gap-1.5 items-center">
-                            <% if (currentPage > 1) { %>
-                                <a href="/admin/order-management?page=<%= currentPage - 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
+                            <% if (currentPage> 1) { %>
+                                <a href="javascript:void(0)" onclick="applyFilters({ page: <%= currentPage - 1 %> })"
                                     class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container transition-all">
                                     <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                                 </a>
@@ -368,14 +389,14 @@
                                     </span>
                                     <% } %>
 
-                                        <% for (let i = 1; i <= (totalPage || 1); i++) { %>
-                                            <% if (i === currentPage) { %>
+                                        <% for (let i=1; i <=(totalPage || 1); i++) { %>
+                                            <% if (i===currentPage) { %>
                                                 <span
                                                     class="w-8 h-8 flex items-center justify-center rounded bg-on-surface text-surface text-xs font-bold shadow-sm">
                                                     <%= i %>
                                                 </span>
                                                 <% } else { %>
-                                                    <a href="/admin/order-management?page=<%= i %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
+                                                    <a href="javascript:void(0)" onclick="applyFilters({ page: <%= i %> })"
                                                         class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container text-xs font-semibold transition-all">
                                                         <%= i %>
                                                     </a>
@@ -383,7 +404,7 @@
                                                         <% } %>
 
                                                             <% if (currentPage < totalPage) { %>
-                                                                <a href="/admin/order-management?page=<%= currentPage + 1 %>&status=<%= locals.status || 'all' %>&search=<%= locals.search || '' %>&sort=<%= locals.sort || 'date-desc' %>"
+                                                                <a href="javascript:void(0)" onclick="applyFilters({ page: <%= currentPage + 1 %> })"
                                                                     class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/20 text-outline hover:bg-surface-container transition-all">
                                                                     <span
                                                                         class="material-symbols-outlined text-[18px]">chevron_right</span>
@@ -404,24 +425,11 @@
             /**
              * Luxe Tech - Order Management Filter & Search System
              * 
-             * This script handles real-time search, date range filtering, and order status tabs.
-             * It is written with detailed explanations to be beginner-friendly.
-             */
-
-            // 1. GLOBAL STATE VARIABLES FOR DATE RANGE FILTERING
-            // These variables store the JavaScript Date objects selected by the user.
-            // They are defined globally so they can be accessed by both the date buttons and the filter function.
-            let startDateFilter = null;
-            let endDateFilter = null;
-
             /**
-             * Toggles the visibility of the Date Range dropdown menu.
-             * @param {Event} event - The browser click event object.
+             * Luxe Tech - Order Management Filter & Search System (Server-side)
              */
             function toggleDateRangeDropdown(event) {
-                // Stop the click from bubbling up to the window (which would immediately close the dropdown)
                 event.stopPropagation();
-
                 const dropdown = document.getElementById('date-range-dropdown');
                 const sortDropdown = document.getElementById('sort-dropdown');
                 dropdown.classList.toggle('hidden');
@@ -430,205 +438,109 @@
 
             function toggleSortDropdown(event) {
                 event.stopPropagation();
-
                 const dropdown = document.getElementById('sort-dropdown');
                 const dateDropdown = document.getElementById('date-range-dropdown');
                 dropdown.classList.toggle('hidden');
                 if (dateDropdown) dateDropdown.classList.add('hidden');
             }
 
-            /**
-             * Reads the start and end dates from the input fields, parses them,
-             * and triggers the table filtering.
-             */
-            function applyDateRange() {
-                // Get the string values from the HTML date inputs (e.g. "2023-10-12")
-                const startVal = document.getElementById('start-date-input').value;
-                const endVal = document.getElementById('end-date-input').value;
-
-                // Convert string inputs into Date objects (or null if empty)
-                startDateFilter = startVal ? new Date(startVal) : null;
-                endDateFilter = endVal ? new Date(endVal) : null;
-
-                // Adjust start date to the very beginning of that day (00:00:00)
-                if (startDateFilter) {
-                    startDateFilter.setHours(0, 0, 0, 0);
-                }
-                // Adjust end date to the very end of that day (23:59:59)
-                if (endDateFilter) {
-                    endDateFilter.setHours(23, 59, 59, 999);
-                }
-
-                // Hide the dropdown menu
-                document.getElementById('date-range-dropdown').classList.add('hidden');
-
-                // Run the main filter table function
-                if (window.triggerFilterTable) {
-                    window.triggerFilterTable();
-                }
-            }
-
-            /**
-             * Clears selected dates, resets the inputs, and updates the table.
-             */
-            function resetDateRange() {
-                // Clear input fields in the UI
-                document.getElementById('start-date-input').value = '';
-                document.getElementById('end-date-input').value = '';
-
-                // Reset the global filter variables
-                startDateFilter = null;
-                endDateFilter = null;
-
-                // Hide the dropdown menu
-                document.getElementById('date-range-dropdown').classList.add('hidden');
-
-                // Run the main filter table function
-                if (window.triggerFilterTable) {
-                    window.triggerFilterTable();
-                }
-            }
-
-            // 2. WINDOW-LEVEL CLICK LISTENER
-            // This event listener detects clicks anywhere on the page.
-            // If the user clicks outside the date range/sort buttons or dropdowns, we hide them.
             window.addEventListener('click', function (event) {
                 const dateContainer = document.getElementById('date-range-container');
                 const dateDropdown = document.getElementById('date-range-dropdown');
                 const sortContainer = document.getElementById('sort-container');
                 const sortDropdown = document.getElementById('sort-dropdown');
 
-                // If the click happened outside the entire date range container, hide the dropdown
                 if (dateContainer && !dateContainer.contains(event.target)) {
                     dateDropdown.classList.add('hidden');
                 }
-                // If the click happened outside the entire sort container, hide the dropdown
                 if (sortContainer && !sortContainer.contains(event.target)) {
                     sortDropdown.classList.add('hidden');
                 }
             });
 
-            // 3. DOM CONTENT LOADED - RUNS WHEN PAGE IS FULLY LOADED
-            document.addEventListener('DOMContentLoaded', () => {
-                // Select essential DOM elements
-                const searchInput = document.getElementById('order-search-input'); // The main text search input
-                const clearSearchBtn = document.getElementById('clear-search');  // The 'X' clear search button
-                const tableRows = document.querySelectorAll('tbody tr');          // All rows in the table body
-                const statusTabs = document.querySelectorAll('.status-tab');      // All status tab buttons at the top
-
-                // State variable to store the currently active status tab (defaults to "All Orders")
-                let currentStatus = 'All Orders';
-
-                /**
-                 * Main Filtering Logic
-                 * Loops through every table row and decides whether to show or hide it based on:
-                 * 1. Search Query (Order ID, Name, Email)
-                 * 2. Active Status Tab
-                 * 3. Selected Date Range
-                 */
-                function filterTable() {
-                    // Get the lowercase search query typed by the user, removing extra spaces
-                    const query = searchInput.value.toLowerCase().trim();
-                    let visibleCount = 0;
-
-                    // Dynamically show or hide the 'X' clear button inside the search field
-                    if (query) {
-                        clearSearchBtn.classList.remove('hidden');
+            function applyFilters(changes = {}) {
+                const params = new URLSearchParams(window.location.search);
+                
+                if (changes.page !== undefined) {
+                    if (changes.page === 1) {
+                        params.delete('page');
                     } else {
-                        clearSearchBtn.classList.add('hidden');
+                        params.set('page', changes.page);
                     }
+                } else {
+                    if (changes.status !== undefined || changes.search !== undefined || changes.startDate !== undefined || changes.endDate !== undefined) {
+                        params.delete('page');
+                    }
+                }
 
-                    // Loop through each table row (representing an order)
-                    tableRows.forEach(row => {
-                        // Get the cells (columns) in the current row
-                        const orderIdCell = row.cells[0];
-                        const customerCell = row.cells[1];
-                        const dateCell = row.cells[2];
-                        const statusCell = row.cells[4];
+                if (changes.status !== undefined) {
+                    if (changes.status === 'all' || !changes.status) {
+                        params.delete('status');
+                    } else {
+                        params.set('status', changes.status);
+                    }
+                }
 
-                        // If the row doesn't have the expected columns, skip it
-                        if (!orderIdCell || !customerCell || !statusCell) return;
+                if (changes.sort !== undefined) {
+                    if (changes.sort === 'date-desc' || !changes.sort) {
+                        params.delete('sort');
+                    } else {
+                        params.set('sort', changes.sort);
+                    }
+                }
 
-                        // Extract the values from the cells and convert to lowercase for comparison
-                        const orderId = orderIdCell.textContent.toLowerCase();
-                        const customerName = customerCell.querySelector('.text-sm')?.textContent.toLowerCase() || '';
-                        const customerEmail = customerCell.querySelector('.text-xs')?.textContent.toLowerCase() || '';
-                        const orderStatus = statusCell.textContent.trim();
+                if (changes.search !== undefined) {
+                    if (!changes.search.trim()) {
+                        params.delete('search');
+                    } else {
+                        params.set('search', changes.search.trim());
+                    }
+                }
 
-                        // Check if row matches search query (checks Order ID, Name, and Email)
-                        const matchesSearch = orderId.includes(query) ||
-                            customerName.includes(query) ||
-                            customerEmail.includes(query);
+                if (changes.startDate !== undefined) {
+                    if (!changes.startDate) {
+                        params.delete('startDate');
+                    } else {
+                        params.set('startDate', changes.startDate);
+                    }
+                }
 
-                        // Check if row matches the active status tab (e.g. "Pending", "Processing", etc.)
-                        const matchesStatus = currentStatus === 'All Orders' ||
-                            orderStatus.toLowerCase() === currentStatus.toLowerCase();
+                if (changes.endDate !== undefined) {
+                    if (!changes.endDate) {
+                        params.delete('endDate');
+                    } else {
+                        params.set('endDate', changes.endDate);
+                    }
+                }
 
-                        // Check if row matches the selected date range
-                        let matchesDate = true;
-                        if (dateCell && (startDateFilter || endDateFilter)) {
-                            // Parse the order date (e.g., "Oct 12, 2023") into a JS Date object
-                            const orderDate = new Date(dateCell.textContent.trim());
+                window.location.href = '/admin/order-management?' + params.toString();
+            }
 
-                            // If a start date is set and order date is before it, mark as non-match
-                            if (startDateFilter && orderDate < startDateFilter) {
-                                matchesDate = false;
-                            }
-                            // If an end date is set and order date is after it, mark as non-match
-                            if (endDateFilter && orderDate > endDateFilter) {
-                                matchesDate = false;
-                            }
-                        }
+            function applyDateRange() {
+                const startVal = document.getElementById('start-date-input').value;
+                const endVal = document.getElementById('end-date-input').value;
+                applyFilters({ startDate: startVal, endDate: endVal });
+            }
 
-                        // If the row matches ALL active filters, show it. Otherwise, hide it.
-                        if (matchesSearch && matchesStatus && matchesDate) {
-                            row.style.display = ''; // empty string resets display to default (table-row)
-                            visibleCount++;
-                        } else {
-                            row.style.display = 'none'; // hides the row
+            function resetDateRange() {
+                applyFilters({ startDate: '', endDate: '' });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchInput = document.getElementById('order-search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            applyFilters({ search: this.value });
                         }
                     });
-
-                    // Update the visible count in the UI
-                    const visibleCountEl = document.getElementById('visible-count');
-                    if (visibleCountEl) {
-                        visibleCountEl.textContent = visibleCount;
-                    }
                 }
-
-                // Expose the filter function to the global window object so global click handlers can trigger it
-                window.triggerFilterTable = filterTable;
-
-                // Listen for typing input inside the search bar
-                if (searchInput) {
-                    searchInput.addEventListener('input', filterTable);
-                }
-
-                // Listen for clicks on the clear search button ('X')
+                const clearSearchBtn = document.getElementById('clear-search');
                 if (clearSearchBtn) {
                     clearSearchBtn.addEventListener('click', () => {
-                        searchInput.value = ''; // Empty the input field
-                        filterTable();          // Re-run the filters
-                        searchInput.focus();    // Re-focus the input cursor
+                        applyFilters({ search: '' });
                     });
                 }
-
-                // Set up click listeners for each of the Status Tabs (All, Pending, Processing, etc.)
-                statusTabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        // 1. Reset styling for all tabs to the inactive state (gray text, no border)
-                        statusTabs.forEach(t => {
-                            t.className = "status-tab pb-4 text-sm font-medium text-outline hover:text-on-surface transition-colors";
-                        });
-
-                        // 2. Set current clicked tab to active state (semibold text, bottom border)
-                        tab.className = "status-tab pb-4 text-sm font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]";
-
-                        // 3. Update the current status filter value and run the table filtering
-                        currentStatus = tab.textContent.replace(/\s+/g, ' ').trim();
-                        filterTable();
-                    });
-                });
             });
 
             async function exportOrdersPDF(btn) {
@@ -667,7 +579,17 @@
                     });
 
                     // Summary statistics
-                    const totalRevenue = orders.reduce((acc, o) => acc + (o.pricing?.grandTotal || 0), 0);
+                    const totalRevenue = orders.reduce((acc, o) => {
+                        let refunded = 0;
+                        if (o.items && o.items.length > 0) {
+                            o.items.forEach(item => {
+                                if (item.status === 'Cancelled' || item.status === 'Return Confirmed' || item.status === 'Returned') {
+                                    refunded += (item.subtotal || 0);
+                                }
+                            });
+                        }
+                        return acc + ((o.pricing?.grandTotal || 0) - refunded);
+                    }, 0);
                     const paidCount = orders.filter(o => o.paymentStatus === 'Paid').length;
                     const nonPaidCount = orders.filter(o => o.paymentStatus !== 'Paid').length;
 
@@ -692,12 +614,12 @@
                             <div>Gross Revenue: <span style="font-weight: 700; color: #0f172a;">₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
                         </div>
 
-                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;">
                             <thead>
                                 <tr style="border-bottom: 1.5px solid #0f172a;">
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 15%; text-align: left;">Order ID</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 25%; text-align: left;">Customer Name</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 25%; text-align: left;">Email Address</th>
+                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 22%; text-align: left;">Order ID</th>
+                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 20%; text-align: left;">Customer Name</th>
+                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 23%; text-align: left;">Email Address</th>
                                     <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 13%;">Order Date</th>
                                     <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 10%;">Payment</th>
                                     <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: right; width: 12%;">Total</th>
@@ -705,53 +627,61 @@
                             </thead>
                             <tbody>
                                 ${orders.map((o, idx) => {
-                                    const oDate = new Date(o.createdAt).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                    });
-                                    const custName = o.shippingAddress?.fullName || 'N/A';
-                                    const custEmail = o.userId?.email || '';
-                                    const paymentStatus = o.paymentStatus || 'Pending';
-                                    const grandTotal = o.pricing?.grandTotal || 0;
+                        const oDate = new Date(o.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                        const custName = o.shippingAddress?.fullName || 'N/A';
+                        const custEmail = o.userId?.email || '';
+                        const paymentStatus = o.paymentStatus || 'Pending';
+                        let refunded = 0;
+                        if (o.items && o.items.length > 0) {
+                            o.items.forEach(item => {
+                                if (item.status === 'Cancelled' || item.status === 'Return Confirmed' || item.status === 'Returned') {
+                                    refunded += (item.subtotal || 0);
+                                }
+                            });
+                        }
+                        const grandTotal = (o.pricing?.grandTotal || 0) - refunded;
 
-                                    let paymentBg = '#cbd5e1';
-                                    let paymentColor = '#1e293b';
-                                    if (paymentStatus === 'Paid') {
-                                        paymentBg = '#dcfce7';
-                                        paymentColor = '#15803d';
-                                    } else if (paymentStatus === 'Failed' || paymentStatus === 'Refunded') {
-                                        paymentBg = '#fee2e2';
-                                        paymentColor = '#b91c1c';
-                                    }
+                        let paymentBg = '#cbd5e1';
+                        let paymentColor = '#1e293b';
+                        if (paymentStatus === 'Paid') {
+                            paymentBg = '#dcfce7';
+                            paymentColor = '#15803d';
+                        } else if (paymentStatus === 'Failed' || paymentStatus === 'Refunded') {
+                            paymentBg = '#fee2e2';
+                            paymentColor = '#b91c1c';
+                        }
 
-                                    const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                        const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
-                                    return `
+                        return `
                                         <tr style="background-color: ${rowBg}; border-bottom: 1px solid #f1f5f9; page-break-inside: avoid;">
-                                            <td style="padding: 12px 10px; font-size: 11px; font-weight: 700; color: #0f172a;">
+                                            <td style="padding: 12px 10px; font-size: 10px; font-weight: 700; color: #0f172a; width: 22%; word-break: break-all; text-align: left;">
                                                 #${o.orderId}
                                             </td>
-                                            <td style="padding: 12px 10px; font-size: 11px; font-weight: 700; color: #0f172a;">
+                                            <td style="padding: 12px 10px; font-size: 10px; font-weight: 700; color: #0f172a; width: 20%; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                                 ${custName}
                                             </td>
-                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569;">
+                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569; width: 23%; text-align: left; word-break: break-all;">
                                                 ${custEmail}
                                             </td>
-                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569; text-align: center;">
+                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569; text-align: center; width: 13%;">
                                                 ${oDate}
                                             </td>
-                                            <td style="padding: 12px 10px; text-align: center;">
+                                            <td style="padding: 12px 10px; text-align: center; width: 10%;">
                                                 <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8px; font-weight: 700; text-transform: uppercase; background-color: ${paymentBg}; color: ${paymentColor};">
                                                     ${paymentStatus}
                                                 </span>
                                             </td>
-                                            <td style="padding: 12px 10px; text-align: right; font-size: 11px; font-weight: 700; color: #0f172a;">
+                                            <td style="padding: 12px 10px; text-align: right; font-size: 10px; font-weight: 700; color: #0f172a; width: 12%;">
                                                 ₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </td>
                                         </tr>
                                     `;
-                                }).join('')}
+                    }).join('')}
                             </tbody>
                         </table>
 
@@ -762,11 +692,11 @@
                     `;
 
                     const opt = {
-                        margin:       [15, 15, 20, 15],
-                        filename:     'LuxeTech_Orders_Report.pdf',
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        margin: [15, 15, 20, 15],
+                        filename: 'LuxeTech_Orders_Report.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
                     await html2pdf().set(opt).from(container).save();

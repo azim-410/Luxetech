@@ -28,7 +28,7 @@ const getCheckoutAddressDataService = async (userId) => {
 const getCheckoutCartDataService = async (userId, query) => {
     const { productId, variantId, qty } = query;
     if (productId) {
-        const product = await productModel.findById(productId);
+        const product = await productModel.findById(productId).populate('category');
         if (!product || product.isDeleted || product.isHidden) {
             throw new Error('Product not found or unavailable');
         }
@@ -41,7 +41,16 @@ const getCheckoutCartDataService = async (userId, query) => {
         const quantity = parseInt(qty) || 1;
         const priceAdd = variant ? variant.priceAdd : 0;
         const productBasePrice = product.basePrice + priceAdd;
-        const productDiscountedPrice = (product.discountedPrice > 0 ? product.discountedPrice : product.basePrice) + priceAdd;
+        
+        let baseDiscountedPrice = (product.discountedPrice > 0 ? product.discountedPrice : product.basePrice) + priceAdd;
+        let categoryOfferPrice = 0;
+        if (product.category) {
+            const category = product.category;
+            if (category.status !== false && category.isHidden !== true && category.categoryOfferPrice > 0) {
+                categoryOfferPrice = category.categoryOfferPrice;
+            }
+        }
+        const productDiscountedPrice = Math.max(0, baseDiscountedPrice - categoryOfferPrice);
 
         const itemOriginalTotal = productBasePrice * quantity;
         const itemSubtotal = productDiscountedPrice * quantity;

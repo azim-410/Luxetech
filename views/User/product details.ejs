@@ -183,6 +183,13 @@
                             <!-- Stock count text under price -->
                             <p id="stock-count-text" class="text-xs font-semibold tracking-wide mt-1"></p>
 
+                            <% if (product.category && product.category.categoryOfferPrice > 0 && product.category.status !== false && product.category.isHidden !== true) { %>
+                                <div class="mt-2 flex items-center gap-2 text-xs font-bold text-amber-600 bg-amber-50 border border-amber-100 rounded px-3 py-1.5 w-fit">
+                                    <span class="material-symbols-outlined text-sm font-bold">local_offer</span>
+                                    <span><%= product.category.categoryOfferName %>: Extra ₹<%= product.category.categoryOfferPrice %> off at checkout!</span>
+                                </div>
+                            <% } %>
+
                             <p class="text-on-surface-variant leading-relaxed text-lg max-w-md">
                                 <%= product.description %>
                             </p>

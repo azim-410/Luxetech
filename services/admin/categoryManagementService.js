@@ -39,7 +39,7 @@ const getCategoryService = async (page, limit, search = '',sort = 'latest') => {
     return { categories: categoriesWithCount, totalCategories, totalPage, totalActive };
 };
 
-const createCategoryService = async (categoryName, description, status, image, isHidden) => {
+const createCategoryService = async (categoryName, description, status, image, isHidden, categoryOfferName = "", categoryOfferPrice = 0) => {
     const errors = {};
 
     if (!categoryName || categoryName.trim() === '') {
@@ -73,6 +73,11 @@ const createCategoryService = async (categoryName, description, status, image, i
         }
     }
 
+    if (categoryOfferPrice && isNaN(Number(categoryOfferPrice))) {
+        errors.categoryOfferPrice = 'Category Offer Price must be a number';
+    } else if (Number(categoryOfferPrice) < 0) {
+        errors.categoryOfferPrice = 'Category Offer Price cannot be negative';
+    }
 
     if (Object.keys(errors).length > 0) {
         const validationError = new Error('Validation Failed');
@@ -89,16 +94,18 @@ const createCategoryService = async (categoryName, description, status, image, i
         status: status === 'true' || status === true,
         isHidden: isHidden === 'true' || isHidden === true,
         slug,
-        image
+        image,
+        categoryOfferName: categoryOfferName ? categoryOfferName.trim() : "",
+        categoryOfferPrice: Number(categoryOfferPrice) || 0
     });
 
     await newCategory.save();
     return { success: true };
 };
 
-const editCategoryServices = async (id, categoryName, description, image, isHidden) => {
+const editCategoryServices = async (id, categoryName, description, image, isHidden, categoryOfferName = "", categoryOfferPrice = 0) => {
     const errors = {};
-
+   
     if (!categoryName || categoryName.trim() === '') {
         errors.categoryName = 'Category Name is required';
     } else {
@@ -132,6 +139,11 @@ const editCategoryServices = async (id, categoryName, description, image, isHidd
         }
     }
 
+    if (categoryOfferPrice && isNaN(Number(categoryOfferPrice))) {
+        errors.categoryOfferPrice = 'Category Offer Price must be a number';
+    } else if (Number(categoryOfferPrice) < 0) {
+        errors.categoryOfferPrice = 'Category Offer Price cannot be negative';
+    }
 
     if (Object.keys(errors).length > 0) {
         const validationError = new Error('Validation Failed');
@@ -146,7 +158,9 @@ const editCategoryServices = async (id, categoryName, description, image, isHidd
         categoryName: trimmedName,
         description: description ? description.trim() : '',
         slug,
-        isHidden: isHidden === 'true' || isHidden === true
+        isHidden: isHidden === 'true' || isHidden === true,
+        categoryOfferName: categoryOfferName ? categoryOfferName.trim() : "",
+        categoryOfferPrice: Number(categoryOfferPrice) || 0
     };
     if (image) {
         updateData.image = image;

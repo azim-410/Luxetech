@@ -30,9 +30,9 @@ const getCategoryList = async (req, res) => {
 
 const createCategory = async (req, res) => {
     try {
-        const { categoryName, description, isHidden } = req.body;
+        const { categoryName, description, isHidden, categoryOfferName, categoryOfferPrice } = req.body;
         const image = req.file ? req.file.path : null;
-        await createCategoryService(categoryName, description, true, image, isHidden);
+        await createCategoryService(categoryName, description, true, image, isHidden, categoryOfferName, categoryOfferPrice);
         return res.json({ success: true });
     } catch (error) {
         console.error('Create category error:', error.message);
@@ -47,10 +47,10 @@ const createCategory = async (req, res) => {
 const editCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { categoryName, description, isHidden } = req.body;
+        const { categoryName, description, isHidden, categoryOfferName, categoryOfferPrice } = req.body;
         const image = req.file ? req.file.path : null;
 
-        await editCategoryServices(id, categoryName, description, image, isHidden);
+        await editCategoryServices(id, categoryName, description, image, isHidden, categoryOfferName, categoryOfferPrice);
         return res.json({ success: true });
     } catch (error) {
         console.error('Edit category error:', error.message);

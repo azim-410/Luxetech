@@ -23,6 +23,14 @@ const categorySchema = new mongoose.Schema({
        },
        image:{
         type:String
+       },
+       categoryOfferName: {
+        type: String,
+        default: ""
+       },
+       categoryOfferPrice: {
+        type: Number,
+        default: 0
        }
 },{
     timestamps:true

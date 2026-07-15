@@ -6,15 +6,28 @@ import Order from '../../model/order.js';
             const page = parseInt(req.query.page) || 1;
             const limit = 5;
             const sort = req.query.sort || 'date-desc';
+            const search = req.query.search || '';
+            const status = req.query.status || 'all';
+            const startDate = req.query.startDate || '';
+            const endDate = req.query.endDate || '';
 
-            const { orders, totalOrders, totalPage } = await getAdminOrdersService(page, limit, sort);
+            const { orders, totalOrders, totalPage } = await getAdminOrdersService(page, limit, sort, {
+                search,
+                status,
+                startDate,
+                endDate
+            });
 
             return res.render('Admin/orderManagmentPage', {
                 orders,
                 totalOrders,
                 totalPage,
                 currentPage: page,
-                sort
+                sort,
+                search,
+                status,
+                startDate,
+                endDate
             });
         } catch (error) {
             console.error("getOrderList error:", error);

@@ -24,8 +24,12 @@ import {
 } from '../controller/user/checkoutController.js';
 
 import { getOrdersPage, getTrackingPage, cancelOrder, getReturnPage, processReturn } from '../controller/user/orderController.js';
+import { getOffersPage } from '../controller/user/offersController.js';
 
 const router = express.Router();
+
+// Offers Page
+router.get('/offers', getOffersPage);
 
 // Product Listing Page
 router.get('/shop', getShop);

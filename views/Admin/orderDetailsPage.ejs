@@ -136,7 +136,7 @@
                                     else if (order.orderStatus==='Delivered' ) {
                                     badgeClass="bg-green-100 text-green-800" ; } else if
                                     (order.orderStatus==='Cancelled' || order.orderStatus==='Returned' ) {
-                                    badgeClass="bg-red-100 text-red-800" ; } else if (order.orderStatus==='Replaced') {
+                                    badgeClass="bg-red-100 text-red-800" ; } else if (order.orderStatus==='Replaced' ) {
                                     badgeClass="bg-blue-100 text-blue-800" ; } else if
                                     (order.orderStatus==='Return Requested' ) { badgeClass="bg-amber-100 text-amber-800"
                                     ; } else if (order.orderStatus==='Return Confirmed' ) {
@@ -312,24 +312,30 @@
                                                             <% if (item.status==='Cancelled' ) { %>
                                                                 <span
                                                                     class="inline-block bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Cancelled</span>
-                                                                <% } else if (item.status==='Return Requested') { %>
+                                                                <% } else if (item.status==='Return Requested' ) { %>
                                                                     <span
-                                                                        class="inline-block bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Return Requested</span>
-                                                                <% } else if (item.status==='Return Confirmed' ) { %>
+                                                                        class="inline-block bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Return
+                                                                        Requested</span>
+                                                                    <% } else if (item.status==='Return Confirmed' ) {
+                                                                        %>
                                                                         <span
                                                                             class="inline-block bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Return
                                                                             Confirmed</span>
-                                                                <% } else if (item.status==='Replacement Confirmed' ) { %>
+                                                                        <% } else if
+                                                                            (item.status==='Replacement Confirmed' ) {
+                                                                            %>
                                                                             <span
                                                                                 class="inline-block bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Replacement
                                                                                 Confirmed</span>
-                                                                <% } else if (item.status==='Returned' ) { %>
-                                                                            <span
-                                                                                class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Returned</span>
-                                                                <% } else if (item.status==='Replaced' ) { %>
-                                                                            <span
-                                                                                class="inline-block bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Replaced</span>
-                                                                <% } %>
+                                                                            <% } else if (item.status==='Returned' ) {
+                                                                                %>
+                                                                                <span
+                                                                                    class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Returned</span>
+                                                                                <% } else if (item.status==='Replaced' )
+                                                                                    { %>
+                                                                                    <span
+                                                                                        class="inline-block bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Replaced</span>
+                                                                                    <% } %>
                                                         </h4>
                                                         <% if (item.variantName) { %>
                                                             <p
@@ -343,41 +349,91 @@
                                                                         <%= String(item.quantity).padStart(2, '0' ) %>
                                                                     </span>
                                                                 </div>
-                                                                <% if (item.status === 'Cancelled' && item.cancellationReason) { %>
-                                                                    <div class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1">
-                                                                        <span class="font-semibold text-outline text-red-600">Cancellation Reason: <span class="text-on-surface"><%= item.cancellationReason %></span></span>
+                                                                <% if (item.status==='Cancelled' &&
+                                                                    item.cancellationReason) { %>
+                                                                    <div
+                                                                        class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1">
+                                                                        <span
+                                                                            class="font-semibold text-outline text-red-600">Cancellation
+                                                                            Reason: <span class="text-on-surface">
+                                                                                <%= item.cancellationReason %>
+                                                                            </span></span>
                                                                         <% if (item.cancellationComments) { %>
-                                                                            <span class="font-semibold text-outline text-[11px] italic">Comments: "<%= item.cancellationComments %>"</span>
-                                                                        <% } %>
-                                                                        <% if (item.cancelledDate) { %>
-                                                                            <span class="font-semibold text-outline">Cancelled On: <span class="text-on-surface"><%= formatDate(item.cancelledDate) %></span></span>
-                                                                        <% } %>
+                                                                            <span
+                                                                                class="font-semibold text-outline text-[11px] italic">Comments:
+                                                                                "<%= item.cancellationComments %>
+                                                                                    "</span>
+                                                                            <% } %>
+                                                                                <% if (item.cancelledDate) { %>
+                                                                                    <span
+                                                                                        class="font-semibold text-outline">Cancelled
+                                                                                        On: <span
+                                                                                            class="text-on-surface">
+                                                                                            <%= formatDate(item.cancelledDate)
+                                                                                                %>
+                                                                                        </span></span>
+                                                                                    <% } %>
                                                                     </div>
-                                                                <% } %>
-                                                                <% if (item.returnReason) { %>
-                                                                    <div class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1 <%= (item.status === 'Returned' || item.status === 'Return Confirmed') ? 'opacity-50' : (item.status === 'Replacement Confirmed' || item.status === 'Replaced' ? 'opacity-80' : '') %>">
-                                                                        <span class="font-semibold text-outline text-amber-600">Return Reason: <span class="text-on-surface"><%= item.returnReason %></span></span>
-                                                                        <span class="font-semibold text-outline">Resolution: <span class="text-on-surface"><%= item.returnResolution %></span></span>
-                                                                        <% if (item.returnComments) { %>
-                                                                            <span class="font-semibold text-outline text-[11px] italic">Comments: "<%= item.returnComments %>"</span>
-                                                                        <% } %>
-                                                                        <% if (item.returnRequestDate) { %>
-                                                                            <span class="font-semibold text-outline">Requested On: <span class="text-on-surface"><%= formatDate(item.returnRequestDate) %></span></span>
-                                                                        <% } %>
-                                                                        <% if (item.returnConfirmedDate && ['Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) { %>
-                                                                            <span class="font-semibold text-outline">Approved On: <span class="text-on-surface"><%= formatDate(item.returnConfirmedDate) %></span></span>
-                                                                        <% } %>
-                                                                        <% if (item.returnedDate && (item.status === 'Returned' || item.status === 'Replaced')) { %>
-                                                                            <span class="font-semibold text-outline">Completed On: <span class="text-on-surface"><%= formatDate(item.returnedDate) %></span></span>
-                                                                        <% } %>
-                                                                    </div>
-                                                                <% } %>
-                                                                <% if (item.paymentReturned) { %>
-                                                                    <div class="mt-2.5 flex items-center gap-1.5 text-xs text-green-700 font-bold bg-green-50 px-2 py-1 rounded w-fit border border-green-200">
-                                                                        <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
-                                                                        Refunded to Wallet
-                                                                    </div>
-                                                                <% } %>
+                                                                    <% } %>
+                                                                        <% if (item.returnReason) { %>
+                                                                            <div
+                                                                                class="mt-2 text-xs text-on-surface-variant flex flex-col gap-1 <%= (item.status === 'Returned' || item.status === 'Return Confirmed') ? 'opacity-50' : (item.status === 'Replacement Confirmed' || item.status === 'Replaced' ? 'opacity-80' : '') %>">
+                                                                                <span
+                                                                                    class="font-semibold text-outline text-amber-600">Return
+                                                                                    Reason: <span
+                                                                                        class="text-on-surface">
+                                                                                        <%= item.returnReason %>
+                                                                                    </span></span>
+                                                                                <span
+                                                                                    class="font-semibold text-outline">Resolution:
+                                                                                    <span class="text-on-surface">
+                                                                                        <%= item.returnResolution %>
+                                                                                    </span></span>
+                                                                                <% if (item.returnComments) { %>
+                                                                                    <span
+                                                                                        class="font-semibold text-outline text-[11px] italic">Comments:
+                                                                                        "<%= item.returnComments %>
+                                                                                            "</span>
+                                                                                    <% } %>
+                                                                                        <% if (item.returnRequestDate) {
+                                                                                            %>
+                                                                                            <span
+                                                                                                class="font-semibold text-outline">Requested
+                                                                                                On: <span
+                                                                                                    class="text-on-surface">
+                                                                                                    <%= formatDate(item.returnRequestDate)
+                                                                                                        %>
+                                                                                                </span></span>
+                                                                                            <% } %>
+                                                                                                <% if (item.returnConfirmedDate && ['Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status)) { %>
+                                                                                                    <span
+                                                                                                        class="font-semibold text-outline">Approved
+                                                                                                        On: <span
+                                                                                                            class="text-on-surface">
+                                                                                                            <%= formatDate(item.returnConfirmedDate)
+                                                                                                                %>
+                                                                                                        </span></span>
+                                                                                                    <% } %>
+                                                                                                        <% if (item.returnedDate && (item.status==='Returned' || item.status==='Replaced')) { %>
+                                                                                                            <span
+                                                                                                                class="font-semibold text-outline">Completed
+                                                                                                                On:
+                                                                                                                <span
+                                                                                                                    class="text-on-surface">
+                                                                                                                    <%= formatDate(item.returnedDate)
+                                                                                                                        %>
+                                                                                                                </span></span>
+                                                                                                            <% } %>
+                                                                            </div>
+                                                                            <% } %>
+                                                                                <% if (item.paymentReturned) { %>
+                                                                                    <div
+                                                                                        class="mt-2.5 flex items-center gap-1.5 text-xs text-green-700 font-bold bg-green-50 px-2 py-1 rounded w-fit border border-green-200">
+                                                                                        <span
+                                                                                            class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                                                                                        Refunded to Wallet
+                                                                                    </div>
+                                                                                    <% } %>
                                                     </div>
                                                     <div class="text-right">
                                                         <p
@@ -392,109 +448,130 @@
                                                     </div>
                                                 </div>
 
-                                                <% if (item.status === 'Return Requested') { %>
-                                                    <div class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
-                                                        <span class="text-xs font-semibold text-on-surface-variant">Action Required:</span>
-                                                        <div class="relative inline-block text-left" id="action-container-<%= item._id %>">
-                                                            <button onclick="toggleActionDropdown('<%= item._id %>')" class="px-3 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
+                                                <% if (item.status==='Return Requested' ) { %>
+                                                    <div
+                                                        class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
+                                                        <span
+                                                            class="text-xs font-semibold text-on-surface-variant">Action
+                                                            Required:</span>
+                                                        <div class="relative inline-block text-left"
+                                                            id="action-container-<%= item._id %>">
+                                                            <button onclick="toggleActionDropdown('<%= item._id %>')"
+                                                                class="px-3 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
                                                                 <span>Select Resolution</span>
-                                                                <span class="material-symbols-outlined text-sm">expand_more</span>
+                                                                <span
+                                                                    class="material-symbols-outlined text-sm">expand_more</span>
                                                             </button>
-                                                            <div id="action-dropdown-<%= item._id %>" class="hidden absolute left-0 mt-1 w-44 rounded-lg bg-surface-container border border-outline-variant/30 shadow-lg z-20 overflow-hidden">
-                                                                <button onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'Return')" class="w-full text-left px-4 py-2.5 hover:bg-surface-container-high text-xs font-semibold text-red-600 flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-sm text-red-600">keyboard_return</span>
+                                                            <div id="action-dropdown-<%= item._id %>"
+                                                                class="hidden absolute left-0 mt-1 w-44 rounded-lg bg-surface-container border border-outline-variant/30 shadow-lg z-20 overflow-hidden">
+                                                                <button
+                                                                    onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'Return')"
+                                                                    class="w-full text-left px-4 py-2.5 hover:bg-surface-container-high text-xs font-semibold text-red-600 flex items-center gap-2">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm text-red-600">keyboard_return</span>
                                                                     Return
                                                                 </button>
-                                                                <button onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'Replacement')" class="w-full text-left px-4 py-2.5 hover:bg-surface-container-high text-xs font-semibold text-blue-600 flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-sm text-blue-600">autorenew</span>
+                                                                <button
+                                                                    onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'Replacement')"
+                                                                    class="w-full text-left px-4 py-2.5 hover:bg-surface-container-high text-xs font-semibold text-blue-600 flex items-center gap-2">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm text-blue-600">autorenew</span>
                                                                     Replacement
                                                                 </button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                <% } else if (item.status === 'Return Confirmed') { %>
-                                                    <div class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
-                                                        <button onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'MarkReturned')" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
-                                                            <span class="material-symbols-outlined text-sm">check_circle</span>
-                                                            <span>Mark as Returned</span>
-                                                        </button>
-                                                    </div>
-                                                <% } else if (item.status === 'Replacement Confirmed') { %>
-                                                    <div class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
-                                                        <button onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'MarkReplaced')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
-                                                            <span class="material-symbols-outlined text-sm">published_with_changes</span>
-                                                            <span>Mark as Replaced</span>
-                                                        </button>
-                                                    </div>
-                                                <% } %>
-                                                </div>
+                                                    <% } else if (item.status==='Return Confirmed' ) { %>
+                                                        <div
+                                                            class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
+                                                            <button
+                                                                onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'MarkReturned')"
+                                                                class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
+                                                                <span
+                                                                    class="material-symbols-outlined text-sm">check_circle</span>
+                                                                <span>Mark as Returned</span>
+                                                            </button>
+                                                        </div>
+                                                        <% } else if (item.status==='Replacement Confirmed' ) { %>
+                                                            <div
+                                                                class="flex items-center gap-3 bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/10 self-start ml-24">
+                                                                <button
+                                                                    onclick="submitItemAction('<%= order._id %>', '<%= item._id %>', 'MarkReplaced')"
+                                                                    class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm">published_with_changes</span>
+                                                                    <span>Mark as Replaced</span>
+                                                                </button>
+                                                            </div>
+                                                            <% } %>
+                                            </div>
                                             <% }); %>
                                     </div>
                                     <!-- Summary Tray -->
                                     <div class="mt-10 pt-8 border-t border-outline-variant/10">
                                         <div class="max-w-xs ml-auto space-y-3">
-                                            <% 
-                                              let couponCodeToShow = order.couponCode || null;
-                                              let couponDiscountAmt = 0;
-                                              let productDiscountAmt = 0;
-
-                                              if (typeof order.pricing.couponDiscount !== 'undefined') {
-                                                  couponDiscountAmt = order.pricing.couponDiscount;
-                                                  productDiscountAmt = order.pricing.productDiscount || 0;
-                                              } else if (couponCodeToShow) {
-                                                  couponDiscountAmt = order.pricing.discount || 0;
-                                                  productDiscountAmt = 0;
-                                              } else {
-                                                  productDiscountAmt = order.pricing.discount || 0;
-                                              }
+                                            <% let couponCodeToShow=order.couponCode || null; let couponDiscountAmt=0;
+                                                let productDiscountAmt=0; if (typeof order.pricing.couponDiscount
+                                                !=='undefined' ) { couponDiscountAmt=order.pricing.couponDiscount;
+                                                productDiscountAmt=order.pricing.productDiscount || 0; } else if
+                                                (couponCodeToShow) { couponDiscountAmt=order.pricing.discount || 0;
+                                                productDiscountAmt=0; } else { productDiscountAmt=order.pricing.discount
+                                                || 0; }
+                                                let refundedAmount = order.pricing.refundedAmount || 0;
+                                                let finalGrandTotal = order.pricing.grandTotal - refundedAmount;
                                             %>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Subtotal</span>
-                                                <span class="font-semibold">₹<%= order.pricing.subtotal.toFixed(2) %>
-                                                </span>
-                                            </div>
-                                            <% if (productDiscountAmt > 0) { %>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Offer Discount</span>
-                                                <span class="font-semibold text-green-600">-₹<%= productDiscountAmt.toFixed(2) %></span>
-                                            </div>
-                                            <% } %>
-                                            <% if (couponCodeToShow) { %>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Coupon Redeemed</span>
-                                                <span class="font-semibold text-primary"><%= couponCodeToShow %></span>
-                                            </div>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Coupon Discount</span>
-                                                <span class="font-semibold text-green-600">-₹<%= couponDiscountAmt.toFixed(2) %></span>
-                                            </div>
-                                            <% } %>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Shipping</span>
-                                                <span class="font-semibold text-secondary">
-                                                    <%= order.pricing.shipping===0 ? 'FREE' : '₹' +
-                                                        order.pricing.shipping.toFixed(2) %>
-                                                </span>
-                                            </div>
-                                            <div class="flex justify-between text-sm">
-                                                <span class="text-on-surface-variant">Tax (8%)</span>
-                                                <span class="font-semibold">₹<%= order.pricing.tax.toFixed(2) %></span>
-                                            </div>
-                                            <div
-                                                class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
-                                                <span
-                                                    class="font-headline font-bold text-lg uppercase tracking-tight">Total</span>
-                                                <span class="font-headline font-extrabold text-2xl text-on-surface">₹<%=
-                                                        order.pricing.grandTotal.toFixed(2) %></span>
-                                            </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-on-surface-variant">Subtotal</span>
+                                                    <span class="font-semibold">₹<%= order.pricing.subtotal.toFixed(2) %></span>
+                                                </div>
+                                                <% if (productDiscountAmt > 0) { %>
+                                                    <div class="flex justify-between text-sm">
+                                                        <span class="text-on-surface-variant">Offer Discount</span>
+                                                        <span class="font-semibold text-green-600">-₹<%= productDiscountAmt.toFixed(2) %></span>
+                                                    </div>
+                                                <% } %>
+                                                <% if (couponCodeToShow) { %>
+                                                    <div class="flex justify-between text-sm">
+                                                        <span class="text-on-surface-variant">Coupon Redeemed</span>
+                                                        <span class="font-semibold text-primary"><%= couponCodeToShow %></span>
+                                                    </div>
+                                                    <div class="flex justify-between text-sm">
+                                                        <span class="text-on-surface-variant">Coupon Discount</span>
+                                                        <span class="font-semibold text-green-600">-₹<%= couponDiscountAmt.toFixed(2) %></span>
+                                                    </div>
+                                                <% } %>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-on-surface-variant">Shipping</span>
+                                                    <span class="font-semibold text-secondary">
+                                                        <%= order.pricing.shipping === 0 ? 'FREE' : '₹' + order.pricing.shipping.toFixed(2) %>
+                                                    </span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-on-surface-variant">Tax (8%)</span>
+                                                    <span class="font-semibold">₹<%= order.pricing.tax.toFixed(2) %></span>
+                                                </div>
+                                                <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                                                    <span class="font-headline font-bold text-sm uppercase tracking-tight text-on-surface-variant">Total</span>
+                                                    <span class="font-semibold text-on-surface">₹<%= order.pricing.grandTotal.toFixed(2) %></span>
+                                                </div>
+                                                <% if (refundedAmount > 0) { %>
+                                                <div class="flex justify-between text-sm text-red-600">
+                                                    <span class="font-semibold">Refunded</span>
+                                                    <span class="font-semibold">-₹<%= refundedAmount.toFixed(2) %></span>
+                                                </div>
+                                                <% } %>
+                                                <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                                                    <span class="font-headline font-bold text-lg uppercase tracking-tight text-primary">Grand Total</span>
+                                                    <span class="font-headline font-extrabold text-2xl text-primary">₹<%= finalGrandTotal.toFixed(2) %></span>
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
                             </section>
 
                             <!-- Order Timeline Section -->
-                            <% const isPendingDone=true; const returnStatuses=['Returned', 'Replaced', 'Return Requested'
-                                , 'Return Confirmed' , 'Replacement Confirmed' ]; const
+                            <% const isPendingDone=true; const returnStatuses=['Returned', 'Replaced'
+                                , 'Return Requested' , 'Return Confirmed' , 'Replacement Confirmed' ]; const
                                 isProcessingDone=!!(order.processingDate || ['Processing', 'Shipped'
                                 , 'Out for Delivery' , 'Delivered' , ...returnStatuses].includes(order.orderStatus));
                                 const isShippedDone=!!(order.shippedDate || ['Shipped', 'Out for Delivery' , 'Delivered'
@@ -502,38 +579,26 @@
                                 isOutForDeliveryDone=!!(order.outForDeliveryDate || ['Out for Delivery', 'Delivered' ,
                                 ...returnStatuses].includes(order.orderStatus)); const
                                 isDeliveredDone=!!(order.deliveredDate || ['Delivered',
-                                ...returnStatuses].includes(order.orderStatus)); 
-                                // Helper function to format Date object in EJS
-                                function formatDate(dateVal) {
-                                if (!dateVal) return '';
-                                return new Date(dateVal).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                                });
-                                }
-
-                                // Fallback values for legacy orders
-                                const getProcessingTime = () => {
+                                ...returnStatuses].includes(order.orderStatus)); function formatDate(dateVal) { if
+                                (!dateVal) return '' ; return new Date(dateVal).toLocaleDateString('en-US', {
+                                month: 'short' , day: 'numeric' , hour: '2-digit' , minute: '2-digit' }); } const
+                                getProcessingTime=()=> {
                                 if (order.processingDate) return formatDate(order.processingDate);
                                 if (order.orderStatus === 'Processing') return formatDate(order.updatedAt);
-                                // 1 hour after creation as fallback
-                                return formatDate(new Date(new Date(order.createdAt).getTime() + 60*60*1000));
+                                return formatDate(new Date(new Date(order.createdAt).getTime() + 60 * 60 * 1000));
                                 };
 
                                 const getShippedTime = () => {
                                 if (order.shippedDate) return formatDate(order.shippedDate);
                                 if (order.orderStatus === 'Shipped') return formatDate(order.updatedAt);
-                                // 1 day after creation as fallback
-                                return formatDate(new Date(new Date(order.createdAt).getTime() + 24*60*60*1000));
+                                return formatDate(new Date(new Date(order.createdAt).getTime() + 24 * 60 * 60 * 1000));
                                 };
 
                                 const getOutForDeliveryTime = () => {
                                 if (order.outForDeliveryDate) return formatDate(order.outForDeliveryDate);
                                 if (order.orderStatus === 'Out for Delivery') return formatDate(order.updatedAt);
-                                // 2 days after creation as fallback
-                                return formatDate(new Date(new Date(order.createdAt).getTime() + 2*24*60*60*1000));
+                                return formatDate(new Date(new Date(order.createdAt).getTime() + 2 * 24 * 60 * 60 *
+                                1000));
                                 };
 
                                 const getDeliveredTime = () => {
@@ -671,7 +736,8 @@
                                             <% } %>
 
                                                 <!-- Step 7 (Returned and Return/Replacement States) -->
-                                                <% if (['Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(order.orderStatus)) { %>
+                                                <% if (['Return Requested', 'Return Confirmed' , 'Replacement Confirmed'
+                                                    , 'Returned' , 'Replaced' ].includes(order.orderStatus)) { %>
                                                     <div class="flex gap-6 relative">
                                                         <div
                                                             class="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center z-10 shadow-lg shadow-amber-500/20">
@@ -680,68 +746,107 @@
                                                         </div>
                                                         <div>
                                                             <h4 class="font-bold text-on-surface">Return Requested</h4>
-                                                            <p class="text-xs text-on-surface-variant mt-0.5">A return request has been submitted by the customer.</p>
+                                                            <p class="text-xs text-on-surface-variant mt-0.5">A return
+                                                                request has been submitted by the customer.</p>
                                                             <span
                                                                 class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mt-2 block">
-                                                                RETURN REQUESTED - <%= formatDate(order.returnRequestDate || order.updatedAt) %>
+                                                                RETURN REQUESTED - <%=
+                                                                    formatDate(order.returnRequestDate ||
+                                                                    order.updatedAt) %>
                                                             </span>
                                                         </div>
                                                     </div>
-                                                <% } %>
+                                                    <% } %>
 
-                                                <% if (order.orderStatus === 'Return Confirmed' || (order.orderStatus === 'Returned' && order.paymentStatus === 'Refunded')) { %>
-                                                    <div class="flex gap-6 relative">
-                                                        <div
-                                                            class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center z-10 shadow-lg shadow-orange-600/20">
-                                                            <span
-                                                                class="material-symbols-outlined text-lg">keyboard_return</span>
-                                                        </div>
-                                                        <div>
-                                                            <h4 class="font-bold text-on-surface">Return Confirmed</h4>
-                                                            <p class="text-xs text-on-surface-variant mt-0.5">The return has been approved and processed.</p>
-                                                            <span
-                                                                class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mt-2 block">
-                                                                RETURN CONFIRMED - <%= formatDate(order.returnConfirmedDate || order.updatedAt) %>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                <% } %>
+                                                        <% if (order.orderStatus==='Return Confirmed' ||
+                                                            (order.orderStatus==='Returned' &&
+                                                            order.paymentStatus==='Refunded' )) { %>
+                                                            <div class="flex gap-6 relative">
+                                                                <div
+                                                                    class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center z-10 shadow-lg shadow-orange-600/20">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-lg">keyboard_return</span>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 class="font-bold text-on-surface">Return
+                                                                        Confirmed</h4>
+                                                                    <p class="text-xs text-on-surface-variant mt-0.5">
+                                                                        The return has been approved and processed.</p>
+                                                                    <span
+                                                                        class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mt-2 block">
+                                                                        RETURN CONFIRMED - <%=
+                                                                            formatDate(order.returnConfirmedDate ||
+                                                                            order.updatedAt) %>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
 
-                                                <% if (order.orderStatus === 'Replacement Confirmed' || order.orderStatus === 'Replaced' || (order.orderStatus === 'Returned' && order.paymentStatus !== 'Refunded')) { %>
-                                                    <div class="flex gap-6 relative">
-                                                        <div
-                                                            class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center z-10 shadow-lg shadow-blue-600/20">
-                                                            <span
-                                                                class="material-symbols-outlined text-lg">autorenew</span>
-                                                        </div>
-                                                        <div>
-                                                            <h4 class="font-bold text-on-surface">Replacement Confirmed</h4>
-                                                            <p class="text-xs text-on-surface-variant mt-0.5">A replacement has been approved and ordered.</p>
-                                                            <span
-                                                                class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-2 block">
-                                                                REPLACEMENT CONFIRMED - <%= formatDate(order.returnConfirmedDate || order.updatedAt) %>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                <% } %>
+                                                                <% if (order.orderStatus==='Replacement Confirmed' ||
+                                                                    order.orderStatus==='Replaced' ||
+                                                                    (order.orderStatus==='Returned' &&
+                                                                    order.paymentStatus !=='Refunded' )) { %>
+                                                                    <div class="flex gap-6 relative">
+                                                                        <div
+                                                                            class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center z-10 shadow-lg shadow-blue-600/20">
+                                                                            <span
+                                                                                class="material-symbols-outlined text-lg">autorenew</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="font-bold text-on-surface">
+                                                                                Replacement Confirmed</h4>
+                                                                            <p
+                                                                                class="text-xs text-on-surface-variant mt-0.5">
+                                                                                A replacement has been approved and
+                                                                                ordered.</p>
+                                                                            <span
+                                                                                class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-2 block">
+                                                                                REPLACEMENT CONFIRMED - <%=
+                                                                                    formatDate(order.returnConfirmedDate
+                                                                                    || order.updatedAt) %>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <% } %>
 
-                                                <% if (order.orderStatus === 'Returned' || order.orderStatus === 'Replaced') { %>
-                                                    <div class="flex gap-6 relative">
-                                                        <div
-                                                            class="w-8 h-8 rounded-full <%= order.orderStatus === 'Returned' ? 'bg-orange-600 shadow-orange-600/20' : 'bg-blue-600 shadow-blue-600/20' %> text-white flex items-center justify-center z-10 shadow-lg">
-                                                            <span
-                                                                class="material-symbols-outlined text-lg"><%= order.orderStatus === 'Returned' ? 'assignment_return' : 'published_with_changes' %></span>
-                                                        </div>
-                                                        <div>
-                                                            <h4 class="font-bold text-on-surface"><%= order.orderStatus === 'Returned' ? 'Order Returned' : 'Order Replaced' %></h4>
-                                                            <p class="text-xs text-on-surface-variant mt-0.5"><%= order.orderStatus === 'Returned' ? 'The product return request has been processed.' : 'The replacement process has been completed successfully.' %></p>
-                                                            <span
-                                                                class="text-[10px] font-bold <%= order.orderStatus === 'Returned' ? 'text-orange-600' : 'text-blue-600' %> uppercase tracking-widest mt-2 block">
-                                                                <%= order.orderStatus === 'Returned' ? 'RETURNED' : 'REPLACED' %> - <%= formatDate(order.returnedDate || order.updatedAt) %>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                <% } %>
+                                                                        <% if (order.orderStatus==='Returned' ||
+                                                                            order.orderStatus==='Replaced' ) { %>
+                                                                            <div class="flex gap-6 relative">
+                                                                                <div
+                                                                                    class="w-8 h-8 rounded-full <%= order.orderStatus === 'Returned' ? 'bg-orange-600 shadow-orange-600/20' : 'bg-blue-600 shadow-blue-600/20' %> text-white flex items-center justify-center z-10 shadow-lg">
+                                                                                    <span
+                                                                                        class="material-symbols-outlined text-lg">
+                                                                                        <%= order.orderStatus==='Returned'
+                                                                                            ? 'assignment_return'
+                                                                                            : 'published_with_changes'
+                                                                                            %>
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h4
+                                                                                        class="font-bold text-on-surface">
+                                                                                        <%= order.orderStatus==='Returned'
+                                                                                            ? 'Order Returned'
+                                                                                            : 'Order Replaced' %>
+                                                                                    </h4>
+                                                                                    <p
+                                                                                        class="text-xs text-on-surface-variant mt-0.5">
+                                                                                        <%= order.orderStatus==='Returned'
+                                                                                            ? 'The product return request has been processed.'
+                                                                                            : 'The replacement process has been completed successfully.'
+                                                                                            %>
+                                                                                    </p>
+                                                                                    <span
+                                                                                        class="text-[10px] font-bold <%= order.orderStatus === 'Returned' ? 'text-orange-600' : 'text-blue-600' %> uppercase tracking-widest mt-2 block">
+                                                                                        <%= order.orderStatus==='Returned'
+                                                                                            ? 'RETURNED' : 'REPLACED' %>
+                                                                                            - <%=
+                                                                                                formatDate(order.returnedDate
+                                                                                                || order.updatedAt) %>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <% } %>
                                     </div>
                                 </section>
                         </div>
@@ -841,15 +946,19 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <% if (order.paymentMethod === 'COD') { %>
-                                    <select onchange="updatePaymentStatus('<%= order._id %>', this.value)"
-                                        class="text-[10px] font-bold pl-3 pr-7 py-1.5 rounded uppercase bg-tertiary-container text-on-tertiary-container border border-outline-variant/10 cursor-pointer outline-none transition-all hover:bg-tertiary-container/85 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M6%208l4%204%204-4%22%20stroke%3D%22%231e293b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_6px_center] bg-[size:14px_14px] bg-no-repeat">
-                                        <option value="Pending" <%=order.paymentStatus==='Pending' ? 'selected' : '' %>>Pending</option>
-                                        <option value="Paid" <%=order.paymentStatus==='Paid' ? 'selected' : '' %>>Paid</option>
-                                        <option value="Failed" <%=order.paymentStatus==='Failed' ? 'selected' : '' %>>Failed</option>
-                                        <option value="Refunded" <%=order.paymentStatus==='Refunded' ? 'selected' : '' %>>Refunded</option>
-                                    </select>
-                                    <% } %>
+                                    <% if (order.paymentMethod==='COD' ) { %>
+                                        <select onchange="updatePaymentStatus('<%= order._id %>', this.value)"
+                                            class="text-[10px] font-bold pl-3 pr-7 py-1.5 rounded uppercase bg-tertiary-container text-on-tertiary-container border border-outline-variant/10 cursor-pointer outline-none transition-all hover:bg-tertiary-container/85 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M6%208l4%204%204-4%22%20stroke%3D%22%231e293b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_6px_center] bg-[size:14px_14px] bg-no-repeat">
+                                            <option value="Pending" <%=order.paymentStatus==='Pending' ? 'selected' : ''
+                                                %>>Pending</option>
+                                            <option value="Paid" <%=order.paymentStatus==='Paid' ? 'selected' : '' %>
+                                                >Paid</option>
+                                            <option value="Failed" <%=order.paymentStatus==='Failed' ? 'selected' : ''
+                                                %>>Failed</option>
+                                            <option value="Refunded" <%=order.paymentStatus==='Refunded' ? 'selected'
+                                                : '' %>>Refunded</option>
+                                        </select>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
@@ -1130,11 +1239,13 @@
                     const tax = <%= order.pricing.tax || 0 %>;
                     const grandTotal = <%= order.pricing.grandTotal || 0 %>;
                     const couponCode = '<%= order.couponCode || "" %>';
-                    
+                    const refundedAmount = <%= order.pricing.refundedAmount || 0 %>;
+                    const finalGrandTotal = grandTotal - refundedAmount;
+
                     let couponDiscount = 0;
                     let offerDiscount = 0;
                     <% if (typeof order.pricing.couponDiscount !== 'undefined') { %>
-                        couponDiscount = <%= order.pricing.couponDiscount %>;
+                        couponDiscount = <%= order.pricing.couponDiscount || 0 %>;
                         offerDiscount = <%= order.pricing.productDiscount || 0 %>;
                     <% } else if (order.couponCode) { %>
                         couponDiscount = <%= order.pricing.discount || 0 %>;
@@ -1142,131 +1253,143 @@
                         offerDiscount = <%= order.pricing.discount || 0 %>;
                     <% } %>
 
-                    container.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px;">
-                            <div>
-                                <h1 style="font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">LUXE TECH</h1>
-                                <p style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin: 4px 0 0 0; font-weight: 600;">Luxury Tech & Hardware Invoice</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">INVOICE</h2>
-                                <p style="font-size: 11px; font-weight: 700; color: #0f172a; margin: 5px 0 0 0;">Order Reference: #<%= order.orderId %></p>
-                                <p style="font-size: 9px; color: #64748b; margin: 2px 0 0 0;">Date Placed: <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
-                                <p style="font-size: 9px; color: #64748b; margin: 2px 0 0 0;">Downloaded On: \${downloadDateTime}</p>
-                            </div>
-                        </div>
+                        container.innerHTML = `
+                        <div style="font-family: 'Inter', 'Helvetica Neue', sans-serif; color: #1a1a1a; max-width: 700px; margin: 0 auto;">
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; font-size: 11px; line-height: 1.5;">
-                            <div>
-                                <h3 style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px;">Billed & Shipped To</h3>
-                                <p style="font-size: 12px; font-weight: 700; color: #0f172a; margin: 0 0 4px 0;"><%= order.shippingAddress.fullName %></p>
-                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.streetAddress %></p>
-                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></p>
-                                <p style="margin: 0; color: #475569;"><%= order.shippingAddress.country %></p>
-                                <p style="margin: 8px 0 0 0; color: #475569; font-weight: 600;">Phone: <%= order.shippingAddress.phoneNumber %></p>
+                            <!-- Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 24px; border-bottom: 1px solid #e5e5e5; margin-bottom: 32px;">
+                                <div>
+                                    <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.04em; color: #111;">LUXE TECH</div>
+                                    <div style="font-size: 10px; color: #999; margin-top: 3px; letter-spacing: 0.08em; text-transform: uppercase;">Invoice</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 10px; color: #999; margin-bottom: 4px;">Order</div>
+                                    <div style="font-size: 12px; font-weight: 600; color: #111;">#<%= order.orderId %></div>
+                                    <div style="font-size: 10px; color: #999; margin-top: 6px;"><%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+                                    <div style="font-size: 10px; color: #bbb;">${downloadDateTime}</div>
+                                </div>
                             </div>
-                            <div>
-                                <h3 style="font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px;">Payment & Delivery Details</h3>
-                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Payment Method:</strong> <%= order.paymentMethod %></p>
-                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Payment Status:</strong> <%= order.paymentStatus %></p>
-                                <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Order Status:</strong> <%= order.orderStatus %></p>
-                                <% if (order.estimateDate) { %>
-                                    <p style="margin: 0 0 4px 0; color: #475569;"><strong style="color: #0f172a;">Estimated Delivery Date:</strong> <%= order.estimateDate %></p>
-                                <% } %>
-                            </div>
-                        </div>
 
-                        <h3 style="font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 800; color: #0f172a; margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em;">Order Summary</h3>
-                        
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 30px;">
-                            <thead>
-                                <tr style="background-color: #0f172a; border-bottom: 2px solid #0f172a;">
-                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; width: 45%;">Item Details</th>
-                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: center; width: 15%;">Unit Price</th>
-                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: center; width: 15%;">Qty</th>
-                                    <th style="padding: 10px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #ffffff; text-align: right; width: 25%;">Total Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% order.items.forEach(function(item) { %>
-                                    <tr style="border-bottom: 1px solid #e2e8f0; page-break-inside: avoid;">
-                                        <td style="padding: 12px 8px;">
-                                            <div style="font-size: 11px; font-weight: 700; color: #0f172a; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                            <!-- Billing & Payment Row -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 36px; font-size: 11px; line-height: 1.9;">
+                                <div>
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #aaa; margin-bottom: 8px;">Bill To</div>
+                                    <div style="font-weight: 600; color: #111; margin-bottom: 2px;"><%= order.shippingAddress.fullName %></div>
+                                    <div style="color: #555;"><%= order.shippingAddress.streetAddress %></div>
+                                    <div style="color: #555;"><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></div>
+                                    <div style="color: #555;"><%= order.shippingAddress.country %></div>
+                                    <div style="color: #777; margin-top: 6px;"><%= order.shippingAddress.phoneNumber %></div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #aaa; margin-bottom: 8px;">Details</div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 4px 0;">
+                                        <span style="color: #888;">Payment</span>
+                                        <span style="font-weight: 500; color: #111;"><%= order.paymentMethod %></span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 4px 0;">
+                                        <span style="color: #888;">Status</span>
+                                        <span style="font-weight: 500; color: #111;"><%= order.paymentStatus %></span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                        <span style="color: #888;">Order</span>
+                                        <span style="font-weight: 500; color: #111;"><%= order.orderStatus %></span>
+                                    </div>
+                                    <% if (order.estimateDate) { %>
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                        <span style="color: #888;">Est. Delivery</span>
+                                        <span style="font-weight: 500; color: #111;"><%= order.estimateDate %></span>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <!-- Items Table -->
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px; table-layout: fixed;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid #111;">
+                                        <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: left; width: 48%;">Item</th>
+                                        <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: center; width: 18%;">Unit</th>
+                                        <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: center; width: 12%;">Qty</th>
+                                        <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: right; width: 22%;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% order.items.forEach(function(item) { %>
+                                    <% const isCancelledOrReturned = item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed'; %>
+                                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                                        <td style="padding: 12px 0;">
+                                            <div style="font-size: 11px; font-weight: 600; color: <%= isCancelledOrReturned ? '#bbb' : '#111' %>; <%= isCancelledOrReturned ? 'text-decoration: line-through;' : '' %> word-break: break-word;">
                                                 <%= item.name %>
                                             </div>
                                             <% if (item.variantName) { %>
-                                                <div style="font-size: 9px; color: #64748b; margin-top: 2px; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
-                                                    <%= item.variantName %>
-                                                </div>
+                                            <div style="font-size: 9px; color: #aaa; margin-top: 2px; <%= isCancelledOrReturned ? 'text-decoration: line-through;' : '' %>">
+                                                <%= item.variantName %>
+                                            </div>
                                             <% } %>
-                                            <% if (item.status !== 'Pending' && item.status !== 'Processing' && item.status !== 'Shipped' && item.status !== 'Out for Delivery' && item.status !== 'Delivered') { %>
-                                                <span style="display: inline-block; background-color: #fee2e2; color: #b91c1c; font-size: 8px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 3px; margin-top: 4px;">
-                                                    <%= item.status %>
-                                                </span>
+                                            <% if (isCancelledOrReturned) { %>
+                                            <span style="display: inline-block; font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #e05555; margin-top: 3px; border: 1px solid #e05555; padding: 1px 5px; border-radius: 2px;">
+                                                <%= item.status %>
+                                            </span>
                                             <% } %>
                                         </td>
-                                        <td style="padding: 12px 8px; font-size: 10px; color: #475569; text-align: center; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                        <td style="padding: 12px 0; font-size: 10px; color: <%= isCancelledOrReturned ? '#ccc' : '#555' %>; text-align: center; <%= isCancelledOrReturned ? 'text-decoration: line-through;' : '' %>">
                                             ₹<%= item.price.toFixed(2) %>
                                         </td>
-                                        <td style="padding: 12px 8px; font-size: 10px; color: #475569; text-align: center; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
-                                            <%= String(item.quantity).padStart(2, '0') %>
+                                        <td style="padding: 12px 0; font-size: 10px; color: <%= isCancelledOrReturned ? '#ccc' : '#555' %>; text-align: center; <%= isCancelledOrReturned ? 'text-decoration: line-through;' : '' %>">
+                                            <%= item.quantity %>
                                         </td>
-                                        <td style="padding: 12px 8px; text-align: right; font-size: 11px; font-weight: 700; color: #0f172a; <%= (item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed') ? 'text-decoration: line-through; opacity: 0.5;' : '' %>">
+                                        <td style="padding: 12px 0; font-size: 11px; font-weight: 600; color: <%= isCancelledOrReturned ? '#ccc' : '#111' %>; text-align: right; <%= isCancelledOrReturned ? 'text-decoration: line-through;' : '' %>">
                                             ₹<%= item.subtotal.toFixed(2) %>
                                         </td>
                                     </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                                    <% }); %>
+                                </tbody>
+                            </table>
 
-                        <div style="display: flex; justify-content: flex-end; page-break-inside: avoid;">
-                            <div style="width: 250px; font-size: 11px; line-height: 1.8;">
-                                <div style="display: flex; justify-content: space-between; color: #475569;">
-                                    <span>Subtotal:</span>
-                                    <span style="font-weight: 600; color: #0f172a;">₹\${subtotal.toFixed(2)}</span>
-                                </div>
-                                
-                                \${offerDiscount > 0 ? `
-                                    <div style="display: flex; justify-content: space-between; color: #16a34a;">
-                                        <span>Offer Discount:</span>
-                                        <span>-₹\${offerDiscount.toFixed(2)}</span>
+                            <!-- Pricing Summary -->
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 40px;">
+                                <div style="width: 220px; font-size: 11px;">
+                                    <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
+                                        <span>Subtotal</span>
+                                        <span style="color: #111;">₹${subtotal.toFixed(2)}</span>
                                     </div>
-                                ` : ''}
-
-                                \${couponCode ? `
-                                    <div style="display: flex; justify-content: space-between; color: #475569;">
-                                        <span>Coupon (\${couponCode}):</span>
-                                        <span style="color: #16a34a; font-weight: 600;">-₹\${couponDiscount.toFixed(2)}</span>
+                                    ${offerDiscount > 0 ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;"><span>Offer Discount</span><span style="color: #22a86b;">−₹' + offerDiscount.toFixed(2) + '</span></div>' : ''}
+                                    ${couponCode ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;"><span>Coupon (' + couponCode + ')</span><span style="color: #22a86b;">−₹' + couponDiscount.toFixed(2) + '</span></div>' : ''}
+                                    <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
+                                        <span>Shipping</span>
+                                        <span style="color: #111;">${shipping === 0 ? 'FREE' : '₹' + shipping.toFixed(2)}</span>
                                     </div>
-                                ` : ''}
-
-                                <div style="display: flex; justify-content: space-between; color: #475569;">
-                                    <span>Shipping:</span>
-                                    <span style="font-weight: 600; color: #0f172a;">\${shipping === 0 ? 'FREE' : '₹' + shipping.toFixed(2)}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; color: #475569;">
-                                    <span>Tax (8%):</span>
-                                    <span style="font-weight: 600; color: #0f172a;">₹\${tax.toFixed(2)}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px; color: #0f172a;">
-                                    <span>Total:</span>
-                                    <span>₹\${grandTotal.toFixed(2)}</span>
+                                    <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
+                                        <span>Tax (8%)</span>
+                                        <span style="color: #111;">₹${tax.toFixed(2)}</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 4px; border-top: 1px solid #e5e5e5; color: #555; font-weight: 600;">
+                                        <span>Total</span>
+                                        <span>₹${grandTotal.toFixed(2)}</span>
+                                    </div>
+                                    ${refundedAmount > 0 ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #e05555; font-weight: 600;"><span>Refunded</span><span>−₹' + refundedAmount.toFixed(2) + '</span></div>' : ''}
+                                    <div style="display: flex; justify-content: space-between; padding: 10px 0; margin-top: 4px; border-top: 1px solid #111; font-size: 13px; font-weight: 700; color: #111;">
+                                        <span>Grand Total</span>
+                                        <span>₹${finalGrandTotal.toFixed(2)}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div style="margin-top: 50px; border-top: 1px dashed #cbd5e1; padding-top: 20px; text-align: center; page-break-inside: avoid;">
-                            <p style="font-size: 9px; color: #94a3b8; margin: 0;">Thank you for shopping with Luxe Tech. For support or warranty queries, contact support@luxetech.com.</p>
-                            <p style="font-size: 9px; color: #94a3b8; margin: 4px 0 0 0;">Luxe Tech Inc. | This is a computer generated invoice and requires no physical signature.</p>
+                            <!-- Footer -->
+                            <div style="border-top: 1px solid #e5e5e5; padding-top: 16px; text-align: center;">
+                                <p style="font-size: 9px; color: #bbb; margin: 0;">Thank you for shopping with Luxe Tech. For support, contact support@luxetech.com.</p>
+                                <p style="font-size: 9px; color: #ccc; margin: 4px 0 0 0;">Luxe Tech Inc. &nbsp;·&nbsp; Computer generated invoice — no signature required.</p>
+                            </div>
+
                         </div>
-                    `;
+                        `;
 
                     const opt = {
-                        margin:       [15, 15, 20, 15],
-                        filename:     'LuxeTech_Invoice_#<%= order.orderId %>.pdf',
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        margin: [15, 15, 20, 15],
+                        filename: 'LuxeTech_Invoice_#<%= order.orderId %>.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
                     await html2pdf().set(opt).from(container).save();

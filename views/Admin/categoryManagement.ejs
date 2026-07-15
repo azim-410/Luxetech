@@ -189,11 +189,6 @@
                                                 <div class="h-2"></div>
                                 </div>
                             </div>
-                            <button
-                                class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:bg-surface-container-high transition-colors rounded-lg">
-                                <span class="material-symbols-outlined text-sm">download</span>
-                                Export
-                            </button>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -334,9 +329,9 @@
                                                         </button>
                                                         <% } else { %>
                                                             <button
-                                                                class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
-                                                                title="Edit"
-                                                                onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, '\\\'') %>', '<%= (category.description || '').replace(/'/g, '\\\'') %>', '<%= category.image || '' %>', '<%= category.isHidden ? 'true' : 'false' %>')">
+                                                                 class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                                                 title="Edit"
+                                                                 onclick="openEditModal('<%= category._id %>', '<%= category.categoryName.replace(/'/g, '\\\'') %>', '<%= (category.description || '').replace(/'/g, '\\\'') %>', '<%= category.image || '' %>', '<%= category.isHidden ? 'true' : 'false' %>', '<%= (category.categoryOfferName || '').replace(/'/g, '\\\'') %>', '<%= category.categoryOfferPrice || 0 %>')">
                                                                             <span
                                                                                 class="material-symbols-outlined text-lg">edit</span>
                                                             </button>
@@ -481,6 +476,21 @@
                         <p id="createImageError" class="text-error text-xs hidden mt-1"></p>
                     </div>
 
+                    <!-- Offer Coupon -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant font-semibold">Offer Coupon Name</label>
+                        <input type="text" id="categoryOfferNameInput" name="categoryOfferName" placeholder="e.g. MONITORSALE"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="createOfferNameError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant font-semibold">Offer Coupon Price (Discount Amount)</label>
+                        <input type="number" id="categoryOfferPriceInput" name="categoryOfferPrice" placeholder="e.g. 500" min="0" step="1"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="createOfferPriceError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
                     <!-- status is always active on create -->
                     <input type="hidden" name="status" value="true" />
 
@@ -577,6 +587,21 @@
                                 class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-secondary/15 file:text-secondary hover:file:bg-secondary/25 cursor-pointer flex-1 min-w-0" />
                         </div>
                         <p id="editImageError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <!-- Offer Coupon -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant font-semibold">Offer Coupon Name</label>
+                        <input type="text" id="editCategoryOfferNameInput" name="categoryOfferName" placeholder="e.g. MONITORSALE"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="editOfferNameError" class="text-error text-xs hidden mt-1"></p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant font-semibold">Offer Coupon Price (Discount Amount)</label>
+                        <input type="number" id="editCategoryOfferPriceInput" name="categoryOfferPrice" placeholder="e.g. 500" min="0" step="1"
+                            class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
+                        <p id="editOfferPriceError" class="text-error text-xs hidden mt-1"></p>
                     </div>
 
                     <!-- Visibility -->
@@ -757,6 +782,11 @@
                     clearFieldError(document.getElementById('categoryNameInput'), document.getElementById('createNameError'));
                     clearFieldError(document.getElementById('categoryDescriptionInput'), document.getElementById('createDescError'));
                     clearFieldError(document.getElementById('categoryImageInput'), document.getElementById('createImageError'));
+                    clearFieldError(document.getElementById('categoryOfferNameInput'), document.getElementById('createOfferNameError'));
+                    clearFieldError(document.getElementById('categoryOfferPriceInput'), document.getElementById('createOfferPriceError'));
+
+                    document.getElementById('categoryOfferNameInput').value = '';
+                    document.getElementById('categoryOfferPriceInput').value = '';
                 }
                 categoryModal.classList.remove('hidden');
             }
@@ -817,9 +847,20 @@
                 const desc = descEl.value;
                 const image = imageEl.files[0];
 
+                const offerNameEl = document.getElementById('categoryOfferNameInput');
+                const offerPriceEl = document.getElementById('categoryOfferPriceInput');
+                const offerNameErrEl = document.getElementById('createOfferNameError');
+                const offerPriceErrEl = document.getElementById('createOfferPriceError');
+
                 const nameErrText = validateCategoryName(name);
                 const descErrText = validateDescription(desc);
                 const imageErrText = validateImageFile(image);
+                let offerPriceErrText = null;
+                if (offerPriceEl.value && isNaN(Number(offerPriceEl.value))) {
+                    offerPriceErrText = 'Offer price must be a number';
+                } else if (offerPriceEl.value && Number(offerPriceEl.value) < 0) {
+                    offerPriceErrText = 'Offer price cannot be negative';
+                }
 
                 let hasError = false;
                 if (nameErrText) {
@@ -841,6 +882,13 @@
                     hasError = true;
                 } else {
                     clearFieldError(imageEl, imageErrEl);
+                }
+
+                if (offerPriceErrText) {
+                    showFieldError(offerPriceEl, offerPriceErrEl, offerPriceErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(offerPriceEl, offerPriceErrEl);
                 }
 
                 if (hasError) return;
@@ -904,7 +952,7 @@
             const editSubmitBtn = document.getElementById('editCategorySubmitBtn');
 
             // holds the values as they were when the modal opened
-            let _originals = { name: '', description: '', isHidden: 'false' };
+            let _originals = { name: '', description: '', isHidden: 'false', offerName: '', offerPrice: '0' };
 
             // Live validation listeners for Edit
             document.getElementById('editCategoryNameInput').addEventListener('input', function() {
@@ -925,11 +973,13 @@
                 else clearFieldError(this, document.getElementById('editImageError'));
             });
 
-            function openEditModal(id, name, description, imageUrl, isHidden) {
+            function openEditModal(id, name, description, imageUrl, isHidden, offerName = "", offerPrice = 0) {
                 // pre-fill
                 editIdInput.value = id;
                 editNameInput.value = name;
                 editDescriptionInput.value = description;
+                document.getElementById('editCategoryOfferNameInput').value = offerName;
+                document.getElementById('editCategoryOfferPriceInput').value = offerPrice;
 
                 // Pre-fill visibility dropdown
                 const visibilitySelect = document.getElementById('editCategoryVisibilityInput');
@@ -956,7 +1006,13 @@
                 }
 
                 // snapshot originals for change-detection
-                _originals = { name: name.trim(), description: (description || '').trim(), isHidden: (isHidden === 'true') ? 'true' : 'false' };
+                _originals = { 
+                    name: name.trim(), 
+                    description: (description || '').trim(), 
+                    isHidden: (isHidden === 'true') ? 'true' : 'false',
+                    offerName: (offerName || '').trim(),
+                    offerPrice: String(offerPrice || 0)
+                };
 
                 // reset error state
                 editErrorContainer.classList.add('hidden');
@@ -966,6 +1022,8 @@
                 clearFieldError(editNameInput, document.getElementById('editNameError'));
                 clearFieldError(editDescriptionInput, document.getElementById('editDescError'));
                 clearFieldError(fileInput, document.getElementById('editImageError'));
+                clearFieldError(document.getElementById('editCategoryOfferNameInput'), document.getElementById('editOfferNameError'));
+                clearFieldError(document.getElementById('editCategoryOfferPriceInput'), document.getElementById('editOfferPriceError'));
 
                 editModal.classList.remove('hidden');
             }
@@ -1070,15 +1128,39 @@
                     clearFieldError(imageEl, imageErrEl);
                 }
 
+                const offerNameEl = document.getElementById('editCategoryOfferNameInput');
+                const offerPriceEl = document.getElementById('editCategoryOfferPriceInput');
+                const offerNameErrEl = document.getElementById('editOfferNameError');
+                const offerPriceErrEl = document.getElementById('editOfferPriceError');
+
+                let offerPriceErrText = null;
+                if (offerPriceEl.value && isNaN(Number(offerPriceEl.value))) {
+                    offerPriceErrText = 'Offer price must be a number';
+                } else if (offerPriceEl.value && Number(offerPriceEl.value) < 0) {
+                    offerPriceErrText = 'Offer price cannot be negative';
+                }
+
+                if (offerPriceErrText) {
+                    showFieldError(offerPriceEl, offerPriceErrEl, offerPriceErrText);
+                    hasError = true;
+                } else {
+                    clearFieldError(offerPriceEl, offerPriceErrEl);
+                }
+
                 if (hasError) return;
 
                 // ── No-change guard ───────────────────────────────────────
                 const currentDesc = desc.trim();
                 const currentVisibility = document.getElementById('editCategoryVisibilityInput').value;
+                const currentOfferName = offerNameEl.value.trim();
+                const currentOfferPrice = offerPriceEl.value.trim();
+
                 if (
                     name.trim() === _originals.name &&
                     currentDesc === _originals.description &&
                     currentVisibility === _originals.isHidden &&
+                    currentOfferName === _originals.offerName &&
+                    currentOfferPrice === _originals.offerPrice &&
                     !imageEl.files[0]
                 ) {
                     showEditError('No changes made. Please modify at least one field before saving.');
@@ -1094,6 +1176,8 @@
                     formData.append('categoryName', name.trim());
                     formData.append('description', currentDesc);
                     formData.append('isHidden', currentVisibility);
+                    formData.append('categoryOfferName', currentOfferName);
+                    formData.append('categoryOfferPrice', currentOfferPrice);
                     if (imageEl.files[0]) {
                         formData.append('image', imageEl.files[0]);
                     }
@@ -1264,6 +1348,8 @@
                         const safeDesc = (c.description || '').replace(/'/g, "\\'");
                         const safeImage = c.image || '';
                         const safeHidden = c.isHidden ? 'true' : 'false';
+                        const safeOfferName = (c.categoryOfferName || '').replace(/'/g, "\\'");
+                        const safeOfferPrice = c.categoryOfferPrice || 0;
 
                         const actionBtns = isInactive
                             ? `<button class="p-2 text-outline/30 rounded-md cursor-not-allowed" disabled title="Cannot edit an inactive category">
@@ -1273,7 +1359,7 @@
                            <span class="material-symbols-outlined text-lg">delete</span>
                        </button>`
                             : `<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all" title="Edit"
-                           onclick="openEditModal('${safeId}','${safeName}','${safeDesc}','${safeImage}','${safeHidden}')">
+                           onclick="openEditModal('${safeId}','${safeName}','${safeDesc}','${safeImage}','${safeHidden}','${safeOfferName}','${safeOfferPrice}')">
                            <span class="material-symbols-outlined text-lg">edit</span>
                        </button>
                        <button class="p-2 text-on-surface-variant hover:text-error hover:bg-surface-container rounded-md transition-all" title="Deactivate"

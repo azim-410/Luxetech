@@ -18,7 +18,7 @@ const getProductsForListing = async (queryObject) => {
         }
 
         // Parse sorting option from the query object (e.g. ?sort=price-asc)
-        let selectedSort = 'featured';
+        let selectedSort = 'newest';
         if (queryObject && queryObject.sort) {
             selectedSort = queryObject.sort;
         }

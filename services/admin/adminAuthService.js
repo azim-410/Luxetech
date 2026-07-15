@@ -23,7 +23,7 @@ const adminLoginService = async (email, password) => {
 const getDashboardStatsService = async () => {
     const totalCustomers = await userModel.countDocuments({ role: 'user' });
     const totalOrders = await Order.countDocuments();
-    
+
     // Sum grandTotal of orders where paymentStatus is 'Paid'
     const revenueResult = await Order.aggregate([
         { $match: { paymentStatus: 'Paid' } },
@@ -45,4 +45,3 @@ const getDashboardStatsService = async () => {
 };
 
 export { adminLoginService, getDashboardStatsService };
- 

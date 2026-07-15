@@ -2,10 +2,46 @@ import Order from '../../model/order.js';
 import User from '../../model/userModel.js'; // Ensure User model is loaded for populate
 import Transaction from '../../model/transaction.js';
 
-const getAdminOrdersService = async (page, limit, sort = 'date-desc') => {
+const getAdminOrdersService = async (page, limit, sort = 'date-desc', filterOptions = {}) => {
     try {
+        const { search, status, startDate, endDate } = filterOptions;
         const skip = (page - 1) * limit;
-        const totalOrders = await Order.countDocuments({});
+
+        let query = {};
+
+        if (status && status !== 'all') {
+            query.orderStatus = status;
+        }
+
+        // 2. Search Filter (Order ID, Customer Name, Customer Email)
+        if (search && search.trim()) {
+            const searchRegex = new RegExp(search.trim(), 'i');
+            const matchingUsers = await User.find({ email: searchRegex }).select('_id');
+            const matchingUserIds = matchingUsers.map(u => u._id);
+
+            query.$or = [
+                { orderId: searchRegex },
+                { 'shippingAddress.fullName': searchRegex },
+                { userId: { $in: matchingUserIds } }
+            ];
+        }
+
+        // 3. Date Range Filter
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) {
+                const sDate = new Date(startDate);
+                sDate.setHours(0, 0, 0, 0);
+                query.createdAt.$gte = sDate;
+            }
+            if (endDate) {
+                const eDate = new Date(endDate);
+                eDate.setHours(23, 59, 59, 999);
+                query.createdAt.$lte = eDate;
+            }
+        }
+
+        const totalOrders = await Order.countDocuments(query);
         const totalPage = Math.max(1, Math.ceil(totalOrders / limit));
 
         let sortQuery = { createdAt: -1 };
@@ -17,7 +53,7 @@ const getAdminOrdersService = async (page, limit, sort = 'date-desc') => {
             sortQuery = { 'pricing.grandTotal': -1 };
         }
 
-        const orders = await Order.find({})
+        const orders = await Order.find(query)
             .populate('userId')
             .skip(skip)
             .limit(limit)
@@ -30,13 +66,12 @@ const getAdminOrdersService = async (page, limit, sort = 'date-desc') => {
 };
 
 const updateOrderEstimateDateService = async (orderId, estimateDate) => {
-    // Find order
+    
     const order = await Order.findById(orderId);
     if (!order) {
         throw new Error('Order not found');
     }
 
-    // Validate estimateDate
     const selectedDate = new Date(estimateDate);
     if (isNaN(selectedDate.getTime())) {
         throw new Error('Invalid estimate date format.');
@@ -46,7 +81,6 @@ const updateOrderEstimateDateService = async (orderId, estimateDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Check if selected date is before today
     if (selectedDate < today) {
         throw new Error('Estimate date must be today or in the future.');
     }
@@ -59,7 +93,7 @@ const updateOrderEstimateDateService = async (orderId, estimateDate) => {
 };
 
 const updateOrderStatusService = async (orderId, status) => {
-    // Find order
+   
     const order = await Order.findById(orderId);
     if (!order) {
         throw new Error('Order not found');
@@ -100,7 +134,15 @@ const updateOrderStatusService = async (orderId, status) => {
         const isPaid = order.paymentStatus === 'Paid';
         if (isPaid) {
             order.paymentStatus = 'Refunded';
-            const refundAmount = order.pricing.grandTotal;
+            // Refund all non-cancelled items
+            let refundAmount = 0;
+            order.items.forEach(item => {
+                if (item.status !== 'Cancelled') {
+                    refundAmount += item.subtotal;
+                }
+            });
+            if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
+            order.pricing.refundedAmount += refundAmount;
             if (refundAmount > 0) {
                 await User.findByIdAndUpdate(order.userId, {
                     $inc: { wallet: refundAmount }
@@ -172,6 +214,8 @@ const processAdminItemActionService = async (orderId, itemId, action) => {
             item.paymentReturned = true;
             // Credit refund to user's wallet
             const refundAmount = item.subtotal;
+            if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
+            order.pricing.refundedAmount += refundAmount;
             await User.findByIdAndUpdate(order.userId, {
                 $inc: { wallet: refundAmount }
             });

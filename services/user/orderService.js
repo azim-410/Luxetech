@@ -90,32 +90,10 @@ const cancelOrderService = async (orderId, userId, cancelItemIds, reason, commen
         order.cancellationReason = reason;
         order.cancellationComments = comments;
 
-        // Recalculate order pricing based on remaining active items
-        const activeItems = order.items.filter(item => item.status !== 'Cancelled');
-
-        if (activeItems.length > 0) {
-            let originalTotal = 0;
-            let subtotal = 0;
-
-            for (const item of activeItems) {
-                subtotal += item.price * item.quantity;
-                originalTotal += item.price * item.quantity;
-            }
-
-            const tax = Math.round(subtotal * 0.08);
-            const shipping = order.pricing.shipping;
-
-            order.pricing.subtotal = subtotal;
-            order.pricing.originalTotal = originalTotal;
-            order.pricing.tax = tax;
-            order.pricing.grandTotal = subtotal + tax + shipping;
-        } else {
-            order.pricing.subtotal = 0;
-            order.pricing.originalTotal = 0;
-            order.pricing.discount = 0;
-            order.pricing.tax = 0;
-            order.pricing.grandTotal = 0;
-        }
+        // Accumulate refundedAmount on pricing — do NOT mutate subtotal/tax/grandTotal
+        // so the original pricing remains intact for display.
+        if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
+        order.pricing.refundedAmount += refundAmount;
 
         // If paymentStatus was Paid, refund the subtotal of the cancelled items to user's wallet
         if (originalPaymentStatus === 'Paid' && refundAmount > 0) {

@@ -7,6 +7,7 @@ import {
     adminLogout,
     showDashboard,
 } from '../controller/admin/adminAuthController.js'
+import { showAnalytics } from '../controller/admin/analyticsController.js';
 import {
     getUserList,
     blockUser,
@@ -44,6 +45,7 @@ router.get('/login', isAdminLogin, showLoginPage);
 router.post('/login', isAdminLogin, adminLogin);
 router.get('/logout', isAdminAuthenticated, adminLogout);
 router.get('/dashboard', isAdminAuthenticated, showDashboard);
+router.get('/analytics', isAdminAuthenticated, showAnalytics);
 
 
 router.get('/user-management', isAdminAuthenticated, getUserList)
@@ -98,7 +100,7 @@ router.post('/order-management/details/:id/item/:itemId/action', isAdminAuthenti
 
 router.get('/coupon-management', isAdminAuthenticated, getCouponList)
 router.post('/coupon-management/create', isAdminAuthenticated, createCoupon)
-router.patch('/coupon-management/:id', isAdminAuthenticated, updateCoupon)
+router.patch('/coupon-management/edit/:id', isAdminAuthenticated, updateCoupon)
 router.delete('/coupon-management/:id', isAdminAuthenticated, deleteCoupon)
 
 export default router

@@ -94,7 +94,10 @@ const addToCartService = async (userId, productId, variantId, quantityInput) => 
 const getCartService = async (userId) => {
     try {
         const cart = await cartModel.findOne({ userId: userId })
-            .populate('items.productId')
+            .populate({
+                path: 'items.productId',
+                populate: { path: 'category' }
+            })
             .populate('items.variantId');
 
         let cartItems = [];
@@ -114,7 +117,18 @@ const getCartService = async (userId) => {
 
                 const priceAdd = variant ? variant.priceAdd : 0;
                 const productBasePrice = product ? (product.basePrice + priceAdd) : 0;
-                const productDiscountedPrice = product ? ((product.discountedPrice > 0 ? product.discountedPrice : product.basePrice) + priceAdd) : 0;
+                
+                let baseDiscountedPrice = product ? ((product.discountedPrice > 0 ? product.discountedPrice : product.basePrice) + priceAdd) : 0;
+                
+                // Category-level offer deduction
+                let categoryOfferPrice = 0;
+                if (product && product.category) {
+                    const category = product.category;
+                    if (category.status !== false && category.isHidden !== true && category.categoryOfferPrice > 0) {
+                        categoryOfferPrice = category.categoryOfferPrice;
+                    }
+                }
+                const productDiscountedPrice = Math.max(0, baseDiscountedPrice - categoryOfferPrice);
 
                 const itemOriginalTotal = productBasePrice * item.quantity;
                 const itemSubtotal = productDiscountedPrice * item.quantity;

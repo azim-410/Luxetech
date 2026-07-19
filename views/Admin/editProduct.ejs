@@ -940,7 +940,16 @@
                         }
                     }
     
-
+                    // Image validation
+                    const key = `${groupName}_${option}`;
+                    const existingCount = (existingVariantImages[key] || []).length;
+                    const newCount = (newVariantImages[key] || []).length;
+                    const totalCount = existingCount + newCount;
+                    if (totalCount < 3) {
+                        clientErrors[`${prefix}_images`] = 'Minimum 3 images are required.';
+                    } else if (totalCount > 6) {
+                        clientErrors[`${prefix}_images`] = 'Maximum 6 images allowed.';
+                    }
                     
                     variantData.push({
                         _id: id ? id : null,

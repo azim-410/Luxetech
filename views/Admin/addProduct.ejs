@@ -488,7 +488,7 @@
                                 <p id="error-variant_${groupName}_${option}_sku" class="text-xs text-red-600 -mt-2 mb-2 hidden"></p>
 
                                 <div class="mt-3 pt-3 border-t border-[#DDE3EC]">
-                                    <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-2 tracking-wider" style="font-family:'Manrope',sans-serif;">Variant Images (Max 3)</label>
+                                    <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-2 tracking-wider" style="font-family:'Manrope',sans-serif;">Variant Images (Min 3, Max 6)</label>
                                     <div class="flex flex-wrap gap-2 items-center">
                                         <div onclick="document.getElementById('input_${idSuffix}').click()"
                                              class="w-10 h-10 border border-dashed border-[#A0AEC0] hover:border-luxe-obsidian bg-white rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
@@ -631,10 +631,21 @@
             const currentCount = variantImages[key].length;
             const newFiles = Array.from(input.files).filter(file => file.type.startsWith('image/'));
             
-            if (currentCount + newFiles.length > 3) {
-                alert('You can only upload up to 3 images per variant.');
+            if (currentCount + newFiles.length > 6) {
+                const errorEl = document.getElementById(`error-variant_${groupName}_${option}_images`);
+                if (errorEl) {
+                    errorEl.textContent = 'Maximum 6 images allowed.';
+                    errorEl.classList.remove('hidden');
+                }
                 input.value = '';
                 return;
+            }
+            
+            // Clear any previous error if selection is valid
+            const errorEl = document.getElementById(`error-variant_${groupName}_${option}_images`);
+            if (errorEl) {
+                errorEl.textContent = '';
+                errorEl.classList.add('hidden');
             }
             
             newFiles.forEach(file => {
@@ -930,12 +941,7 @@
                             seenSku.add(skuVal.toLowerCase());
                         }
 
-                        const images = variantImages[`${groupName}_${option}`] || [];
-                        if (images.length === 0) {
-                            clientErrors[`${prefix}_images`] = 'At least one image is required.';
-                        } else if (images.length > 3) {
-                            clientErrors[`${prefix}_images`] = 'Maximum 3 images allowed.';
-                        }
+
                     });
                 });
             }

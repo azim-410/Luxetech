@@ -771,6 +771,12 @@
                 return;
             }
 
+            const minOrderValue = parseFloat(document.getElementById('minOrderValue').value) || 0;
+            if (type === 'fixed' && value >= minOrderValue) {
+                showError('Fixed discount amount must be less than the minimum purchase requirement');
+                return;
+            }
+
             const checkboxes = categoryDropdownMenu ? categoryDropdownMenu.querySelectorAll('input[type="checkbox"]:checked') : [];
             const applicableCategories = Array.from(checkboxes).map(cb => cb.value);
 

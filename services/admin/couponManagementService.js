@@ -48,6 +48,14 @@ const createCouponService = async (couponData) => {
     });
     if (existingCoupon) throw new Error('Coupon Code already exists');
 
+    if (discountType === 'fixed') {
+        const val = Number(discountValue);
+        const minVal = Number(minOrderValue || 0);
+        if (val >= minVal) {
+            throw new Error('Fixed discount amount must be less than the minimum purchase requirement');
+        }
+    }
+
     let categoriesArr = [];
     if (applicableCategories) {
         if (Array.isArray(applicableCategories)) {
@@ -105,6 +113,14 @@ const updateCouponService = async (id, couponData) => {
         _id: { $ne: id }
     });
     if (existingCoupon) throw new Error('Coupon Code already exists');
+
+    if (discountType === 'fixed') {
+        const val = Number(discountValue);
+        const minVal = Number(minOrderValue || 0);
+        if (val >= minVal) {
+            throw new Error('Fixed discount amount must be less than the minimum purchase requirement');
+        }
+    }
 
     const couponToUpdate = await couponModel.findById(id);
     if (!couponToUpdate) throw new Error('Coupon not found');

@@ -34,6 +34,11 @@ const cancelOrderService = async (orderId, userId, cancelItemIds, reason, commen
         const originalGrandTotal = order.pricing.grandTotal;
         const originalPaymentStatus = order.paymentStatus;
 
+        // Block cancellation if order is Razorpay and has a pending payment status
+        if (order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Pending') {
+            throw new Error('This order cannot be cancelled because the payment is pending. Please complete the payment or retry first.');
+        }
+
         // Validate order status
         const nonCancellableStatuses = ['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned', 'Replaced'];
         if (nonCancellableStatuses.includes(order.orderStatus)) {

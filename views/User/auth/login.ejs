@@ -25,6 +25,10 @@
         </header>
 
         <form class="login-form" action="/login" method="POST">
+          <% if (locals.successMessage) { %>
+            <div class="general-success">✓ <%= locals.successMessage %>
+            </div>
+          <% } %>
           <% if (locals.errorField==='global' || locals.errorField==='general' ) { %>
             <div class="general-error">⚠ <%= locals.errorMessage %>
             </div>

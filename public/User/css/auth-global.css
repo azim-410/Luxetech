@@ -201,6 +201,16 @@ a {
     margin-bottom: 12px;
 }
 
+.general-success {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid #2ecc71;
+    color: #27ae60;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
 /* ============================================================
    ENTRANCE ANIMATION
    ============================================================ */

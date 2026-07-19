@@ -24,8 +24,10 @@ const registerPage = (req, res) => {
 
 const loginPage = (req, res) => {
     const blocked = req.query.blocked === '1';
+    const registered = req.query.registered === 'true';
     return res.render('User/auth/login', {
         errorMessage: blocked ? 'Your account has been blocked by the admin. Please contact support.' : null,
+        successMessage: registered ? 'Account created successfully! Please log in.' : null,
         errorField: blocked ? 'general' : null,
         formData: {}
     });
@@ -155,7 +157,7 @@ const otp = async (req, res) => {
         }
 
         await verifyOtp(inputValue, userId);
-        return res.redirect('/login');
+        return res.redirect('/login?registered=true');
     } catch (error) {
         console.error('OTP Error:', error.message);
         const userId = req.session.userId;

@@ -143,10 +143,10 @@ const addProductService = async (productData, body, files) => {
             }
 
             const imageCount = (variantImageMap[key] || []).length;
-            if (imageCount === 0) {
-                errors[`${prefix}_images`] = 'At least one image is required';
-            } else if (imageCount > 3) {
-                errors[`${prefix}_images`] = 'Maximum 3 images allowed';
+            if (imageCount < 3) {
+                errors[`${prefix}_images`] = 'Minimum 3 images are required';
+            } else if (imageCount > 6) {
+                errors[`${prefix}_images`] = 'Maximum 6 images allowed';
             }
         }
     }
@@ -433,10 +433,10 @@ const updateProductService = async (id, body, files) => {
                 totalImages = newUploadedImages.length;
             }
 
-            if (totalImages === 0) {
-                errors[`${prefix}_images`] = 'At least one image is required';
-            } else if (totalImages > 3) {
-                errors[`${prefix}_images`] = 'Maximum 3 images allowed';
+            if (totalImages < 3) {
+                errors[`${prefix}_images`] = 'Minimum 3 images are required';
+            } else if (totalImages > 6) {
+                errors[`${prefix}_images`] = 'Maximum 6 images allowed';
             }
         }
     }

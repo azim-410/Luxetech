@@ -38,7 +38,7 @@ const getCouponsService = async () => {
 };
 
 const createCouponService = async (couponData) => {
-    const { code, discountType, discountValue, minOrderValue, usageLimit, expiryDate, applicableCategories } = couponData;
+    const { code, discountType, discountValue, minOrderValue, maxRedeemableAmount, usageLimit, expiryDate, applicableCategories } = couponData;
 
     if (!code || code.trim() === '') throw new Error('Coupon Code is required');
     if (!/^[A-Z0-9]+$/i.test(code.trim())) throw new Error('Coupon Code must be alphanumeric');
@@ -47,6 +47,21 @@ const createCouponService = async (couponData) => {
         code: code.trim().toUpperCase()
     });
     if (existingCoupon) throw new Error('Coupon Code already exists');
+
+    if (discountType === 'fixed') {
+        const val = Number(discountValue);
+        const minVal = Number(minOrderValue || 0);
+        if (val >= minVal) {
+            throw new Error('Fixed discount amount must be less than the minimum purchase requirement');
+        }
+    }
+
+    if (discountType === 'percentage' && maxRedeemableAmount !== undefined && maxRedeemableAmount !== null && maxRedeemableAmount !== '') {
+        const maxRed = Number(maxRedeemableAmount);
+        if (isNaN(maxRed) || maxRed <= 0) {
+            throw new Error('Maximum redeemable amount must be a positive number');
+        }
+    }
 
     let categoriesArr = [];
     if (applicableCategories) {
@@ -66,6 +81,7 @@ const createCouponService = async (couponData) => {
         discountType,
         discountValue,
         minOrderValue: minOrderValue || 0,
+        maxRedeemableAmount: discountType === 'percentage' ? (maxRedeemableAmount || undefined) : undefined,
         usageLimit: usageLimit || undefined,
         expiryDate: newExpiryDate,
         applicableCategories: categoriesArr,
@@ -95,7 +111,7 @@ const deleteCouponService = async (id) => {
 };
 
 const updateCouponService = async (id, couponData) => {
-    const { code, discountType, discountValue, minOrderValue, usageLimit, expiryDate, applicableCategories } = couponData;
+    const { code, discountType, discountValue, minOrderValue, maxRedeemableAmount, usageLimit, expiryDate, applicableCategories } = couponData;
 
     if (!code || code.trim() === '') throw new Error('Coupon Code is required');
     if (!/^[A-Z0-9]+$/i.test(code.trim())) throw new Error('Coupon Code must be alphanumeric');
@@ -105,6 +121,21 @@ const updateCouponService = async (id, couponData) => {
         _id: { $ne: id }
     });
     if (existingCoupon) throw new Error('Coupon Code already exists');
+
+    if (discountType === 'fixed') {
+        const val = Number(discountValue);
+        const minVal = Number(minOrderValue || 0);
+        if (val >= minVal) {
+            throw new Error('Fixed discount amount must be less than the minimum purchase requirement');
+        }
+    }
+
+    if (discountType === 'percentage' && maxRedeemableAmount !== undefined && maxRedeemableAmount !== null && maxRedeemableAmount !== '') {
+        const maxRed = Number(maxRedeemableAmount);
+        if (isNaN(maxRed) || maxRed <= 0) {
+            throw new Error('Maximum redeemable amount must be a positive number');
+        }
+    }
 
     const couponToUpdate = await couponModel.findById(id);
     if (!couponToUpdate) throw new Error('Coupon not found');
@@ -155,6 +186,7 @@ const updateCouponService = async (id, couponData) => {
                     discountType,
                     discountValue,
                     minOrderValue: minOrderValue || 0,
+                    maxRedeemableAmount: discountType === 'percentage' ? (maxRedeemableAmount || undefined) : undefined,
                     usageLimit: newUsageLimit,
                     expiryDate: newExpiryDate,
                     applicableCategories: categoriesArr,

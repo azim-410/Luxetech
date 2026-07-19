@@ -622,6 +622,7 @@
                                                                 data-type="<%= coupon.discountType %>"
                                                                 data-value="<%= coupon.discountValue %>"
                                                                 data-min="<%= coupon.minOrderValue %>"
+                                                                data-max="<%= coupon.maxRedeemableAmount || '' %>"
                                                                 data-categories="<%= coupon.applicableCategories.map(c => String(c._id || c)).join(',') %>"
                                                                 <% if (!isApplicable) { %>
                                                                 disabled
@@ -635,9 +636,9 @@
                                                                                 <% } else { %>
                                                                                     <%= coupon.code %> — <%=
                                                                                             coupon.discountType==='percentage'
-                                                                                            ? coupon.discountValue + '%'
-                                                                                            : '₹' + coupon.discountValue
-                                                                                            %> OFF
+                                                                                            ? coupon.discountValue + '% OFF' + (coupon.maxRedeemableAmount ? ' (Up to ₹' + coupon.maxRedeemableAmount + ')' : '')
+                                                                                            : '₹' + coupon.discountValue + ' OFF'
+                                                                                            %>
                                                                                             <% } %>
                                                             </option>
                                                             <% }); %>
@@ -1349,6 +1350,13 @@
                 } else {
                     if (type === 'percentage') {
                         couponDiscount = Math.round(baseSubtotal * (value / 100));
+                        const maxValAttr = selectedOption.getAttribute('data-max');
+                        if (maxValAttr) {
+                            const maxRedeem = parseFloat(maxValAttr);
+                            if (!isNaN(maxRedeem) && maxRedeem > 0) {
+                                couponDiscount = Math.min(couponDiscount, maxRedeem);
+                            }
+                        }
                     } else if (type === 'fixed') {
                         couponDiscount = value;
                     }

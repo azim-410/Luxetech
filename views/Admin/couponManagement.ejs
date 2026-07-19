@@ -151,7 +151,7 @@
                         <%= coupon.discountType %>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span onclick="openEditCouponModal('<%= coupon._id %>', '<%= coupon.code %>', '<%= coupon.discountType %>', <%= coupon.discountValue %>, <%= coupon.minOrderValue %>, <%= coupon.usageLimit || 'null' %>, '<%= coupon.expiryDate %>', '<%= JSON.stringify(coupon.applicableCategories.map(c => c._id)) %>')" class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="edit">edit</span>
+                        <span onclick="openEditCouponModal('<%= coupon._id %>', '<%= coupon.code %>', '<%= coupon.discountType %>', <%= coupon.discountValue %>, <%= coupon.minOrderValue %>, <%= coupon.maxRedeemableAmount || 'null' %>, <%= coupon.usageLimit || 'null' %>, '<%= coupon.expiryDate %>', '<%= JSON.stringify(coupon.applicableCategories.map(c => c._id)) %>')" class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="edit">edit</span>
                         <span onclick="openDeleteConfirm('<%= coupon._id %>', '<%= coupon.code %>')" class="material-symbols-outlined text-on-surface-variant hover:text-error cursor-pointer transition-colors" data-icon="delete">delete</span>
                     </div>
                 </div>
@@ -160,6 +160,12 @@
                         <%= coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue.toFixed(2)} OFF` %>
                     </h4>
                     <p class="text-sm font-bold font-mono tracking-widest text-secondary mt-1"><%= coupon.code %></p>
+                    <div class="text-[10px] text-on-surface-variant font-medium mt-1">
+                        Min. Spend: ₹<%= coupon.minOrderValue || 0 %>
+                        <% if (coupon.discountType === 'percentage' && coupon.maxRedeemableAmount) { %>
+                            | Max Discount: ₹<%= coupon.maxRedeemableAmount %>
+                        <% } %>
+                    </div>
                     <% if (coupon.applicableCategories && coupon.applicableCategories.length > 0) { %>
                         <div class="flex flex-wrap gap-1 mt-1.5">
                             <% coupon.applicableCategories.forEach(cat => { %>
@@ -225,6 +231,12 @@
                                 <%= coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue.toFixed(2)} OFF` %>
                             </h4>
                             <p class="text-sm font-bold font-mono tracking-widest text-on-surface-variant/70 mt-1"><%= coupon.code %></p>
+                            <div class="text-[10px] text-on-surface-variant/60 font-medium mt-1">
+                                Min. Spend: ₹<%= coupon.minOrderValue || 0 %>
+                                <% if (coupon.discountType === 'percentage' && coupon.maxRedeemableAmount) { %>
+                                    | Max Discount: ₹<%= coupon.maxRedeemableAmount %>
+                                <% } %>
+                            </div>
                             <% if (coupon.applicableCategories && coupon.applicableCategories.length > 0) { %>
                                 <div class="flex flex-wrap gap-1 mt-1.5 opacity-60">
                                     <% coupon.applicableCategories.forEach(cat => { %>
@@ -381,6 +393,13 @@
                     <input type="number" id="minOrderValue" name="minOrderValue" min="0" step="any" placeholder="e.g. 50"
                         class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
                 </div>
+            </div>
+
+            <!-- Max Redeemable Amount (For % based coupon) -->
+            <div id="maxRedeemableContainer" class="flex flex-col gap-1.5 hidden">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Max Redeemable Amount</label>
+                <input type="number" id="maxRedeemableAmount" name="maxRedeemableAmount" min="1" step="any" placeholder="e.g. 200 (Optional)"
+                    class="bg-surface-container border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" />
             </div>
 
             <!-- Limit (Usage) -->
@@ -603,14 +622,20 @@
     const discountValueInput = document.getElementById('discountValue');
 
     function updateDiscountValueUI() {
+        const container = document.getElementById('maxRedeemableContainer');
         if (discountTypeSelect.value === 'percentage') {
             discountValueLabel.textContent = 'Discount Percentage (%)';
             discountValueInput.placeholder = 'e.g. 20';
             discountValueInput.max = '100';
+            if (container) container.classList.remove('hidden');
         } else {
             discountValueLabel.textContent = 'Discount Amount (₹)';
             discountValueInput.placeholder = 'e.g. 150';
             discountValueInput.removeAttribute('max');
+            if (container) {
+                container.classList.add('hidden');
+                document.getElementById('maxRedeemableAmount').value = '';
+            }
         }
     }
 
@@ -650,7 +675,7 @@
         if (couponModal) couponModal.classList.remove('hidden');
     }
 
-    function openEditCouponModal(id, code, discountType, discountValue, minOrderValue, usageLimit, expiryDate, applicableCategoriesJson) {
+    function openEditCouponModal(id, code, discountType, discountValue, minOrderValue, maxRedeemableAmount, usageLimit, expiryDate, applicableCategoriesJson) {
         _editingCouponId = id;
         const modalTitle = document.getElementById('couponModalTitle');
         const submitBtn = document.getElementById('couponSubmitButton');
@@ -665,6 +690,7 @@
         updateDiscountValueUI();
         document.getElementById('discountValue').value = discountValue;
         document.getElementById('minOrderValue').value = minOrderValue;
+        document.getElementById('maxRedeemableAmount').value = maxRedeemableAmount !== null && maxRedeemableAmount !== undefined ? maxRedeemableAmount : '';
         document.getElementById('usageLimit').value = usageLimit !== null && usageLimit !== undefined ? usageLimit : '';
         
         // Format date to YYYY-MM-DD
@@ -771,6 +797,24 @@
                 return;
             }
 
+            const minOrderValue = parseFloat(document.getElementById('minOrderValue').value) || 0;
+            if (type === 'fixed' && value >= minOrderValue) {
+                showError('Fixed discount amount must be less than the minimum purchase requirement');
+                return;
+            }
+
+            let maxRedeemableAmount = null;
+            if (type === 'percentage') {
+                const maxRedVal = document.getElementById('maxRedeemableAmount').value;
+                if (maxRedVal !== '') {
+                    maxRedeemableAmount = parseFloat(maxRedVal);
+                    if (isNaN(maxRedeemableAmount) || maxRedeemableAmount <= 0) {
+                        showError('Maximum redeemable amount must be a positive number');
+                        return;
+                    }
+                }
+            }
+
             const checkboxes = categoryDropdownMenu ? categoryDropdownMenu.querySelectorAll('input[type="checkbox"]:checked') : [];
             const applicableCategories = Array.from(checkboxes).map(cb => cb.value);
 
@@ -779,6 +823,7 @@
                 discountType: type,
                 discountValue: value,
                 minOrderValue: parseFloat(document.getElementById('minOrderValue').value) || 0,
+                maxRedeemableAmount,
                 usageLimit: parseInt(document.getElementById('usageLimit').value) || null,
                 expiryDate: document.getElementById('expiryDate').value,
                 applicableCategories

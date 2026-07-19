@@ -266,6 +266,17 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Partial TTL index to match the index in MongoDB Atlas (auto-delete unpaid Razorpay orders after 15 minutes)
+orderSchema.index(
+    { createdAt: 1 },
+    {
+        expireAfterSeconds: 900,
+        partialFilterExpression: {
+            paymentStatus: 'Pending',
+            paymentMethod: 'Razorpay'
+        }
+    }
+);
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

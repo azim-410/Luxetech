@@ -10,6 +10,7 @@ export const getOffersPage = async (req, res) => {
             selectedCategories: serviceResult.selectedCategories,
             selectedPrices: serviceResult.selectedPrices,
             selectedSort: serviceResult.selectedSort,
+            selectedSearch: serviceResult.selectedSearch || '',
             user: req.session.user || req.user || null
         });
     } catch (error) {

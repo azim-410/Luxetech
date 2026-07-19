@@ -328,11 +328,11 @@
       <!-- Search Bar -->
       <div style="position: relative; max-width: 320px; width: 100%; z-index: 10;">
         <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; pointer-events: none;">search</span>
-        <input type="text" id="search-input" value="" placeholder="Search gear..." 
+        <input type="text" id="search-input" value="<%= locals.selectedSearch || '' %>" placeholder="Search gear..." 
           style="width: 100%; padding: 10px 14px 10px 40px; font-size: 13px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-family: inherit; outline: none; background: #fff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease-in-out;"
           onfocus="this.style.borderColor='#94a3b8'; this.style.boxShadow='0 0 0 3px rgba(148, 163, 184, 0.15)'"
           onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'" />
-        <span class="material-symbols-outlined" id="clear-search-btn" onclick="clearSearch()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; cursor: pointer; user-select: none; display: none;">close</span>
+        <span class="material-symbols-outlined" id="clear-search-btn" onclick="clearSearch()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; cursor: pointer; user-select: none; display: <%= (locals.selectedSearch) ? 'block' : 'none' %>;">close</span>
       </div>
 
       <span class="toolbar-count" style="margin-left: auto;">Showing <%= locals.products ? locals.products.length : 0 %> results</span>
@@ -395,8 +395,7 @@
           </div>
         <% } %>
       <% } %>
-      <!-- Dynamic no products message -->
-      <div id="no-products-message" style="display: none; grid-column: 1 / -1; text-align: center; padding: 40px; color: #777; width: 100%;">
+      <div id="no-products-message" style="display: <%= (!locals.products || products.length === 0) ? 'block' : 'none' %>; grid-column: 1 / -1; text-align: center; padding: 40px; color: #777; width: 100%;">
         <p>No products found matching your search.</p>
       </div>
     </div><!-- /product-grid -->
@@ -475,6 +474,7 @@
       });
 
       const sortVal = document.getElementById('sort-select').value;
+      const searchVal = document.getElementById('search-input').value.trim();
  
       const params = new URLSearchParams();
       if (categories.length > 0) {
@@ -486,6 +486,9 @@
       if (sortVal && sortVal !== 'newest') {
           params.set('sort', sortVal);
       }
+      if (searchVal) {
+          params.set('search', searchVal);
+      }
  
       window.location.href = '/shop?' + params.toString();
   }
@@ -494,62 +497,25 @@
       const input = document.getElementById('search-input');
       if (input) {
           input.value = '';
-          input.dispatchEvent(new Event('input'));
+          applyFilters();
       }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
       
-      function filterProducts() {
-          const query = searchInput.value.toLowerCase().trim();
-          const cards = document.querySelectorAll('.product-card');
-          let visibleCount = 0;
-
-          cards.forEach(card => {
-              const nameEl = card.querySelector('.product-name');
-              if (nameEl) {
-                  const name = nameEl.textContent.toLowerCase();
-                  if (name.includes(query)) {
-                      card.style.display = '';
-                      visibleCount++;
-                  } else {
-                      card.style.display = 'none';
-                  }
+      if (searchInput) {
+          searchInput.addEventListener('keypress', (e) => {
+              if (e.key === 'Enter') {
+                  applyFilters();
               }
           });
-
-          // Update count text
-          const countEl = document.querySelector('.toolbar-count');
-          if (countEl) {
-              countEl.textContent = `Showing ${visibleCount} results`;
-          }
-
-          // Show/hide close (clear) icon
-          const clearBtn = document.getElementById('clear-search-btn');
-          if (clearBtn) {
-              if (query) {
-                  clearBtn.style.display = 'block';
-              } else {
-                  clearBtn.style.display = 'none';
+          searchInput.addEventListener('input', () => {
+              if (clearBtn) {
+                  clearBtn.style.display = searchInput.value.trim() ? 'block' : 'none';
               }
-          }
-
-          // Show/hide no products message
-          const noProdMsg = document.getElementById('no-products-message');
-          if (noProdMsg) {
-              if (visibleCount === 0) {
-                  noProdMsg.style.display = 'block';
-              } else {
-                  noProdMsg.style.display = 'none';
-              }
-          }
-      }
-
-      if (searchInput) {
-          searchInput.addEventListener('input', filterProducts);
-          // Run immediately on page load to handle pre-populated query
-          filterProducts();
+          });
       }
   });
 </script>

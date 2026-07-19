@@ -22,6 +22,12 @@ export const getOfferProductsService = async (queryObject) => {
             selectedSort = queryObject.sort;
         }
 
+        // Parse search query
+        let search = '';
+        if (queryObject && queryObject.search) {
+            search = queryObject.search.trim();
+        }
+
         // 1. Get all active categories (to return to view for the sidebar)
         const categories = await categoryModel.find({
             isHidden: { $ne: true },
@@ -43,7 +49,8 @@ export const getOfferProductsService = async (queryObject) => {
                 categories: categories,
                 selectedCategories: selectedCategories,
                 selectedPrices: selectedPrices,
-                selectedSort: selectedSort
+                selectedSort: selectedSort,
+                selectedSearch: search
             };
         }
 
@@ -55,13 +62,19 @@ export const getOfferProductsService = async (queryObject) => {
         };
         const sortOption = sortMap[selectedSort] || {};
 
-        // 2. Fetch all products belonging to these categories
-        const products = await productModel.find({
+        // Build database query
+        const query = {
             isDeleted: { $ne: true },
             isHidden: { $ne: true },
             status: { $ne: false },
             category: { $in: targetCategoryIds }
-        }).populate('category').sort(sortOption);
+        };
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
+        }
+
+        // 2. Fetch all products belonging to these categories
+        const products = await productModel.find(query).populate('category').sort(sortOption);
 
         let productList = [];
 
@@ -132,7 +145,8 @@ export const getOfferProductsService = async (queryObject) => {
             categories: categories,
             selectedCategories: selectedCategories,
             selectedPrices: selectedPrices,
-            selectedSort: selectedSort
+            selectedSort: selectedSort,
+            selectedSearch: search
         };
     } catch (error) {
         console.error('getOfferProductsService error:', error);

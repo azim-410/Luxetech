@@ -24,13 +24,15 @@ const getShop = async (req, res) => {
         const selectedCategories = serviceResult.selectedCategories;
         const selectedPrices = serviceResult.selectedPrices;
         const selectedSort = serviceResult.selectedSort;
+        const selectedSearch = serviceResult.selectedSearch || '';
 
         res.render('User/product listing page', {
             products: products,
             categories: categories,
             selectedCategories: selectedCategories,
             selectedPrices: selectedPrices,
-            selectedSort: selectedSort
+            selectedSort: selectedSort,
+            selectedSearch: selectedSearch
         });
     } catch (error) {
         console.error('getShop error:', error);

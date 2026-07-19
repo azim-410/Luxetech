@@ -23,6 +23,12 @@ const getProductsForListing = async (queryObject) => {
             selectedSort = queryObject.sort;
         }
 
+        // Parse search query
+        let search = '';
+        if (queryObject && queryObject.search) {
+            search = queryObject.search.trim();
+        }
+
         // Fetch categories to return to view
         const categories = await categoryModel.find({ isHidden: { $ne: true }, status: true });
 
@@ -38,6 +44,9 @@ const getProductsForListing = async (queryObject) => {
         const query = { isDeleted: { $ne: true } };
         if (selectedCategories.length > 0) {
             query.category = { $in: selectedCategories };
+        }
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
         }
 
         // Fetch all active products sorted directly in MongoDB query
@@ -118,7 +127,8 @@ const getProductsForListing = async (queryObject) => {
             categories: categories,
             selectedCategories: selectedCategories,
             selectedPrices: selectedPrices,
-            selectedSort: selectedSort
+            selectedSort: selectedSort,
+            selectedSearch: search
         };
     } catch (error) {
         console.error('getProductsForListing service error:', error);

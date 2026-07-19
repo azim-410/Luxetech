@@ -215,6 +215,9 @@ const placeOrderService = async (userId, query, body) => {
 
         if (coupon.discountType === 'percentage') {
             couponDiscount = Math.round(cart.subtotal * (coupon.discountValue / 100));
+            if (coupon.maxRedeemableAmount !== undefined && coupon.maxRedeemableAmount !== null && coupon.maxRedeemableAmount > 0) {
+                couponDiscount = Math.min(couponDiscount, coupon.maxRedeemableAmount);
+            }
         } else if (coupon.discountType === 'fixed') {
             couponDiscount = coupon.discountValue;
         }

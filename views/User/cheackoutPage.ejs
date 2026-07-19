@@ -1171,9 +1171,122 @@
             if (e.key === 'Escape') closeEditModal();
         });
 
+        // ── Checkout Address validation helpers ─────────────────────────
+        function clearFormErrors(form) {
+            const errorBanner = form.querySelector('.bg-error-container');
+            if (errorBanner) errorBanner.remove();
+
+            form.querySelectorAll('input, select').forEach(el => {
+                el.classList.remove('border-red-500');
+                el.classList.add('border-outline-variant/30');
+            });
+            form.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        }
+
+        function showCheckoutFieldError(form, name, message) {
+            const input = form.querySelector(`[name="${name}"]`);
+            if (input) {
+                input.classList.remove('border-outline-variant/30', 'border-outline-variant\\/30');
+                input.classList.add('border-red-500');
+                
+                const errP = document.createElement('p');
+                errP.className = 'text-[10px] text-red-500 mt-1';
+                errP.textContent = message;
+                input.parentNode.appendChild(errP);
+            }
+        }
+
+        function showCheckoutTopBanner(form, message) {
+            const container = document.createElement('div');
+            container.className = 'bg-error-container text-[11px] text-red-600 rounded-lg px-4 py-3 text-left flex items-start gap-3 border border-red-200';
+            container.innerHTML = `
+                <span class="material-symbols-outlined text-base shrink-0 mt-0.5">error</span>
+                <div>
+                  <p class="font-bold">${message}</p>
+                </div>
+            `;
+            form.insertBefore(container, form.firstChild);
+        }
+
+        function validateCheckoutAddressForm(form, getFieldFn) {
+            clearFormErrors(form);
+            let hasError = false;
+
+            const fullName = getFieldFn('fullName').value.trim();
+            const streetAddress = getFieldFn('streetAddress').value.trim();
+            const city = getFieldFn('city').value.trim();
+            const zipCode = getFieldFn('zipCode').value.trim();
+            const state = getFieldFn('state').value.trim();
+            const country = getFieldFn('country').value.trim();
+            const phoneNumber = getFieldFn('phoneNumber').value.trim();
+
+            if (!fullName) {
+                showCheckoutFieldError(form, 'fullName', 'Full name is required.');
+                hasError = true;
+            } else if (fullName.length < 3) {
+                showCheckoutFieldError(form, 'fullName', 'Full name must be at least 3 characters.');
+                hasError = true;
+            }
+
+            if (!streetAddress) {
+                showCheckoutFieldError(form, 'streetAddress', 'Street address is required.');
+                hasError = true;
+            }
+
+            if (!city) {
+                showCheckoutFieldError(form, 'city', 'City is required.');
+                hasError = true;
+            }
+
+            if (!zipCode) {
+                showCheckoutFieldError(form, 'zipCode', 'Zip code is required.');
+                hasError = true;
+            }
+
+            if (!state) {
+                showCheckoutFieldError(form, 'state', 'State is required.');
+                hasError = true;
+            }
+
+            if (!country) {
+                showCheckoutFieldError(form, 'country', 'Country is required.');
+                hasError = true;
+            }
+
+            if (!phoneNumber) {
+                showCheckoutFieldError(form, 'phoneNumber', 'Phone number is required.');
+                hasError = true;
+            } else if (!/^[0-9]{10}$/.test(phoneNumber)) {
+                showCheckoutFieldError(form, 'phoneNumber', 'Phone number must be exactly 10 digits (no spaces or dashes).');
+                hasError = true;
+            } else if (/^(\d)\1{9}$/.test(phoneNumber)) {
+                showCheckoutFieldError(form, 'phoneNumber', 'Phone number cannot consist of the same digit repeated.');
+                hasError = true;
+            }
+
+            if (hasError) {
+                showCheckoutTopBanner(form, 'Please fix the highlighted errors below.');
+            }
+            return !hasError;
+        }
+
         // Initialization
         if (newAddressForm) {
             newAddressForm.action = `/checkout/address/add${window.location.search}`;
+            newAddressForm.addEventListener('submit', (e) => {
+                function newField(name) { return newAddressForm.querySelector(`[name="${name}"]`); }
+                if (!validateCheckoutAddressForm(newAddressForm, newField)) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        if (editAddressForm) {
+            editAddressForm.addEventListener('submit', (e) => {
+                if (!validateCheckoutAddressForm(editAddressForm, editField)) {
+                    e.preventDefault();
+                }
+            });
         }
 
         <% if (addresses.length === 0 || locals.activeTab === 'new') { %>

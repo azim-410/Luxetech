@@ -504,6 +504,94 @@
         openModal();
         <% } %>
 
+        // ── Client-side form validation ───────────────────────────────
+        function showFieldError(name, message) {
+          const input = field(name);
+          if (input) {
+            input.classList.remove('border-outline-variant/30', 'border-outline-variant\\/30');
+            input.classList.add('border-error');
+            
+            const errP = document.createElement('p');
+            errP.className = 'text-[10px] text-error mt-1';
+            errP.textContent = message;
+            input.parentNode.appendChild(errP);
+          }
+        }
+
+        function showTopBanner(form, message) {
+          const container = document.createElement('div');
+          container.className = 'flex items-start gap-3 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-xs';
+          container.innerHTML = `
+            <span class="material-symbols-outlined text-base shrink-0 mt-0.5">error</span>
+            <div>
+              <p class="font-bold">${message}</p>
+            </div>
+          `;
+          form.insertBefore(container, form.firstChild);
+        }
+
+        modalForm.addEventListener('submit', (e) => {
+          clearErrors();
+          let hasError = false;
+
+          const fullName = field('fullName').value.trim();
+          const streetAddress = field('streetAddress').value.trim();
+          const city = field('city').value.trim();
+          const zipCode = field('zipCode').value.trim();
+          const state = field('state').value.trim();
+          const country = field('country').value.trim();
+          const phoneNumber = field('phoneNumber').value.trim();
+
+          if (!fullName) {
+            showFieldError('fullName', 'Full name is required.');
+            hasError = true;
+          } else if (fullName.length < 3) {
+            showFieldError('fullName', 'Full name must be at least 3 characters.');
+            hasError = true;
+          }
+
+          if (!streetAddress) {
+            showFieldError('streetAddress', 'Street address is required.');
+            hasError = true;
+          }
+
+          if (!city) {
+            showFieldError('city', 'City is required.');
+            hasError = true;
+          }
+
+          if (!zipCode) {
+            showFieldError('zipCode', 'Zip code is required.');
+            hasError = true;
+          }
+
+          if (!state) {
+            showFieldError('state', 'State is required.');
+            hasError = true;
+          }
+
+          if (!country) {
+            showFieldError('country', 'Country is required.');
+            hasError = true;
+          }
+
+          if (!phoneNumber) {
+            showFieldError('phoneNumber', 'Phone number is required.');
+            hasError = true;
+          } else if (!/^[0-9]{10}$/.test(phoneNumber)) {
+            showFieldError('phoneNumber', 'Phone number must be exactly 10 digits (no spaces or dashes).');
+            hasError = true;
+          } else if (/^(\d)\1{9}$/.test(phoneNumber)) {
+            showFieldError('phoneNumber', 'Phone number cannot consist of the same digit repeated.');
+            hasError = true;
+          }
+
+          if (hasError) {
+            e.preventDefault();
+            showTopBanner(modalForm, 'Please fix the highlighted errors below.');
+          }
+        });
+
         // ── Delete modal ───────────────────────────────────────────────
         const deleteModal    = document.getElementById('deleteAddressModal');
         const cancelDeleteBtn  = document.getElementById('cancelDeleteAddressBtn');

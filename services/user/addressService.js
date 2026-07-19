@@ -84,6 +84,8 @@ const validateAddressData = ({ fullName, streetAddress, city, zipCode, state, co
         errors.phoneNumber = 'Phone number is required.';
     } else if (!PHONE_REGEX.test(phoneNumber.trim())) {
         errors.phoneNumber = 'Phone number must be exactly 10 digits (no spaces or dashes).';
+    } else if (/^(\d)\1{9}$/.test(phoneNumber.trim())) {
+        errors.phoneNumber = 'Phone number cannot consist of the same digit repeated.';
     }
 
     return errors;

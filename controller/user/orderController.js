@@ -1,5 +1,5 @@
 import { getUserById } from '../../services/user/profileService.js';
-import { getUserOrdersService, getOrderByIdService, cancelOrderService, returnOrderService } from '../../services/user/orderService.js';
+import { getUserOrdersService, getOrderByIdService, cancelOrderService, returnOrderService, retryPaymentService } from '../../services/user/orderService.js';
 
 const getOrdersPage = async (req, res) => {
     try {
@@ -126,10 +126,34 @@ const processReturn = async (req, res) => {
     }
 };
 
+const retryPayment = async (req, res) => {
+    try {
+        const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        const { orderId } = req.body;
+        const retryData = await retryPaymentService(orderId, userId);
+
+        return res.json({
+            success: true,
+            ...retryData
+        });
+    } catch (error) {
+        console.error('retryPayment controller error:', error);
+        return res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to initiate payment retry.'
+        });
+    }
+};
+
 export {
     getOrdersPage,
     getTrackingPage,
     cancelOrder,
     getReturnPage,
-    processReturn
+    processReturn,
+    retryPayment
 };

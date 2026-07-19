@@ -23,7 +23,7 @@ import {
     verifyPayment
 } from '../controller/user/checkoutController.js';
 
-import { getOrdersPage, getTrackingPage, cancelOrder, getReturnPage, processReturn } from '../controller/user/orderController.js';
+import { getOrdersPage, getTrackingPage, cancelOrder, getReturnPage, processReturn, retryPayment } from '../controller/user/orderController.js';
 import { getOffersPage } from '../controller/user/offersController.js';
 
 const router = express.Router();
@@ -67,6 +67,7 @@ router.get('/orders/track/:orderId', isAuthenticated, checkIfBlocked, getTrackin
 router.post('/orders/cancel/:orderId', isAuthenticated, checkIfBlocked, cancelOrder);
 router.get('/orders/return/:orderId', isAuthenticated, checkIfBlocked, getReturnPage);
 router.post('/orders/return/:orderId', isAuthenticated, checkIfBlocked, processReturn);
+router.post('/orders/retry-payment', isAuthenticated, checkIfBlocked, retryPayment);
 
 
 export default router;

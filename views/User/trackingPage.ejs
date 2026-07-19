@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <!-- html2pdf.js for exporting PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
     rel="stylesheet" />
@@ -196,6 +198,13 @@
                     </div>
                   </div>
                   <div class="flex gap-3 flex-wrap">
+                    <% if (order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Pending' && order.orderStatus === 'Pending') { %>
+                      <button onclick="retryPayment('<%= order.orderId %>', <%= order.pricing.grandTotal %>)"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-black text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md">
+                        <span class="material-symbols-outlined text-sm">payments</span>
+                        Retry Payment
+                      </button>
+                    <% } %>
                     <button
                       class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
                       <span class="material-symbols-outlined text-sm">support_agent</span>
@@ -421,6 +430,15 @@
                                       <% } %>
                             </div>
                           </div>
+                          <% if (order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Pending' && order.orderStatus === 'Pending') { %>
+                            <div class="mt-4 pt-4 border-t border-outline-variant/10">
+                              <button onclick="retryPayment('<%= order.orderId %>', <%= order.pricing.grandTotal %>)"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-black text-white hover:bg-neutral-800 rounded-md text-xs font-bold uppercase tracking-wider transition-all shadow-md">
+                                <span class="material-symbols-outlined text-sm">payments</span>
+                                Retry Payment
+                              </button>
+                            </div>
+                          <% } %>
                         </div>
                       </div>
                     </div>
@@ -1281,6 +1299,78 @@
               } finally {
                   btn.disabled = false;
                   btn.innerHTML = originalText;
+              }
+          }
+
+          async function retryPayment(orderId, amount) {
+              const retryBtn = event.currentTarget;
+              const originalText = retryBtn.innerHTML;
+              retryBtn.disabled = true;
+              retryBtn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">sync</span> Processing...`;
+
+              try {
+                  const response = await fetch('/orders/retry-payment', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ orderId })
+                  });
+                  const data = await response.json();
+
+                  if (!data.success) {
+                      throw new Error(data.message || 'Failed to initiate payment retry.');
+                  }
+
+                  const options = {
+                      "key": data.razorpayKeyId,
+                      "amount": data.amount,
+                      "currency": data.currency,
+                      "name": "Luxe Tech",
+                      "description": "Payment Retry for Order #" + data.orderId,
+                      "image": "/logo.png",
+                      "order_id": data.razorpayOrderId,
+                      "handler": function (response) {
+                          // Call checkout verify payment endpoint to verify the transaction
+                          fetch('/checkout/verify-payment', {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                  razorpay_order_id: response.razorpay_order_id,
+                                  razorpay_payment_id: response.razorpay_payment_id,
+                                  razorpay_signature: response.razorpay_signature
+                              })
+                          })
+                          .then(res => res.json())
+                          .then(verifyData => {
+                              if (verifyData.success) {
+                                  window.location.href = `/order/success?orderId=${verifyData.orderId}`;
+                              } else {
+                                  alert(verifyData.message || 'Payment verification failed.');
+                              }
+                          })
+                          .catch(err => {
+                              console.error(err);
+                              alert('Payment verification connection failed.');
+                          });
+                      },
+                      "prefill": {
+                          "name": "<%= order.shippingAddress.fullName %>",
+                          "contact": "<%= order.shippingAddress.phoneNumber %>"
+                      },
+                      "theme": { "color": "#000000" }
+                  };
+                  const rzp = new Razorpay(options);
+                  rzp.open();
+
+              } catch (err) {
+                  console.error('Error retrying payment:', err);
+                  alert(err.message || 'An error occurred while retrying the payment.');
+              } finally {
+                  retryBtn.disabled = false;
+                  retryBtn.innerHTML = originalText;
               }
           }
         </script>

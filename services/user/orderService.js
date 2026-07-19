@@ -2,6 +2,7 @@ import Order from '../../model/order.js';
 import variantModel from '../../model/variant.js';
 import User from '../../model/userModel.js';
 import Transaction from '../../model/transaction.js';
+import razorpay from '../../config/razorpay.js';
 
 const getUserOrdersService = async (userId) => {
     try {
@@ -203,9 +204,69 @@ const returnOrderService = async (orderId, userId, selectedItems, reason, commen
     }
 };
 
+const retryPaymentService = async (orderId, userId) => {
+    try {
+        const order = await Order.findOne({ orderId, userId });
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        // Validate eligibility
+        if (order.paymentMethod !== 'Razorpay') {
+            throw new Error('Order is not configured for Razorpay payment.');
+        }
+        if (order.paymentStatus === 'Paid') {
+            throw new Error('Order is already paid.');
+        }
+        if (order.orderStatus === 'Cancelled') {
+            throw new Error('Order has been cancelled.');
+        }
+
+        // Validate stock of items in the order
+        for (const item of order.items) {
+            if (item.variantId) {
+                const variant = await variantModel.findById(item.variantId);
+                if (!variant || variant.stock < item.quantity) {
+                    throw new Error(`Insufficient stock for "${item.name}"`);
+                }
+            }
+        }
+
+        // Create a new Razorpay order
+        let razorpayOrderId;
+        try {
+            const rzpOrder = await razorpay.orders.create({
+                amount: Math.round(order.pricing.grandTotal * 100), // in paise
+                currency: 'INR',
+                receipt: order.orderId
+            });
+            razorpayOrderId = rzpOrder.id;
+        } catch (error) {
+            console.error("Razorpay order retry creation error:", error);
+            throw new Error("Failed to initiate online payment transaction with Razorpay. " + (error.message || ''));
+        }
+
+        // Update the order's razorpayOrderId
+        order.razorpayOrderId = razorpayOrderId;
+        await order.save();
+
+        return {
+            orderId: order.orderId,
+            razorpayOrderId,
+            amount: Math.round(order.pricing.grandTotal * 100),
+            currency: 'INR',
+            razorpayKeyId: process.env.RAZORPAY_KEY_ID
+        };
+    } catch (error) {
+        console.error('retryPaymentService error:', error);
+        throw error;
+    }
+};
+
 export {
     getUserOrdersService,
     getOrderByIdService,
     cancelOrderService,
-    returnOrderService
+    returnOrderService,
+    retryPaymentService
 };

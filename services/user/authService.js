@@ -45,6 +45,12 @@ const registerUser = async (data) => {
         errors.password = "Password is required";
     } else if (password.length < 6) {
         errors.password = "Password must be at least 6 characters";
+    } else if (!/[A-Z]/.test(password)) {
+        errors.password = "Password must contain at least one uppercase letter";
+    } else if (!/[a-z]/.test(password)) {
+        errors.password = "Password must contain at least one lowercase letter";
+    } else if (!/[0-9]/.test(password)) {
+        errors.password = "Password must contain at least one number";
     }
 
     // Confirm Password Validation
@@ -247,6 +253,21 @@ const updatePasswordService = async (email, newPassword, confirmPassword) => {
     }
     if (newPassword.length < 6) {
         const err = new Error('Password must be at least 6 characters.');
+        err.field = 'newPassword';
+        throw err;
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+        const err = new Error('Password must contain at least one uppercase letter.');
+        err.field = 'newPassword';
+        throw err;
+    }
+    if (!/[a-z]/.test(newPassword)) {
+        const err = new Error('Password must contain at least one lowercase letter.');
+        err.field = 'newPassword';
+        throw err;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+        const err = new Error('Password must contain at least one number.');
         err.field = 'newPassword';
         throw err;
     }

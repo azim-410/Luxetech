@@ -313,14 +313,14 @@ const changePasswordService = async (userId, newPassword, confirmPassword) => {
         throw new Error('New password must contain at least one uppercase letter.');
     }
 
+    // Must contain at least one lowercase letter
+    if (!/[a-z]/.test(newPassword)) {
+        throw new Error('New password must contain at least one lowercase letter.');
+    }
+
     // Must contain at least one digit
     if (!/[0-9]/.test(newPassword)) {
         throw new Error('New password must contain at least one number.');
-    }
-
-    // Must contain at least one special character
-    if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>/?`~\\|]/.test(newPassword)) {
-        throw new Error('New password must contain at least one special character.');
     }
 
     if (newPassword !== confirmPassword) {

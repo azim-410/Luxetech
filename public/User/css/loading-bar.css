@@ -1,4 +1,10 @@
-/* --- Top Page Loading Bar (Deep Navy & Sapphire Theme) --- */
+/* --- Top Page Loading Bar (Dark Midnight & Charcoal Theme) --- */
+:root {
+    --loading-bar-gradient: linear-gradient(90deg, #0f172a 0%, #1e293b 35%, #334155 70%, #0f172a 100%);
+    --loading-bar-glow: 0 0 8px rgba(15, 23, 42, 0.9), 0 0 4px rgba(30, 41, 59, 0.7);
+    --loading-bar-peg-glow: 0 0 8px #334155, 0 0 4px #1e293b;
+}
+
 .page-loading-bar {
     position: fixed;
     top: 0;
@@ -20,11 +26,10 @@
 .page-loading-bar-progress {
     height: 100%;
     width: 0%;
-    background-color: #47596c;
-    background-image: linear-gradient(90deg, #0d1b2a 0%, #1e3a5f 40%, #001a52 70%, #0d1b2a 100%);
+    background-image: var(--loading-bar-gradient);
     background-size: 200% 100%;
     animation: moveGradientLeftToRight 1.5s linear infinite;
-    box-shadow: 0 0 10px rgba(37, 99, 235, 0.6), 0 0 5px rgba(13, 27, 42, 0.8);
+    box-shadow: var(--loading-bar-glow);
     transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
@@ -44,7 +49,7 @@
     right: 0px;
     width: 100px;
     height: 100%;
-    box-shadow: 0 0 10px #2563eb, 0 0 5px #1e3a5f;
+    box-shadow: var(--loading-bar-peg-glow);
     opacity: 1;
     transform: rotate(3deg) translate(0px, -4px);
 }

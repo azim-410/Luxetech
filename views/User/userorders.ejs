@@ -226,15 +226,15 @@
                                   shipment • Ships from Central Hub
                               </p>
                               <div class="mt-4 flex flex-wrap gap-4">
-                                <% if (['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(order.orderStatus)) { %>
-                                  <button disabled style="opacity: 0.5; pointer-events: none; cursor: not-allowed;"
-                                    class="text-[11px] font-bold uppercase tracking-widest border-b border-gray-400 text-gray-400 pb-0.5 flex items-center gap-1">
+                                <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(order.orderStatus)) { %>
+                                  <button onclick="downloadInvoicePDF(this)" data-order="<%= encodeURIComponent(JSON.stringify(order)) %>" data-email="<%= user.email %>"
+                                    class="text-[11px] font-bold uppercase tracking-widest border-b border-black text-black pb-0.5 hover:text-slate-700 hover:border-slate-400 transition-colors flex items-center gap-1">
                                     <span class="material-symbols-outlined text-sm">description</span>
                                     Download Invoice
                                   </button>
                                 <% } else { %>
-                                  <button onclick="downloadInvoicePDF(this)" data-order="<%= encodeURIComponent(JSON.stringify(order)) %>" data-email="<%= user.email %>"
-                                    class="text-[11px] font-bold uppercase tracking-widest border-b border-black text-black pb-0.5 hover:text-slate-700 hover:border-slate-400 transition-colors flex items-center gap-1">
+                                  <button disabled style="opacity: 0.5; pointer-events: none; cursor: not-allowed;" title="Invoice available after delivery"
+                                    class="text-[11px] font-bold uppercase tracking-widest border-b border-gray-400 text-gray-400 pb-0.5 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-sm">description</span>
                                     Download Invoice
                                   </button>

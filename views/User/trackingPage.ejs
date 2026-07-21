@@ -210,15 +210,15 @@
                       <span class="material-symbols-outlined text-sm">support_agent</span>
                       Get Help
                     </button>
-                    <% if (['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(order.orderStatus)) { %>
-                      <button disabled style="opacity: 0.5; pointer-events: none; cursor: not-allowed;"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider">
+                    <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(order.orderStatus)) { %>
+                      <button onclick="downloadInvoicePDF(this)"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
                         <span class="material-symbols-outlined text-sm">download</span>
                         Download Invoice
                       </button>
                     <% } else { %>
-                      <button onclick="downloadInvoicePDF(this)"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
+                      <button disabled style="opacity: 0.5; pointer-events: none; cursor: not-allowed;" title="Invoice available after delivery"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider">
                         <span class="material-symbols-outlined text-sm">download</span>
                         Download Invoice
                       </button>

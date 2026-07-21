@@ -10,6 +10,7 @@
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="/User/css/main-global.css">
+    <link rel="stylesheet" href="/User/css/loading-bar.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -45,6 +46,7 @@
 </head>
 
 <body class="bg-[#F4F6F9] font-body text-on-surface antialiased min-h-screen flex flex-col justify-between">
+    <%- include('../partials/loadingBar') %>
 
     <%- include('../partials/user/main-header', { user }) %>
 
@@ -603,7 +605,7 @@
                 });
             }
         </script>
-
+        <script src="/User/js/loading-bar.js"></script>
 </body>
 
 </html>

@@ -15,6 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
   <link href="/User/css/main-global.css" rel="stylesheet" />
+  <link href="/User/css/loading-bar.css" rel="stylesheet" />
   <link href="/User/css/profile.css" rel="stylesheet" />
   <script id="tailwind-config">
     tailwind.config = {
@@ -83,6 +84,7 @@
 </head>
 
 <body class="text-on-surface bg-background">
+  <%- include('../partials/loadingBar') %>
   <%- include('../partials/user/main-header', { user }) %>
     <% const
       dummyImgUrl='https://lh3.googleusercontent.com/aida-public/AB6AXuCjFumsIfpKweThkz0kigWDz4L3U_MlZOYAOjJqVe_fiTnzYV-LTpbevhNkCABEs92MYz-pOz4nfaNJ_ZaH-gt9q4BgY9RjUl8a828prR07HQSp1jOu-01gXC4efDLIQQTWkL40yxC7rdOXkerc1MPXQoaKtayglB0j0wCAVLobeEwrXuTSCDjMvdBsRuuTYFfuc2Tle7m9vQt41ZLWCIXDiTNkVuMlCqY4vlUjmcXOrGqfc269b-Zh8a-6CX3Ib2OtsJuKe0UHik0'
@@ -508,6 +510,7 @@
       </script>
 
       <%- include('../partials/user/profile-mobile-nav') %>
+      <script src="/User/js/loading-bar.js"></script>
 </body>
 
 </html>

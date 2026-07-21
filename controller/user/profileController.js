@@ -10,67 +10,83 @@ import {
   getProfileDashboardData,
   verifyCurrentOtpService,
   resendCurrentOtpService,
-  getProfileCurrentOtpTimerData
-} from '../../services/user/profileService.js';
-import Transaction from '../../model/transaction.js';
+  getProfileCurrentOtpTimerData,
+} from "../../services/user/profileService.js";
+import Transaction from "../../model/transaction.js";
 
 const getProfile = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const user = await getUserById(userId);
 
-    if (!user) return res.redirect('/login');
+    if (!user) return res.redirect("/login");
 
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
 
-    return res.render('User/profile', { user, recentOrders, savedAddresses });
-
+    return res.render("User/profile", { user, recentOrders, savedAddresses });
   } catch (error) {
-    console.error('Profile error:', error);
-    return res.status(500).send('Server error');
+    console.error("Profile error:", error);
+    return res.status(500).send("Server error");
   }
 };
 
 const updateProfile = async (req, res) => {
-  console.log('start')
+  console.log("start");
   try {
-    console.log("part 1 ")
+    console.log("part 1 ");
 
     const { name, email } = req.body;
 
-    console.log('[updateProfile] START - data:', { name, email });
+    console.log("[updateProfile] START - data:", { name, email });
     const userId = req.session.user.id;
-    console.log('[updateProfile] userId:', userId);
+    console.log("[updateProfile] userId:", userId);
 
     const profileImage = req.file ? req.file.path : null;
-    console.log('[updateProfile] profileImage:', profileImage);
+    console.log("[updateProfile] profileImage:", profileImage);
 
-    console.log('[updateProfile] calling updateProfileService...');
-    const result = await updateProfileService(userId, name, email, profileImage);
-    console.log('[updateProfile] result:', result);
+    console.log("[updateProfile] calling updateProfileService...");
+    const result = await updateProfileService(
+      userId,
+      name,
+      email,
+      profileImage,
+    );
+    console.log("[updateProfile] result:", result);
 
     if (result.requiresOtp) {
-      console.log('[updateProfile] requiresOtp=true → redirecting to /verify-current-email-otp');
-      return res.redirect('/verify-current-email-otp');
+      console.log(
+        "[updateProfile] requiresOtp=true → redirecting to /verify-current-email-otp",
+      );
+      return res.redirect("/verify-current-email-otp");
     }
 
     const user = await getUserById(userId);
-    console.log('[updateProfile] done, rendering profile with success');
+    console.log("[updateProfile] done, rendering profile with success");
 
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
 
-    return res.status(200).render('User/profile', {
+    return res.status(200).render("User/profile", {
       user,
       successMessage: result.message,
       recentOrders,
-      savedAddresses
+      savedAddresses,
     });
   } catch (error) {
-    console.error('[updateProfile] ERROR:', error.message, error.stack);
+    console.error("[updateProfile] ERROR:", error.message, error.stack);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
-    return res.status(400).render('User/profile', { user, errorMessage: error.message, recentOrders, savedAddresses });
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
+    return res
+      .status(400)
+      .render("User/profile", {
+        user,
+        errorMessage: error.message,
+        recentOrders,
+        savedAddresses,
+      });
   }
 };
 
@@ -80,59 +96,70 @@ const deleteProfileImage = async (req, res) => {
 
     const result = await deleteProfileImageServices(userId);
     const user = await getUserById(userId);
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
-    return res.status(200).render('User/profile', {
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
+    return res.status(200).render("User/profile", {
       user,
       successMessage: result.message,
       recentOrders,
-      savedAddresses
+      savedAddresses,
     });
   } catch (error) {
-    console.error('Delete image error:', error.message);
+    console.error("Delete image error:", error.message);
     const userId = req.session.user.id;
     const user = await getUserById(userId);
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
-    return res.status(400).render('User/profile', { user, errorMessage: error.message, recentOrders, savedAddresses });
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
+    return res
+      .status(400)
+      .render("User/profile", {
+        user,
+        errorMessage: error.message,
+        recentOrders,
+        savedAddresses,
+      });
   }
 };
 
 const showCurrentOtpPage = async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileCurrentOtpTimerData(userId);
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-current-email-otp',
-      resendUrl:             '/verify-current-email-otp/resend',
-      errorMessage:          null,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileCurrentOtpTimerData(userId);
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-current-email-otp",
+      resendUrl: "/verify-current-email-otp/resend",
+      errorMessage: null,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   } catch (error) {
-    console.error('[showCurrentOtpPage] ERROR:', error.message);
-    return res.status(500).send('Server error');
+    console.error("[showCurrentOtpPage] ERROR:", error.message);
+    return res.status(500).send("Server error");
   }
 };
 
 const verifyCurrentOtp = async (req, res) => {
   try {
-    const otp = Object.values(req.body).join('');
+    const otp = Object.values(req.body).join("");
     const userId = req.session.user.id;
     await verifyCurrentOtpService(userId, otp);
-    return res.redirect('/verify-emailChange-otp');
+    return res.redirect("/verify-emailChange-otp");
   } catch (error) {
-    console.error('[verifyCurrentOtp] ERROR:', error.message);
+    console.error("[verifyCurrentOtp] ERROR:", error.message);
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileCurrentOtpTimerData(userId);
-    return res.status(400).render('User/auth/otp-verification', {
-      actionUrl:             '/verify-current-email-otp',
-      resendUrl:             '/verify-current-email-otp/resend',
-      errorMessage:          error.message,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileCurrentOtpTimerData(userId);
+    return res.status(400).render("User/auth/otp-verification", {
+      actionUrl: "/verify-current-email-otp",
+      resendUrl: "/verify-current-email-otp/resend",
+      errorMessage: error.message,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   }
 };
@@ -141,28 +168,30 @@ const resendCurrentOtp = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const result = await resendCurrentOtpService(userId);
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileCurrentOtpTimerData(userId);
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-current-email-otp',
-      resendUrl:             '/verify-current-email-otp/resend',
-      errorMessage:          null,
-      successMessage:        result.message,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileCurrentOtpTimerData(userId);
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-current-email-otp",
+      resendUrl: "/verify-current-email-otp/resend",
+      errorMessage: null,
+      successMessage: result.message,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   } catch (error) {
-    console.error('[resendCurrentOtp] ERROR:', error.message);
+    console.error("[resendCurrentOtp] ERROR:", error.message);
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileCurrentOtpTimerData(userId);
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-current-email-otp',
-      resendUrl:             '/verify-current-email-otp/resend',
-      errorMessage:          error.message,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileCurrentOtpTimerData(userId);
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-current-email-otp",
+      resendUrl: "/verify-current-email-otp/resend",
+      errorMessage: error.message,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   }
 };
@@ -170,52 +199,55 @@ const resendCurrentOtp = async (req, res) => {
 const showOtpPage = async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileOtpTimerData(userId);
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-emailChange-otp',
-      resendUrl:             '/verify-emailChange-otp/resend',
-      errorMessage:          null,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileOtpTimerData(userId);
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-emailChange-otp",
+      resendUrl: "/verify-emailChange-otp/resend",
+      errorMessage: null,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   } catch (error) {
-    console.error('[showOtpPage] ERROR:', error.message, error.stack);
-    return res.status(500).send('Server error');
+    console.error("[showOtpPage] ERROR:", error.message, error.stack);
+    return res.status(500).send("Server error");
   }
 };
 
 const verifyOtp = async (req, res) => {
   try {
-    console.log('[verifyOtp] body:', req.body);
-    const otp = Object.values(req.body).join('');
+    console.log("[verifyOtp] body:", req.body);
+    const otp = Object.values(req.body).join("");
     const userId = req.session.user.id;
-    console.log('[verifyOtp] otp:', otp, '| userId:', userId);
+    console.log("[verifyOtp] otp:", otp, "| userId:", userId);
 
     const result = await verifyOtpService(userId, otp);
-    console.log('[verifyOtp] result:', result);
+    console.log("[verifyOtp] result:", result);
     const user = await getUserById(userId);
-    const { recentOrders, savedAddresses } = await getProfileDashboardData(userId);
+    const { recentOrders, savedAddresses } =
+      await getProfileDashboardData(userId);
 
-    return res.status(200).render('User/profile', {
+    return res.status(200).render("User/profile", {
       user,
       successMessage: result.message,
       recentOrders,
-      savedAddresses
+      savedAddresses,
     });
   } catch (error) {
-    console.error('[verifyOtp] ERROR:', error.message);
+    console.error("[verifyOtp] ERROR:", error.message);
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileOtpTimerData(userId);
-    return res.status(400).render('User/auth/otp-verification', {
-      actionUrl:             '/verify-emailChange-otp',
-      resendUrl:             '/verify-emailChange-otp/resend',
-      errorMessage:          error.message,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileOtpTimerData(userId);
+    return res.status(400).render("User/auth/otp-verification", {
+      actionUrl: "/verify-emailChange-otp",
+      resendUrl: "/verify-emailChange-otp/resend",
+      errorMessage: error.message,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   }
 };
@@ -224,41 +256,43 @@ const resendOtp = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const result = await resendOtpService(userId);
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileOtpTimerData(userId);
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileOtpTimerData(userId);
 
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-emailChange-otp',
-      resendUrl:             '/verify-emailChange-otp/resend',
-      errorMessage:          null,
-      successMessage:        result.message,
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-emailChange-otp",
+      resendUrl: "/verify-emailChange-otp/resend",
+      errorMessage: null,
+      successMessage: result.message,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   } catch (error) {
-    console.error('Resend OTP error:', error.message);
+    console.error("Resend OTP error:", error.message);
     const userId = req.session.user.id;
-    const { remainingSeconds, resendCooldownSeconds, email } = await getProfileOtpTimerData(userId);
-    return res.render('User/auth/otp-verification', {
-      actionUrl:             '/verify-emailChange-otp',
-      resendUrl:             '/verify-emailChange-otp/resend',
-      errorMessage:          error.message,
-      successMessage:        null,
+    const { remainingSeconds, resendCooldownSeconds, email } =
+      await getProfileOtpTimerData(userId);
+    return res.render("User/auth/otp-verification", {
+      actionUrl: "/verify-emailChange-otp",
+      resendUrl: "/verify-emailChange-otp/resend",
+      errorMessage: error.message,
+      successMessage: null,
       remainingSeconds,
       resendCooldownSeconds,
-      email
+      email,
     });
   }
 };
 
 const showChangePasswordPage = async (req, res) => {
   try {
-    return res.render('User/changepassword', {
-      actionUrl: '/change-password/verify-old'
+    return res.render("User/changepassword", {
+      actionUrl: "/change-password/verify-old",
     });
   } catch (error) {
-    console.error('Change password page error:', error.message);
-    return res.status(500).send('Server error');
+    console.error("Change password page error:", error.message);
+    return res.status(500).send("Server error");
   }
 };
 
@@ -271,13 +305,12 @@ const verifyOldPassword = async (req, res) => {
 
     req.session.passwordVerified = true;
 
-    return res.redirect('/change-password/new');
-
+    return res.redirect("/change-password/new");
   } catch (error) {
-    console.error('Verify old password error:', error.message);
-    return res.status(400).render('User/changepassword', {
-      actionUrl: '/change-password/verify-old',
-      errorMessage: error.message
+    console.error("Verify old password error:", error.message);
+    return res.status(400).render("User/changepassword", {
+      actionUrl: "/change-password/verify-old",
+      errorMessage: error.message,
     });
   }
 };
@@ -285,21 +318,21 @@ const verifyOldPassword = async (req, res) => {
 const showNewPasswordPage = async (req, res) => {
   try {
     if (!req.session.passwordVerified) {
-      return res.redirect('/change-password');
+      return res.redirect("/change-password");
     }
-    return res.render('User/auth/reset-password', {
-      actionUrl: '/change-password/new',
+    return res.render("User/auth/reset-password", {
+      actionUrl: "/change-password/new",
     });
   } catch (error) {
-    console.error('New password page error:', error.message);
-    return res.status(500).send('Server error');
+    console.error("New password page error:", error.message);
+    return res.status(500).send("Server error");
   }
 };
 
 const changePassword = async (req, res) => {
   try {
     if (!req.session.passwordVerified) {
-      return res.redirect('/change-password');
+      return res.redirect("/change-password");
     }
 
     const { newPassword, confirmPassword } = req.body;
@@ -309,18 +342,17 @@ const changePassword = async (req, res) => {
 
     return req.session.destroy((err) => {
       if (err) {
-        console.error('Session destroy error:', err);
-        return res.status(500).send('Server error');
+        console.error("Session destroy error:", err);
+        return res.status(500).send("Server error");
       }
-      res.clearCookie('connect.sid');
-      return res.redirect('/login');
+      res.clearCookie("connect.sid");
+      return res.redirect("/login");
     });
-
   } catch (error) {
-    console.error('Change password error:', error.message);
-    return res.status(400).render('User/auth/reset-password', {
-      actionUrl: '/change-password/new',
-      errorMessage: error.message
+    console.error("Change password error:", error.message);
+    return res.status(400).render("User/auth/reset-password", {
+      actionUrl: "/change-password/new",
+      errorMessage: error.message,
     });
   }
 };
@@ -329,66 +361,72 @@ const getAddresses = async (req, res) => {
   try {
     const user = await getUserById(req.session.user.id);
 
-    if (!user) return res.redirect('/login');
+    if (!user) return res.redirect("/login");
 
-    return res.render('User/address', { user });
+    return res.render("User/address", { user });
   } catch (error) {
-    console.error('Profile error:', error);
-    return res.status(500).send('Server error');
+    console.error("Profile error:", error);
+    return res.status(500).send("Server error");
   }
-}
+};
 
 const getWallet = async (req, res) => {
   try {
     const user = await getUserById(req.session.user.id);
 
-    if (!user) return res.redirect('/login');
+    if (!user) return res.redirect("/login");
 
-    const showAll = req.query.showAll === 'true';
-    const sortBy = req.query.sortBy || 'date_desc';
+    const showAll = req.query.showAll === "true";
+    const sortBy = req.query.sortBy || "date_desc";
 
     let sortOption = {};
-    if (sortBy === 'date_asc') {
+    if (sortBy === "date_asc") {
       sortOption = { createdAt: 1 };
-    } else if (sortBy === 'amount_desc') {
+    } else if (sortBy === "amount_desc") {
       sortOption = { amount: -1 };
-    } else if (sortBy === 'amount_asc') {
+    } else if (sortBy === "amount_asc") {
       sortOption = { amount: 1 };
     } else {
       sortOption = { createdAt: -1 }; // default
     }
 
-    let query = Transaction.find({ userId: req.session.user.id }).sort(sortOption);
+    let query = Transaction.find({ userId: req.session.user.id }).sort(
+      sortOption,
+    );
 
     if (!showAll) {
       query = query.limit(5);
     }
 
     const transactions = await query;
-    const totalTransactions = await Transaction.countDocuments({ userId: req.session.user.id });
+    const totalTransactions = await Transaction.countDocuments({
+      userId: req.session.user.id,
+    });
 
-    return res.render('User/wallet', { 
-      user, 
-      transactions, 
-      showAll, 
-      sortBy, 
-      totalTransactions 
+    return res.render("User/wallet", {
+      user,
+      transactions,
+      showAll,
+      sortBy,
+      totalTransactions,
     });
   } catch (error) {
-    console.error('Wallet error:', error);
-    return res.status(500).send('Server error');
+    console.error("Wallet error:", error);
+    return res.status(500).send("Server error");
   }
-}
+};
 
 const getWalletHistory = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ userId: req.session.user.id }).sort({ createdAt: -1 });
+    const transactions = await Transaction.find({
+      userId: req.session.user.id,
+    }).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, transactions });
   } catch (error) {
-    console.error('Wallet history API error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Wallet history API error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
 
 export {
   getProfile,
@@ -406,5 +444,5 @@ export {
   resendCurrentOtp,
   getAddresses,
   getWallet,
-  getWalletHistory
-}
+  getWalletHistory,
+};

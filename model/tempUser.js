@@ -4,35 +4,35 @@ const tempUserSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+      ref: "User",
+      required: true,
     },
     name: {
       type: String,
-      default: null
+      default: null,
     },
     tempEmail: {
       type: String,
-      default: null
+      default: null,
     },
     tempEmailOtp: {
       type: String,
-      default: null
+      default: null,
     },
     emailOtpExpiry: {
       type: Date,
-      default: null
+      default: null,
     },
     temUserExpire: {
       type: Date,
       default: Date.now,
-      expires: 660 
+      expires: 660,
     },
   },
   {
-    timestamps: true
-  }
-)
+    timestamps: true,
+  },
+);
 
 const tempUserModel = mongoose.model("TempUser", tempUserSchema);
 

@@ -16,9 +16,11 @@
         rel="stylesheet">
     <link rel="stylesheet" href="/User/css/main-global.css">
     <link rel="stylesheet" href="/User/css/landing.css">
+    <link rel="stylesheet" href="/User/css/loading-bar.css">
 </head>
 
 <body class="animate-in">
+    <%- include('../partials/loadingBar') %>
 
     <!-- Header -->
     <%- include('../partials/user/main-header', { user }) %>
@@ -192,6 +194,7 @@
         </div>
     </footer>
 
+    <script src="/User/js/loading-bar.js"></script>
 </body>
 
 </html>

@@ -227,7 +227,7 @@
                               </p>
                               <div class="mt-4 flex flex-wrap gap-4">
                                 <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(order.orderStatus)) { %>
-                                  <button onclick="downloadInvoicePDF(this)" data-order="<%= encodeURIComponent(JSON.stringify(order)) %>" data-email="<%= user.email %>"
+                                  <button onclick="downloadInvoicePDF(this, '<%= order._id %>')"
                                     class="text-[11px] font-bold uppercase tracking-widest border-b border-black text-black pb-0.5 hover:text-slate-700 hover:border-slate-400 transition-colors flex items-center gap-1">
                                     <span class="material-symbols-outlined text-sm">description</span>
                                     Download Invoice
@@ -304,7 +304,7 @@
       </div>
 
       <script>
-          async function downloadInvoicePDF(btn) {
+          async function downloadInvoicePDF(btn, orderId) {
               const originalText = btn.innerHTML;
               btn.disabled = true;
               btn.innerHTML = `
@@ -313,8 +313,13 @@
               `;
 
               try {
-                  const order = JSON.parse(decodeURIComponent(btn.getAttribute('data-order')));
-                  const userEmail = btn.getAttribute('data-email') || '';
+                  const response = await fetch(`/orders/invoice-data/${orderId}`);
+                  const result = await response.json();
+                  if (!result.success) {
+                      throw new Error(result.message || 'Failed to fetch invoice details.');
+                  }
+                  const order = result.order;
+                  const userEmail = '<%= user.email %>';
 
                   // Create virtual element for PDF rendering
                   const container = document.createElement('div');
@@ -501,11 +506,61 @@
 
               } catch (err) {
                   console.error('Error generating PDF:', err);
-                  alert('An error occurred while generating the invoice PDF.');
+                  showToast(err.message || 'An error occurred while generating the invoice PDF.', 'error');
               } finally {
                   btn.disabled = false;
                   btn.innerHTML = originalText;
               }
+          }
+
+          function showToast(message, type = 'error') {
+              let container = document.getElementById('toast-container');
+              if (!container) {
+                  container = document.createElement('div');
+                  container.id = 'toast-container';
+                  container.style.position = 'fixed';
+                  container.style.top = '24px';
+                  container.style.right = '24px';
+                  container.style.zIndex = '9999';
+                  container.style.display = 'flex';
+                  container.style.flexDirection = 'column';
+                  container.style.gap = '8px';
+                  document.body.appendChild(container);
+              }
+
+              const toast = document.createElement('div');
+              toast.style.padding = '12px 20px';
+              toast.style.borderRadius = '8px';
+              toast.style.color = '#ffffff';
+              toast.style.fontSize = '13px';
+              toast.style.fontWeight = '500';
+              toast.style.fontFamily = "'Inter', sans-serif";
+              toast.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+              toast.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+              toast.style.opacity = '0';
+              toast.style.transform = 'translateY(-20px)';
+
+              if (type === 'error') {
+                  toast.style.backgroundColor = '#ef4444';
+              } else {
+                  toast.style.backgroundColor = '#10b981';
+              }
+
+              toast.innerText = message;
+              container.appendChild(toast);
+
+              setTimeout(() => {
+                  toast.style.opacity = '1';
+                  toast.style.transform = 'translateY(0)';
+              }, 10);
+
+              setTimeout(() => {
+                  toast.style.opacity = '0';
+                  toast.style.transform = 'translateY(-20px)';
+                  setTimeout(() => {
+                      toast.remove();
+                  }, 300);
+              }, 4000);
           }
       </script>
 

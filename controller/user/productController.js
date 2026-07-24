@@ -96,7 +96,7 @@ const addToCart = async (req, res) => {
             return res.redirect(`/product-details?id=${productId}&error=${encodeURIComponent(result.message)}`);
         }
 
-        return res.redirect('/cart');
+        return res.redirect(`/product-details?id=${productId}&success=${encodeURIComponent(result.message || 'Product added to cart successfully.')}`);
     } catch (error) {
         console.error('addToCart controller error:', error);
         res.status(500).send('Internal Server Error');
@@ -197,7 +197,7 @@ const addToWishlist = async (req, res) => {
         if (!result.success) {
             return res.redirect(`/product-details?id=${productId}&error=${encodeURIComponent(result.message)}`);
         }
-        return res.redirect('/wishlist');
+        return res.redirect(`/product-details?id=${productId}&success=${encodeURIComponent('Added to wishlist.')}`);
     } catch (error) {
         console.error('addToWishlist error:', error);
         res.status(500).send('Internal Server Error');

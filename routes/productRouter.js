@@ -46,7 +46,7 @@ router.get("/product-details", getProductDetails);
 
 // Cart Page
 router.get("/cart", isAuthenticated, checkIfBlocked, getCart);
-router.post("/cart/add", isAuthenticated, checkIfBlocked, addToCart);
+router.post("/cart/add", checkIfBlocked, addToCart);
 router.post(
   "/cart/update-quantity",
   isAuthenticated,
@@ -60,7 +60,7 @@ router.get("/wishlist", isAuthenticated, checkIfBlocked, getWishlist);
 router.get("/favorite", isAuthenticated, checkIfBlocked, getWishlist);
 
 // Wishlist Actions
-router.post("/wishlist/add", isAuthenticated, checkIfBlocked, addToWishlist);
+router.post("/wishlist/add", checkIfBlocked, addToWishlist);
 router.post(
   "/wishlist/remove",
   isAuthenticated,

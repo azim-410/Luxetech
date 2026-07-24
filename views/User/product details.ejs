@@ -199,18 +199,23 @@
 
                             <!-- Redesigned Actions -->
                             <div class="flex flex-col gap-3">
-                                <!-- Add to Cart Button -->
-                                <button id="add-to-cart-btn" onclick="addToCart('<%= product._id %>')"
-                                    <%=locals.isBlocked ? 'disabled' : '' %>
-                                    class="w-full py-5 <%= locals.isBlocked
-                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                        : 'bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202]' %> transition-all
-                                        duration-300 font-label font-bold uppercase tracking-widest text-sm flex
-                                        items-center justify-center gap-3">
-                                        <span
-                                            class="material-symbols-outlined <%= locals.isBlocked ? 'text-slate-400' : 'text-[#E65F00]' %>">shopping_cart</span>
-                                        Add to Cart
-                                </button>
+                                <!-- Add to Cart Button Form -->
+                                <form action="/cart/add" method="POST" id="add-to-cart-form" class="w-full">
+                                    <input type="hidden" name="productId" value="<%= product._id %>" />
+                                    <input type="hidden" name="variantId" id="cart-variant-id" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" id="add-to-cart-btn"
+                                        <%=locals.isBlocked ? 'disabled' : '' %>
+                                        class="w-full py-5 <%= locals.isBlocked
+                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                            : 'bg-[#3C1B04] text-[#E65F00] hover:bg-[#2A1202]' %> transition-all
+                                            duration-300 font-label font-bold uppercase tracking-widest text-sm flex
+                                            items-center justify-center gap-3">
+                                            <span
+                                                class="material-symbols-outlined <%= locals.isBlocked ? 'text-slate-400' : 'text-[#E65F00]' %>">shopping_cart</span>
+                                            Add to Cart
+                                    </button>
+                                </form>
                                 <!-- Buy Now Button -->
                                 <a id="buy-now-btn" href="#" onclick="buyNow(event, '<%= product._id %>')"
                                     class="w-full py-5 <%= locals.isBlocked
@@ -222,13 +227,13 @@
                                 </a>
                             </div>
                             <!-- Options & Add to Wishlist -->
-                            <div class="flex items-start gap-3 w-full">
+                            <div class="flex items-center gap-3 w-full">
                                 <% if (variants && variants.length > 0) { %>
                                     <!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
                                     <input type="hidden" id="variant-select" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
 
                                     <!-- Render a single dropdown containing all variants -->
-                                    <div class="flex flex-col gap-3 flex-grow">
+                                    <div class="flex flex-col gap-3 w-[68%]">
                                         <div class="relative h-12 w-full">
                                             <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
                                                     data-group-name="Variant"
@@ -251,11 +256,15 @@
                                     </div>
                                 <% } %>
 
-                                <!-- Add to Wishlist Button -->
-                                <button id="wishlist-btn" onclick="addToFavorite('<%= product._id %>')" <%= locals.isBlocked ? 'disabled' : '' %>
-                                    class="flex-grow h-12 max-w-[180px] <%= locals.isBlocked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %> transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
-                                    Add to Wishlist
-                                </button>
+                                <!-- Add to Wishlist Button Form -->
+                                <form action="/wishlist/add" method="POST" id="add-to-wishlist-form" class="<%= (variants && variants.length > 0) ? 'w-[32%]' : 'w-full' %>">
+                                    <input type="hidden" name="productId" value="<%= product._id %>" />
+                                    <input type="hidden" name="variantId" id="wishlist-variant-id" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
+                                    <button type="submit" id="wishlist-btn" <%= locals.isBlocked ? 'disabled' : '' %>
+                                        class="w-full h-12 <%= locals.isBlocked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' : 'bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50' %> transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center">
+                                        Add to Wishlist
+                                    </button>
+                                </form>
                             </div>
 
                             <div class="flex items-center gap-2 text-on-surface-variant">
@@ -539,7 +548,7 @@
                 const isBlocked = <%= locals.isBlocked ? 'true' : 'false' %>;
                 if (isBlocked) {
                     btn.disabled = true;
-                    btn.className = "flex-grow h-12 max-w-[180px] bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center";
+                    btn.className = "w-full h-12 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center";
                     btn.innerHTML = "Add to Wishlist";
                     return;
                 }
@@ -553,11 +562,11 @@
                 if (isInWishlist) {
                     btn.innerHTML = '❤️ Already in Wishlist';
                     btn.disabled = true;
-                    btn.className = "flex-grow h-12 max-w-[180px] bg-[#0D1B2A] text-white border-2 border-[#0D1B2A] transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-default";
+                    btn.className = "w-full h-12 bg-[#0D1B2A] text-white border-2 border-[#0D1B2A] transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-default";
                 } else {
                     btn.innerHTML = 'Add to Wishlist';
                     btn.disabled = false;
-                    btn.className = "flex-grow h-12 max-w-[180px] bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-pointer";
+                    btn.className = "w-full h-12 bg-white text-[#0D1B2A] border-2 border-[#0D1B2A] hover:bg-slate-50 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-pointer";
                 }
             }
 
@@ -755,6 +764,12 @@
                         hiddenInput.value = selectedValue;
                     }
 
+                    // Update standard form inputs too
+                    const cartVarInput = document.getElementById('cart-variant-id');
+                    const wishlistVarInput = document.getElementById('wishlist-variant-id');
+                    if (cartVarInput) cartVarInput.value = selectedValue;
+                    if (wishlistVarInput) wishlistVarInput.value = selectedValue;
+
                     // 4. Since only one variant can be purchased at a time, reset all other dropdowns
                     var allSelects = document.querySelectorAll('.variant-group-select');
                     for (var i = 0; i < allSelects.length; i++) {
@@ -850,6 +865,24 @@
                     }
                 }
 
+                // Sync the form inputs with the selected variant on load
+                const currentVariantId = hiddenInput ? hiddenInput.value : '';
+                const cartVarInput = document.getElementById('cart-variant-id');
+                const wishlistVarInput = document.getElementById('wishlist-variant-id');
+                if (cartVarInput) cartVarInput.value = currentVariantId;
+                if (wishlistVarInput) wishlistVarInput.value = currentVariantId;
+
+                // Check for error in query parameters and show alert if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorMsg = urlParams.get('error');
+                if (errorMsg) {
+                    showAlert(decodeURIComponent(errorMsg), "Status Notice");
+                }
+                const successMsg = urlParams.get('success');
+                if (successMsg) {
+                    showAlert(decodeURIComponent(successMsg), "Success");
+                }
+
                 // Bind custom alert modal events
                 const alertCloseBtn = document.getElementById('alert-close-btn');
                 if (alertCloseBtn) {
@@ -857,7 +890,13 @@
                         <% if (locals.isBlocked) { %>
                             window.location.href = '/shop';
                         <% } else { %>
-                            closeAlertModal();
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const errorMsg = urlParams.get('error');
+                            if (errorMsg && errorMsg.toLowerCase().includes('login')) {
+                                window.location.href = '/login';
+                            } else {
+                                closeAlertModal();
+                            }
                         <% } %>
                     });
                 }
@@ -869,7 +908,13 @@
                             <% if (locals.isBlocked) { %>
                                 window.location.href = '/shop';
                             <% } else { %>
-                                closeAlertModal();
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const errorMsg = urlParams.get('error');
+                                if (errorMsg && errorMsg.toLowerCase().includes('login')) {
+                                    window.location.href = '/login';
+                                } else {
+                                    closeAlertModal();
+                                }
                             <% } %>
                         });
                     }
@@ -891,6 +936,19 @@
                     document.getElementById('alert-modal-message').innerText = message;
                     modal.querySelector('h3').innerText = title;
 
+                    // Dynamically set icon and color based on title
+                    const iconContainer = modal.querySelector('.rounded-full');
+                    const iconSpan = iconContainer.querySelector('.material-symbols-outlined');
+                    if (iconContainer && iconSpan) {
+                        if (title.toLowerCase() === 'success') {
+                            iconContainer.className = "w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4";
+                            iconSpan.innerText = "check_circle";
+                        } else {
+                            iconContainer.className = "w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4";
+                            iconSpan.innerText = "warning";
+                        }
+                    }
+
                     modal.classList.remove('hidden');
                     setTimeout(() => {
                         modal.classList.remove('opacity-0');
@@ -910,76 +968,6 @@
                 }
             };
 
-            async function addToFavorite(productId) {
-                const btn = document.getElementById('wishlist-btn');
-                const variantSelect = document.getElementById('variant-select');
-                const variantId = variantSelect ? variantSelect.value : null;
-
-                try {
-                    const response = await fetch('/wishlist/add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ productId: productId, variantId: variantId })
-                    });
-
-                    const data = await response.json();
-                    if (data.success) {
-                        if (btn) {
-                            btn.innerHTML = '❤️ Added to Wishlist';
-                            btn.disabled = true;
-                            btn.className = "flex-grow h-12 max-w-[180px] bg-[#0D1B2A] text-white border-2 border-[#0D1B2A] transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center cursor-default";
-                        }
-                        userWishlistItems.push({ productId: productId, variantId: variantId });
-                    } else {
-                        if (response.status === 401) {
-                            window.location.href = '/login';
-                        } else {
-                            showAlert(data.message || 'Failed to add to wishlist.', 'Status Notice');
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error adding to favorites:', err);
-                    showAlert('An error occurred. Please try again.', 'Error');
-                }
-            }
-
-            async function addToCart(productId) {
-                const btn = document.getElementById('add-to-cart-btn');
-                const variantSelect = document.getElementById('variant-select');
-                const variantId = variantSelect ? variantSelect.value : null;
-
-                try {
-                    const response = await fetch('/cart/add', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ productId: productId, variantId: variantId, quantity: 1 })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        if (btn) {
-                            btn.innerHTML = '🛒 Added to Cart';
-                            btn.style.backgroundColor = '#E65F00';
-                            btn.style.color = '#FFFFFF';
-                            setTimeout(() => {
-                                btn.innerHTML = '<span class="material-symbols-outlined text-[#E65F00]">shopping_cart</span> Add to Cart';
-                                btn.style.backgroundColor = '#3C1B04';
-                                btn.style.color = '#E65F00';
-                            }, 2000);
-                        }
-                    } else {
-                        if (response.status === 401) {
-                            window.location.href = '/login';
-                        } else {
-                            showAlert(data.message || 'Failed to add to cart.', 'Status Notice');
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error adding to cart:', err);
-                    showAlert('An error occurred. Please try again.', 'Error');
-                }
-            }
 
             function buyNow(event, productId) {
                 if (event) event.preventDefault();

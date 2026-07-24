@@ -163,72 +163,63 @@ const getProductDetailsService = async (productId) => {
 };
 
 const addToWishlistService = async (userId, productId, variantId) => {
-  try {
-    // Validate product is still active before adding to wishlist
-    const product = await productModel.findById(productId);
-    if (!product || product.isDeleted) {
-      return {
-        success: false,
-        message: "This product is no longer available.",
-      };
+    try {
+        if (!userId) {
+            return { success: false, message: 'Please login to add favorites.' };
+        }
+        // Validate product is still active before adding to wishlist
+        const product = await productModel.findById(productId);
+        if (!product || product.isDeleted) {
+            return { success: false, message: 'This product is no longer available.' };
+        }
+        if (product.isHidden) {
+            return { success: false, message: 'This product is currently unavailable.' };
+        }
+
+        let wishlist = await wishlistModel.findOne({ userId: userId });
+
+        if (!wishlist) {
+            wishlist = new wishlistModel({
+                userId: userId,
+                products: []
+            });
+        }
+
+        let existingIndex = -1;
+        for (let i = 0; i < wishlist.products.length; i++) {
+            const item = wishlist.products[i];
+            const sameProd = item.productId.toString() === productId.toString();
+            const sameVar = (!item.variantId && !variantId) || 
+                            (item.variantId && variantId && item.variantId.toString() === variantId.toString());
+            
+            if (sameProd && sameVar) {
+                existingIndex = i;
+                break;
+            }
+        }
+
+        if (existingIndex !== -1) {
+            // If the item is already active in the wishlist, return a validation warning
+            if (wishlist.products[existingIndex].isActive === true) {
+                return { success: false, message: 'This variant is already in your wishlist.' };
+            }
+            // Re-activate if it was soft-deleted
+            wishlist.products[existingIndex].isActive = true;
+        } else {
+            // Add new product with specific variant
+            wishlist.products.push({
+                productId: productId,
+                variantId: variantId || null,
+                isActive: true
+            });
+        }
+
+        await wishlist.save();
+        return { success: true };
+    } catch (error) {
+        console.error('addToWishlistService error:', error);
+        throw error;
     }
-    if (product.isHidden) {
-      return {
-        success: false,
-        message: "This product is currently unavailable.",
-      };
-    }
-
-    let wishlist = await wishlistModel.findOne({ userId: userId });
-
-    if (!wishlist) {
-      wishlist = new wishlistModel({
-        userId: userId,
-        products: [],
-      });
-    }
-
-    let existingIndex = -1;
-    for (let i = 0; i < wishlist.products.length; i++) {
-      const item = wishlist.products[i];
-      const sameProd = item.productId.toString() === productId.toString();
-      const sameVar =
-        (!item.variantId && !variantId) ||
-        (item.variantId &&
-          variantId &&
-          item.variantId.toString() === variantId.toString());
-
-      if (sameProd && sameVar) {
-        existingIndex = i;
-        break;
-      }
-    }
-
-    if (existingIndex !== -1) {
-      // If the item is already active in the wishlist, return a validation warning
-      if (wishlist.products[existingIndex].isActive === true) {
-        return {
-          success: false,
-          message: "This variant is already in your wishlist.",
-        };
-      }
-      // Re-activate if it was soft-deleted
-      wishlist.products[existingIndex].isActive = true;
-    } else {
-      // Add new product with specific variant
-      wishlist.products.push({
-        productId: productId,
-        variantId: variantId || null,
-        isActive: true,
-      });
-    }
-
-    await wishlist.save();
-    return { success: true };
-  } catch (error) {
-    console.error("addToWishlistService error:", error);
-    throw error;
-  }
 };
 
 const getWishlistService = async (userId) => {

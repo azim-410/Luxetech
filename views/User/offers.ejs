@@ -219,10 +219,18 @@
         </li>
         <% for (let i = 0; i < categories.length; i++) { %>
           <% const cat = categories[i]; %>
-          <li>
+          <li class="<%= i >= 3 ? 'extra-category-desktop' : '' %>" style="<%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'display: none;' : '' %>">
             <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
               <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
             </label>
+          </li>
+        <% } %>
+        <% if (categories.length > 3) { %>
+          <li style="margin-top: 8px; list-style: none;">
+            <button type="button" id="toggle-desktop-categories-btn" onclick="toggleDesktopCategories()" 
+              style="background: none; border: none; padding: 0; color: #111; font-weight: 600; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+              Show More ▾
+            </button>
           </li>
         <% } %>
       </ul>
@@ -278,10 +286,18 @@
           </li>
           <% for (let i = 0; i < categories.length; i++) { %>
             <% const cat = categories[i]; %>
-            <li>
+            <li class="<%= i >= 3 ? 'extra-category-mobile' : '' %>" style="<%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'display: none;' : '' %>">
               <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
                 <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
               </label>
+            </li>
+          <% } %>
+          <% if (categories.length > 3) { %>
+            <li style="margin-top: 8px; list-style: none;">
+              <button type="button" id="toggle-mobile-categories-btn" onclick="toggleMobileCategories()" 
+                style="background: none; border: none; padding: 0; color: #111; font-weight: 600; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+                Show More ▾
+              </button>
             </li>
           <% } %>
         </ul>
@@ -474,6 +490,32 @@
           input.value = '';
           applyFilters();
       }
+  }
+
+  function toggleDesktopCategories() {
+      const btn = document.getElementById('toggle-desktop-categories-btn');
+      const extraItems = document.querySelectorAll('.extra-category-desktop');
+      if (extraItems.length === 0) return;
+      const isHidden = extraItems[0].style.display === 'none';
+      
+      extraItems.forEach(el => {
+          el.style.display = isHidden ? 'block' : 'none';
+      });
+      
+      btn.textContent = isHidden ? 'Show Less ▴' : 'Show More ▾';
+  }
+
+  function toggleMobileCategories() {
+      const btn = document.getElementById('toggle-mobile-categories-btn');
+      const extraItems = document.querySelectorAll('.extra-category-mobile');
+      if (extraItems.length === 0) return;
+      const isHidden = extraItems[0].style.display === 'none';
+      
+      extraItems.forEach(el => {
+          el.style.display = isHidden ? 'block' : 'none';
+      });
+      
+      btn.textContent = isHidden ? 'Show Less ▴' : 'Show More ▾';
   }
 
   document.addEventListener('DOMContentLoaded', () => {

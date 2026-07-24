@@ -6,101 +6,94 @@ import wishlistModel from "../../model/wishlist.js";
 // Max quantity a single customer can purchase per variant
 const MAX_ITEM_LIMIT = 5;
 
-const addToCartService = async (
-  userId,
-  productId,
-  variantId,
-  quantityInput,
-) => {
-  try {
-    const quantity = parseInt(quantityInput) || 1;
-    if (quantity <= 0) {
-      return { success: false, message: "Quantity must be at least 1." };
+const addToCartService = async (userId, productId, variantId, quantityInput) => {
+    try {
+        if (!userId) {
+            return { success: false, message: 'Please login to add items to your cart.' };
+        }
+        const quantity = parseInt(quantityInput) || 1;
+        if (quantity <= 0) {
+            return { success: false, message: 'Quantity must be at least 1.' };
+        }
+
+        // Validate product
+        const product = await productModel.findById(productId);
+        if (!product || product.isDeleted || product.isHidden) {
+            return { success: false, message: 'Product not found or unavailable.' };
+        }
+
+        // Validate variant
+        let variant = null;
+        if (variantId) {
+            variant = await variantModel.findById(variantId);
+            if (!variant || variant.productId.toString() !== productId.toString()) {
+                return { success: false, message: 'Selected product variant not found.' };
+            }
+        } else {
+            variant = await variantModel.findOne({ productId: productId });
+            if (!variant) {
+                return { success: false, message: 'Product variant not found.' };
+            }
+        }
+
+        // Check stock
+        const stockAvailable = variant ? variant.stock : 0;
+
+        // Find or create cart
+        let cart = await cartModel.findOne({ userId: userId });
+        if (!cart) {
+            cart = new cartModel({ userId: userId, items: [] });
+        }
+
+        // Find if item already exists in the cart
+        const existingItem = cart.items.find(item => {
+            const sameProduct = item.productId.toString() === productId.toString();
+            const sameVariant = (!item.variantId && !variantId) || 
+                               (item.variantId && variantId && item.variantId.toString() === variantId.toString());
+            return sameProduct && sameVariant;
+        });
+
+        const currentQty = existingItem ? existingItem.quantity : 0;
+        const newQty = currentQty + quantity;
+
+        if (newQty > MAX_ITEM_LIMIT) {
+            return { 
+                success: false, 
+                message: `You can only have up to ${MAX_ITEM_LIMIT} units of this item in your cart. You already have ${currentQty} units.` 
+            };
+        }
+
+        if (newQty > stockAvailable) {
+            if (stockAvailable === 0) {
+                return {
+                    success: false,
+                    message: 'This product is out of stock.'
+                };
+            }
+            return { 
+                success: false, 
+                message: `Cannot add more units. Only ${stockAvailable} unit(s) available in stock, and you already have ${currentQty} in your cart.` 
+            };
+        }
+
+        if (existingItem) {
+            existingItem.quantity = newQty;
+        } else {
+            cart.items.push({
+                productId: productId,
+                variantId: variantId || null,
+                quantity: quantity
+            });
+        }
+
+        await cart.save();
+        return { success: true, message: 'Product added to cart successfully.' };
+    } catch (error) {
+        console.error('addToCartService error:', error);
+        throw error;
     }
-
-    // Validate product
-    const product = await productModel.findById(productId);
-    if (!product || product.isDeleted || product.isHidden) {
-      return { success: false, message: "Product not found or unavailable." };
-    }
-
-    // Validate variant
-    let variant = null;
-    if (variantId) {
-      variant = await variantModel.findById(variantId);
-      if (!variant || variant.productId.toString() !== productId.toString()) {
-        return {
-          success: false,
-          message: "Selected product variant not found.",
-        };
-      }
-    } else {
-      variant = await variantModel.findOne({ productId: productId });
-      if (!variant) {
-        return { success: false, message: "Product variant not found." };
-      }
-    }
-
-    // Check stock
-    const stockAvailable = variant ? variant.stock : 0;
-
-    // Find or create cart
-    let cart = await cartModel.findOne({ userId: userId });
-    if (!cart) {
-      cart = new cartModel({ userId: userId, items: [] });
-    }
-
-    // Find if item already exists in the cart
-    const existingItem = cart.items.find((item) => {
-      const sameProduct = item.productId.toString() === productId.toString();
-      const sameVariant =
-        (!item.variantId && !variantId) ||
-        (item.variantId &&
-          variantId &&
-          item.variantId.toString() === variantId.toString());
-      return sameProduct && sameVariant;
-    });
-
-    const currentQty = existingItem ? existingItem.quantity : 0;
-    const newQty = currentQty + quantity;
-
-    if (newQty > MAX_ITEM_LIMIT) {
-      return {
-        success: false,
-        message: `You can only have up to ${MAX_ITEM_LIMIT} units of this item in your cart. You already have ${currentQty} units.`,
-      };
-    }
-
-    if (newQty > stockAvailable) {
-      if (stockAvailable === 0) {
-        return {
-          success: false,
-          message: "This product is out of stock.",
-        };
-      }
-      return {
-        success: false,
-        message: `Cannot add more units. Only ${stockAvailable} unit(s) available in stock, and you already have ${currentQty} in your cart.`,
-      };
-    }
-
-    if (existingItem) {
-      existingItem.quantity = newQty;
-    } else {
-      cart.items.push({
-        productId: productId,
-        variantId: variantId || null,
-        quantity: quantity,
-      });
-    }
-
-    await cart.save();
-    return { success: true, message: "Product added to cart successfully." };
-  } catch (error) {
-    console.error("addToCartService error:", error);
-    throw error;
-  }
 };
+
 
 const getCartService = async (userId) => {
   try {

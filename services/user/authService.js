@@ -94,6 +94,7 @@ const registerUser = async (data) => {
     password: hashedPassword,
     terms: true,
     referredBy: referredByCode,
+    userExpire: Date.now(),
   });
   await user.save();
 

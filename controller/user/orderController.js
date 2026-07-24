@@ -5,6 +5,7 @@ import {
   cancelOrderService,
   returnOrderService,
   retryPaymentService,
+  getInvoiceDataService,
 } from "../../services/user/orderService.js";
 
 const getOrdersPage = async (req, res) => {
@@ -185,6 +186,33 @@ const retryPayment = async (req, res) => {
   }
 };
 
+const getInvoiceData = async (req, res) => {
+  try {
+    const userId = req.session.user
+      ? req.session.user.id
+      : req.user
+        ? req.user._id
+        : null;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const { orderId } = req.params;
+    const order = await getInvoiceDataService(orderId, userId);
+
+    return res.json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.error("getInvoiceData controller error:", error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to retrieve invoice data",
+    });
+  }
+};
+
 export {
   getOrdersPage,
   getTrackingPage,
@@ -192,4 +220,5 @@ export {
   getReturnPage,
   processReturn,
   retryPayment,
+  getInvoiceData,
 };

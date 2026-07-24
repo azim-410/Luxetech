@@ -334,10 +334,38 @@ const retryPaymentService = async (orderId, userId) => {
   }
 };
 
+const getInvoiceDataService = async (orderId, userId) => {
+  try {
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    const allowedStatuses = [
+      'Delivered',
+      'Return Requested',
+      'Return Confirmed',
+      'Replacement Confirmed',
+      'Returned',
+      'Replaced'
+    ];
+
+    if (!allowedStatuses.includes(order.orderStatus)) {
+      throw new Error("Invoice can only be downloaded once the order has been delivered.");
+    }
+
+    return order;
+  } catch (error) {
+    console.error("getInvoiceDataService error:", error);
+    throw error;
+  }
+};
+
 export {
   getUserOrdersService,
   getOrderByIdService,
   cancelOrderService,
   returnOrderService,
   retryPaymentService,
+  getInvoiceDataService,
 };

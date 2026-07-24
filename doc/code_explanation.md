@@ -8,31 +8,24 @@ This document explains the code implemented in `views/User/product details.ejs` 
 
 ```html
 <!-- Options & Add to Wishlist -->
-<div class="flex items-start gap-3">
+<div class="flex items-start gap-3"></div>
 ```
-* **Explanation**: Creates a container box that lays out its children horizontally (`flex`), aligning them to the top of the container (`items-start`), with a 12px gap between elements (`gap-3`).
+
+- **Explanation**: Creates a container box that lays out its children horizontally (`flex`), aligning them to the top of the container (`items-start`), with a 12px gap between elements (`gap-3`).
 
 ```html
-    <% 
-        // 1. Group the variants by their groupName (like "Color", "Panel")
-        // We create an empty object to hold the grouped lists of variants
-        const variantGroups = {};
-        if (variants && variants.length > 0) {
-            for (let i = 0; i < variants.length; i++) {
-                const v = variants[i];
-                // If this groupName doesn't exist in our object yet, create an empty array for it
-                if (!variantGroups[v.groupName]) {
-                    variantGroups[v.groupName] = [];
-                }
-                // Add the variant to its respective group array
-                variantGroups[v.groupName].push(v);
-            }
-        }
-        // Get the list of all group names (e.g. ["Color", "Panel"])
-        const groupNames = Object.keys(variantGroups);
-    %>
+<% // 1. Group the variants by their groupName (like "Color", "Panel") // We
+create an empty object to hold the grouped lists of variants const variantGroups
+= {}; if (variants && variants.length > 0) { for (let i = 0; i <
+variants.length; i++) { const v = variants[i]; // If this groupName doesn't
+exist in our object yet, create an empty array for it if
+(!variantGroups[v.groupName]) { variantGroups[v.groupName] = []; } // Add the
+variant to its respective group array variantGroups[v.groupName].push(v); } } //
+Get the list of all group names (e.g. ["Color", "Panel"]) const groupNames =
+Object.keys(variantGroups); %>
 ```
-* **Explanation**: 
+
+- **Explanation**:
   - Declares an empty JavaScript object named `variantGroups`.
   - Runs a standard `for` loop from `0` to `variants.length - 1` to inspect each variant `v` of the product.
   - If `variantGroups` does not have a key for the current variant's `groupName` (e.g. "Color"), it initializes it to an empty array `[]`.
@@ -40,32 +33,41 @@ This document explains the code implemented in `views/User/product details.ejs` 
   - Uses `Object.keys()` to extract all unique group names (like `["Color", "Panel"]`) and stores them in the array `groupNames`.
 
 ```html
-    <% if (groupNames.length > 0) { %>
+<% if (groupNames.length > 0) { %>
 ```
-* **Explanation**: If there is at least one variant group name in the list, compile and output the following HTML blocks.
+
+- **Explanation**: If there is at least one variant group name in the list, compile and output the following HTML blocks.
 
 ```html
-        <!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
-        <input type="hidden" id="variant-select" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
+<!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
+<input
+  type="hidden"
+  id="variant-select"
+  value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>"
+/>
 ```
-* **Explanation**: Renders a hidden text input with ID `variant-select`. Its value is dynamically populated with the pre-selected variant's ID if one is defined; otherwise, it defaults to an empty string.
+
+- **Explanation**: Renders a hidden text input with ID `variant-select`. Its value is dynamically populated with the pre-selected variant's ID if one is defined; otherwise, it defaults to an empty string.
 
 ```html
-        <!-- Render separate dropdowns stacked vertically in a flex-grow container -->
-        <div class="flex flex-col gap-3 flex-grow">
+<!-- Render separate dropdowns stacked vertically in a flex-grow container -->
+<div class="flex flex-col gap-3 flex-grow"></div>
 ```
-* **Explanation**: Creates a vertical flexbox container (`flex-col`) that automatically expands to fill all remaining horizontal space (`flex-grow`), with a 12px gap between child elements (`gap-3`).
+
+- **Explanation**: Creates a vertical flexbox container (`flex-col`) that automatically expands to fill all remaining horizontal space (`flex-grow`), with a 12px gap between child elements (`gap-3`).
 
 ```html
-            <% for (let i = 0; i < groupNames.length; i++) { %>
-                <% const groupName = groupNames[i]; %>
+<% for (let i = 0; i < groupNames.length; i++) { %> <% const groupName =
+groupNames[i]; %>
 ```
-* **Explanation**: Loops through each group name in the `groupNames` list. On each iteration, it assigns the current group name to a variable `groupName`.
+
+- **Explanation**: Loops through each group name in the `groupNames` list. On each iteration, it assigns the current group name to a variable `groupName`.
 
 ```html
-                <div class="relative h-12 w-full">
+<div class="relative h-12 w-full"></div>
 ```
-* **Explanation**: Creates a container for each select dropdown that is 48px high (`h-12`), takes the full width of the parent container (`w-full`), and has a position of `relative` so that the custom arrow icon can be positioned absolutely inside it.
+
+- **Explanation**: Creates a container for each select dropdown that is 48px high (`h-12`), takes the full width of the parent container (`w-full`), and has a position of `relative` so that the custom arrow icon can be positioned absolutely inside it.
 
 ```html
                     <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
@@ -73,7 +75,8 @@ This document explains the code implemented in `views/User/product details.ejs` 
                             onchange="handleVariantChange(this)"
                             <%= locals.isBlocked ? 'disabled' : '' %>>
 ```
-* **Explanation**: 
+
+- **Explanation**:
   - Renders an HTML `<select>` element.
   - Adds classes for styling (borders, margins, fonts, uppercase text, colors).
   - Uses a ternary expression to check if the product is blocked (`locals.isBlocked`). If true, it adds disabled cursors and background styles; otherwise, it shows a pointing cursor.
@@ -82,14 +85,14 @@ This document explains the code implemented in `views/User/product details.ejs` 
   - Disables the element if the product is blocked.
 
 ```html
-                        <% const groupVariants = variantGroups[groupName]; %>
-                        <% for (let j = 0; j < groupVariants.length; j++) { %>
-                            <% const v = groupVariants[j]; %>
+<% const groupVariants = variantGroups[groupName]; %> <% for (let j = 0; j <
+groupVariants.length; j++) { %> <% const v = groupVariants[j]; %>
 ```
-* **Explanation**: Retrieves the array of variants belonging to the current `groupName`. Loops through each variant `v` in that array.
+
+- **Explanation**: Retrieves the array of variants belonging to the current `groupName`. Loops through each variant `v` in that array.
 
 ```html
-                            <option value="<%= v._id %>" 
+                            <option value="<%= v._id %>"
                                     data-price-add="<%= v.priceAdd %>"
                                     data-images="<%= v.images ? v.images.join(',') : '' %>"
                                     data-stock="<%= v.stock %>"
@@ -98,7 +101,8 @@ This document explains the code implemented in `views/User/product details.ejs` 
                             </option>
                         <% } %>
 ```
-* **Explanation**: 
+
+- **Explanation**:
   - Renders an HTML `<option>` element.
   - Sets the `value` to the variant's MongoDB ID (`v._id`).
   - Sets custom data attributes containing the price addition (`data-price-add`), image paths joined as a comma-separated string (`data-images`), and variant stock count (`data-stock`).
@@ -113,7 +117,8 @@ This document explains the code implemented in `views/User/product details.ejs` 
         </div>
     <% } %>
 ```
-* **Explanation**: 
+
+- **Explanation**:
   - Closes the select tag.
   - Adds an arrow icon from Google Symbols, positioned absolutely on the right-hand edge, vertically centered, and configured to ignore click events (`pointer-events-none`).
   - Closes the EJS loop blocks.
@@ -127,35 +132,36 @@ This document explains the code implemented in `views/User/product details.ejs` 
 ```javascript
 // This function runs whenever the user changes a select option in one of the variant dropdowns
 function handleVariantChange(selectElement) {
-    // 1. Get the value of the option the user clicked (this is the selected variant ID)
-    var selectedValue = selectElement.value;
-    
-    // 2. Get the hidden input that stores the active variant ID
-    var hiddenInput = document.getElementById('variant-select');
-    
-    // 3. If a valid option is selected (not placeholder or empty)
-    if (selectedValue) {
-        // Update the hidden input value so the form knows which variant is selected
-        if (hiddenInput) {
-            hiddenInput.value = selectedValue;
-        }
+  // 1. Get the value of the option the user clicked (this is the selected variant ID)
+  var selectedValue = selectElement.value;
 
-        // 4. Since only one variant can be purchased at a time, reset all other dropdowns
-        var allSelects = document.querySelectorAll('.variant-group-select');
-        for (var i = 0; i < allSelects.length; i++) {
-            var select = allSelects[i];
-            // If it is a different select element than the one clicked, reset it to its first option (index 0)
-            if (select !== selectElement) {
-                select.selectedIndex = 0;
-            }
-        }
+  // 2. Get the hidden input that stores the active variant ID
+  var hiddenInput = document.getElementById("variant-select");
 
-        // 5. Update the page's product gallery, price, and stock indicators to match the selected variant
-        updateVariantGallery(selectElement);
+  // 3. If a valid option is selected (not placeholder or empty)
+  if (selectedValue) {
+    // Update the hidden input value so the form knows which variant is selected
+    if (hiddenInput) {
+      hiddenInput.value = selectedValue;
     }
+
+    // 4. Since only one variant can be purchased at a time, reset all other dropdowns
+    var allSelects = document.querySelectorAll(".variant-group-select");
+    for (var i = 0; i < allSelects.length; i++) {
+      var select = allSelects[i];
+      // If it is a different select element than the one clicked, reset it to its first option (index 0)
+      if (select !== selectElement) {
+        select.selectedIndex = 0;
+      }
+    }
+
+    // 5. Update the page's product gallery, price, and stock indicators to match the selected variant
+    updateVariantGallery(selectElement);
+  }
 }
 ```
-* **Explanation**:
+
+- **Explanation**:
   - Sets up the change handler for dropdown selects.
   - Fetches the selected variant ID from the select value and stores it in the hidden input `#variant-select`.
   - Selects all dropdowns on the page using class `.variant-group-select`.
@@ -174,9 +180,9 @@ window.addEventListener('DOMContentLoaded', function () {
     if (hiddenInput) {
         selectedVal = hiddenInput.value;
     }
-    
+
     var activeSelect = null;
-    
+
     // 1. If there is a pre-selected variant (e.g. redirected with a variant selected)
     if (selectedVal) {
         var allSelects = document.querySelectorAll('.variant-group-select');
@@ -195,7 +201,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    
+
     // 2. Fallback: If no variant is pre-selected, default to the first option of the first select group
     if (!activeSelect) {
         var firstSelect = document.querySelector('.variant-group-select');
@@ -209,7 +215,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    
+
     // 3. If we have variant selects, update the gallery/price display with the active select
     var hasVariantSelects = document.querySelectorAll('.variant-group-select').length > 0;
     if (hasVariantSelects) {
@@ -221,7 +227,8 @@ window.addEventListener('DOMContentLoaded', function () {
     }
     ...
 ```
-* **Explanation**:
+
+- **Explanation**:
   - Attaches a listener that executes when the HTML document is fully parsed.
   - Checks if the hidden `#variant-select` has an initial value (which occurs if a specific variant ID was pre-selected from the backend).
   - If a value exists, loops through all dropdown options to find it, sets that select's value, and designates it as the `activeSelect`.
@@ -240,7 +247,8 @@ function updateVariantGallery(selectElement) {
     const images = imagesAttr ? imagesAttr.split(',') : [];
     const priceAdd = parseFloat(selectedOption.getAttribute('data-price-add') || '0');
 ```
-* **Explanation**:
+
+- **Explanation**:
   - Retrieves the selected option element from the active select dropdown using the `selectedIndex` property.
   - Exits early if there is no selected option.
   - Retrieves the `data-images` attribute containing image paths, splitting it into an array on each comma character.
@@ -260,7 +268,8 @@ function resetVariantDisplay() {
     const stockText = document.getElementById('stock-count-text');
     ...
 ```
-* **Explanation**:
+
+- **Explanation**:
   - Finds the price elements (`#product-price` and `#product-base-price`) and resets their text content to the baseline product prices retrieved from custom data attributes.
   - Finds the stock indicator badges and updates their text to display `"Select Variant"`.
   - Disables the "Add to Cart" and "Buy Now" button elements so the user cannot click them, updating their labels to `"Select Variant"`.

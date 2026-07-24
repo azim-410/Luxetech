@@ -114,391 +114,409 @@ a {
 
 /* Keep body scroll for tall register form */
 body {
-    background-color: var(--luxe-gray-bg);
-    overflow-y: auto;
+  background-color: var(--luxe-gray-bg);
+  overflow-y: auto;
 }
 
 /* Main Content */
 .main-content {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem; 
-    min-height: 0; 
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 0;
 }
 
 /* Main Div - Increased Size */
 .signup-card {
-    max-width: 80rem; 
-    width: 100%;
-    height: auto;
-    min-height: 85vh;
-    max-height: none;
-    background-color: #ffffff;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-    border-radius: 0.125rem;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  max-width: 80rem;
+  width: 100%;
+  height: auto;
+  min-height: 85vh;
+  max-height: none;
+  background-color: #ffffff;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  border-radius: 0.125rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Hero Section */
 .hero-column {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    padding: 3rem; 
-    background-size: cover;
-    background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 3rem;
+  background-size: cover;
+  background-position: center;
 }
 
 .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .hero-content {
-    position: relative;
-    z-index: 10;
-    max-width: 32rem; 
+  position: relative;
+  z-index: 10;
+  max-width: 32rem;
 }
 
 .badge {
-    display: inline-block;
-    background-color: rgba(234, 88, 12, 0.8);
-    font-size: 0.625rem;
-    font-weight: 700;
-    color: #ffffff;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.125rem;
-    margin-bottom: 1rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  display: inline-block;
+  background-color: rgba(234, 88, 12, 0.8);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.125rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .hero-title {
-    font-size: 2.25rem; 
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.2;
-    margin-bottom: 0.75rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
 }
 
 .hero-subtitle {
-    color: #e5e7eb;
-    font-size: 1rem;
+  color: #e5e7eb;
+  font-size: 1rem;
 }
 
 /* Form Section */
 .form-section {
-    padding: 2rem 3rem;
-    background-color: #ffffff;
-    overflow-y: auto; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center; 
+  padding: 2rem 3rem;
+  background-color: #ffffff;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .form-container {
-    max-width: 32rem; 
-    width: 100%;
-    margin: 0 auto;
+  max-width: 32rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .form-header {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-header h2 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
 }
 
 .form-header p {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 /* Forms & Inputs */
 .registration-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; 
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .grid-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .input-group label {
-    display: block;
-    font-size: 0.625rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.35rem;
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
 }
 
 .input-group input[type="text"],
 .input-group input[type="email"],
 .input-group input[type="password"] {
-    width: 100%;
-    background-color: var(--luxe-input-bg);
-    border: none;
-    padding: 0.75rem; 
-    font-size: 0.875rem;
-    border-radius: 5px;
-    outline: none;
-    font-family: inherit;
-    transition: box-shadow 0.2s ease-in-out;
+  width: 100%;
+  background-color: var(--luxe-input-bg);
+  border: none;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 5px;
+  outline: none;
+  font-family: inherit;
+  transition: box-shadow 0.2s ease-in-out;
 }
 
 .input-group input:focus {
-    box-shadow: 0 0 0 2px var(--luxe-dark);
+  box-shadow: 0 0 0 2px var(--luxe-dark);
 }
 
 /* Password Wrapper & Toggle */
 .password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .toggle-password {
-    position: absolute;
-    right: 0.75rem;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: color 0.2s ease;
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s ease;
 }
 
 .toggle-password:hover {
-    color: var(--luxe-dark);
+  color: var(--luxe-dark);
 }
 
 .eye-icon {
-    width: 1.25rem;
-    height: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* Checkboxes */
 .checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding-top: 0.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
 }
 
 .checkbox-group input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid var(--border-color);
-    margin-top: 0.125rem;
-    cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  margin-top: 0.125rem;
+  cursor: pointer;
 }
 
 .checkbox-group label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
 .checkbox-group a {
-    text-decoration: underline;
-    font-weight: 500;
+  text-decoration: underline;
+  font-weight: 500;
 }
 
 /* Buttons */
 .form-actions {
-    padding-top: 0.75rem;
+  padding-top: 0.75rem;
 }
 
 .btn-primary {
-    width: 100%;
-    background-color: var(--luxe-dark);
-    color: #ffffff;
-    font-weight: 700;
-    padding: 1rem 1.5rem; 
-    border: none;
-    border-radius: 0.125rem;
-    cursor: pointer;
-    /* Added transform to the transition */
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 0.875rem;
-    border-radius: 10px;
+  width: 100%;
+  background-color: var(--luxe-dark);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 0.125rem;
+  cursor: pointer;
+  /* Added transform to the transition */
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+  border-radius: 10px;
 }
 
 .btn-primary:hover {
-    background-color: #000000;
+  background-color: #000000;
 }
 
 /* The Clicking Effect for Primary Button */
 .btn-primary:active {
-    transform: scale(0.96);
+  transform: scale(0.96);
 }
 
 .arrow-icon {
-    width: 1rem;
-    height: 1rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Social Login */
 .social-login-section {
-    margin-top: 1.5rem;
-    text-align: center;
+  margin-top: 1.5rem;
+  text-align: center;
 }
 
 .login-link {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
 }
 
 .login-link a {
-    color: #1d4ed8;
-    font-weight: 700;
+  color: #1d4ed8;
+  font-weight: 700;
 }
 
 .divider {
-    position: relative;
-    margin-bottom: 1.25rem;
+  position: relative;
+  margin-bottom: 1.25rem;
 }
 
 .divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    border-top: 1px solid var(--border-color);
-    z-index: 1;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--border-color);
+  z-index: 1;
 }
 
 .divider span {
-    position: relative;
-    z-index: 2;
-    background-color: #ffffff;
-    padding: 0 0.75rem;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: -0.05em;
+  position: relative;
+  z-index: 2;
+  background-color: #ffffff;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
 }
 
 .btn-social {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border-color);
-    background-color: #ffffff;
-    padding: 0.75rem;
-    border-radius: 0.125rem;
-    cursor: pointer;
-    /* Added transform to the transition */
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    border-radius: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 0.125rem;
+  cursor: pointer;
+  /* Added transform to the transition */
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  border-radius: 10px;
 }
 
 .btn-social:hover {
-    background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 
 /* The Clicking Effect for Social Button */
 .btn-social:active {
-    transform: scale(0.96);
+  transform: scale(0.96);
 }
 
 .google-icon {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.75rem;
-
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.75rem;
 }
 
 /* --- Media Queries --- */
 @media (min-width: 768px) {
-    .signup-card {
-        flex-direction: row;
-        height: 85vh;
-        max-height: 900px;
-    }
+  .signup-card {
+    flex-direction: row;
+    height: 85vh;
+    max-height: 900px;
+  }
 
-    .hero-column {
-        width: 45%;
-    }
+  .hero-column {
+    width: 45%;
+  }
 
-    .form-section {
-        width: 55%;
-    }
+  .form-section {
+    width: 55%;
+  }
 }
 
 /* --- Mobile Responsive --- */
 @media (max-width: 767px) {
-    .main-content {
-        padding: 1rem;
-        align-items: flex-start;
-    }
+  .main-content {
+    padding: 1rem;
+    align-items: flex-start;
+  }
 
-    .signup-card {
-        max-width: 100%;
-        border-radius: 0.5rem;
-        box-shadow: 0 8px 20px -5px rgba(0,0,0,0.1);
-    }
+  .signup-card {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
+  }
 
-    .hero-column {
-        min-height: 200px;
-        padding: 2rem 1.5rem;
-    }
+  .hero-column {
+    min-height: 200px;
+    padding: 2rem 1.5rem;
+  }
 
-    .hero-title { font-size: 1.75rem; }
-    .hero-subtitle { font-size: 0.875rem; }
+  .hero-title {
+    font-size: 1.75rem;
+  }
+  .hero-subtitle {
+    font-size: 0.875rem;
+  }
 
-    .form-section {
-        padding: 1.5rem;
-    }
+  .form-section {
+    padding: 1.5rem;
+  }
 
-    .grid-row {
-        grid-template-columns: 1fr;
-    }
+  .grid-row {
+    grid-template-columns: 1fr;
+  }
 
-    .form-header h2 { font-size: 1.5rem; }
+  .form-header h2 {
+    font-size: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .main-content { padding: 0.75rem; }
-    .form-section { padding: 1.25rem 1rem; }
-    .hero-column { min-height: 160px; padding: 1.5rem 1rem; }
-    .hero-title { font-size: 1.5rem; }
-    .input-group input[type="text"],
-    .input-group input[type="email"],
-    .input-group input[type="password"] {
-        padding: 0.65rem;
-    }
+  .main-content {
+    padding: 0.75rem;
+  }
+  .form-section {
+    padding: 1.25rem 1rem;
+  }
+  .hero-column {
+    min-height: 160px;
+    padding: 1.5rem 1rem;
+  }
+  .hero-title {
+    font-size: 1.5rem;
+  }
+  .input-group input[type="text"],
+  .input-group input[type="email"],
+  .input-group input[type="password"] {
+    padding: 0.65rem;
+  }
 }

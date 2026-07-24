@@ -5,240 +5,264 @@
    ============================================================ */
 
 /* --- Google Fonts --- */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap");
 
 /* --- Material Symbols Outlined (icon font used across all auth pages) --- */
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
 /* --- CSS Variables (Unified Luxe Tech Palette) --- */
 :root {
-    /* Brand */
-    --luxe-dark: #00102b;
-    --luxe-accent: #c27843;
+  /* Brand */
+  --luxe-dark: #00102b;
+  --luxe-accent: #c27843;
 
-    /* Backgrounds */
-    --bg: #f7f9fc;
-    --luxe-gray-bg: #f3f4f6;
-    --surface: #f7f9fc;
-    --surface-card: #ffffff;
-    --surface-low: #f2f4f7;
-    --luxe-input-bg: #f1f3f6;
+  /* Backgrounds */
+  --bg: #f7f9fc;
+  --luxe-gray-bg: #f3f4f6;
+  --surface: #f7f9fc;
+  --surface-card: #ffffff;
+  --surface-low: #f2f4f7;
+  --luxe-input-bg: #f1f3f6;
 
-    /* Text */
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --text-muted: #9ca3af;
-    --on-surface: #191c1e;
-    --on-surface-variant: #44474c;
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --on-surface: #191c1e;
+  --on-surface-variant: #44474c;
 
-    /* Borders & Accents */
-    --border-color: #e5e7eb;
-    --border: #e0e3e6;
-    --accent: #2b5bb5;
-    --primary-dark: #001945;
-    --primary-gradient: linear-gradient(135deg, #000000 0%, #001945 100%);
-    --shadow-primary: rgba(0, 25, 69, 0.2);
+  /* Borders & Accents */
+  --border-color: #e5e7eb;
+  --border: #e0e3e6;
+  --accent: #2b5bb5;
+  --primary-dark: #001945;
+  --primary-gradient: linear-gradient(135deg, #000000 0%, #001945 100%);
+  --shadow-primary: rgba(0, 25, 69, 0.2);
 
-    /* OTP / Outline tokens */
-    --surface-container-lowest: #ffffff;
-    --surface-container-low: #f2f4f7;
-    --surface-container-high: #e6e8eb;
-    --outline-variant: rgba(196, 198, 204, 0.15);
-    --surface-tint: rgba(43, 91, 181, 0.5);
-    --secondary-container: rgba(203, 231, 245, 0.4);
-    --on-secondary-container: #4e6874;
+  /* OTP / Outline tokens */
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f2f4f7;
+  --surface-container-high: #e6e8eb;
+  --outline-variant: rgba(196, 198, 204, 0.15);
+  --surface-tint: rgba(43, 91, 181, 0.5);
+  --secondary-container: rgba(203, 231, 245, 0.4);
+  --on-secondary-container: #4e6874;
 
-    /* Font stacks */
-    --font-headline: 'Manrope', sans-serif;
-    --font-body: 'Inter', sans-serif;
+  /* Font stacks */
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
 }
 
 /* --- Global Reset --- */
 *,
 *::before,
 *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* --- Base Body --- */
-html, body {
-    height: 100%;
-    width: 100%;
+html,
+body {
+  height: 100%;
+  width: 100%;
 }
 
 body {
-    font-family: var(--font-body);
-    background-color: var(--bg);
-    color: var(--on-surface);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--on-surface);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* --- Cursor Helpers --- */
-a, button, input[type="checkbox"], label[for] {
-    cursor: pointer;
+a,
+button,
+input[type="checkbox"],
+label[for] {
+  cursor: pointer;
 }
 
 /* --- Links (bare reset) --- */
 a {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
 
 /* --- Material Symbols config --- */
 .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    vertical-align: middle;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align: middle;
 }
 
 /* ============================================================
    HEADER
    ============================================================ */
 .site-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem 2rem;
-    flex-shrink: 0;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  flex-shrink: 0;
 }
 
 .header-container {
-    width: 100%;
-    display: flex;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .brand-logo {
-    font-family: var(--font-headline);
-    font-size: 1.125rem;
-    font-weight: 800;
-    letter-spacing: -0.05em;
-    color: var(--on-surface);
+  font-family: var(--font-headline);
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--on-surface);
 }
 
 /* ============================================================
    FOOTER
    ============================================================ */
 .site-footer {
-    background-color: #ffffff;
-    border-top: 1px solid var(--border-color);
-    padding: 1.5rem 2rem;
-    min-height: 80px;
-    flex-shrink: 0;
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  padding: 1.5rem 2rem;
+  min-height: 80px;
+  flex-shrink: 0;
 }
 
 .footer-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    text-transform: uppercase;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .footer-brand {
-    font-family: var(--font-headline);
-    font-size: 1.25rem;
-    color: var(--text-primary);
-    letter-spacing: -0.05em;
-    margin-bottom: 1rem;
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  letter-spacing: -0.05em;
+  margin-bottom: 1rem;
 }
 
 .footer-copyright {
-    font-size: 0.875rem;
-    color: var(--text-primary);
-    letter-spacing: -0.05em;
-    margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  letter-spacing: -0.05em;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 768px) {
-    .footer-container {
-        flex-direction: row;
-    }
+  .footer-container {
+    flex-direction: row;
+  }
 
-    .footer-brand {
-        margin-bottom: 0;
-        margin-right: 2rem;
-    }
+  .footer-brand {
+    margin-bottom: 0;
+    margin-right: 2rem;
+  }
 
-    .footer-copyright {
-        margin-bottom: 0;
-    }
+  .footer-copyright {
+    margin-bottom: 0;
+  }
 }
 
 /* ============================================================
    SHARED ERROR STYLES (used across auth forms)
    ============================================================ */
 .field-error {
-    color: #ff5555;
-    font-size: 0.78rem;
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  color: #ff5555;
+  font-size: 0.78rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .field-error::before {
-    content: '⚠ ';
+  content: "⚠ ";
 }
 
 .general-error {
-    background: rgba(255, 85, 85, 0.1);
-    border: 1px solid #ff5555;
-    color: #ff5555;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 12px;
+  background: rgba(255, 85, 85, 0.1);
+  border: 1px solid #ff5555;
+  color: #ff5555;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
 }
 
 .general-success {
-    background: rgba(46, 204, 113, 0.1);
-    border: 1px solid #2ecc71;
-    color: #27ae60;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 12px;
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid #2ecc71;
+  color: #27ae60;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
 }
 
 /* ============================================================
    ENTRANCE ANIMATION
    ============================================================ */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-in {
-    animation: fadeInUp 0.6s ease-out;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 /* --- Auth Global Responsive --- */
 @media (max-width: 768px) {
-    .site-header {
-        padding: 0.875rem 1.25rem;
-    }
+  .site-header {
+    padding: 0.875rem 1.25rem;
+  }
 
-    .site-footer {
-        padding: 1rem 1.25rem;
-        min-height: 60px;
-    }
+  .site-footer {
+    padding: 1rem 1.25rem;
+    min-height: 60px;
+  }
 }
 
 @media (max-width: 480px) {
-    .site-header { padding: 0.75rem 1rem; }
-    .brand-logo { font-size: 1rem; }
-    .site-footer { padding: 0.875rem 1rem; }
-    .footer-brand { font-size: 1.125rem; }
-    .footer-copyright { font-size: 0.8rem; }
+  .site-header {
+    padding: 0.75rem 1rem;
+  }
+  .brand-logo {
+    font-size: 1rem;
+  }
+  .site-footer {
+    padding: 0.875rem 1rem;
+  }
+  .footer-brand {
+    font-size: 1.125rem;
+  }
+  .footer-copyright {
+    font-size: 0.8rem;
+  }
 }

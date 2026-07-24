@@ -1,334 +1,374 @@
-import Order from '../../model/order.js';
-import User from '../../model/userModel.js'; // Ensure User model is loaded for populate
-import Transaction from '../../model/transaction.js';
+import Order from "../../model/order.js";
+import User from "../../model/userModel.js"; // Ensure User model is loaded for populate
+import Transaction from "../../model/transaction.js";
 
-const getAdminOrdersService = async (page, limit, sort = 'date-desc', filterOptions = {}) => {
-    try {
-        const { search, status, startDate, endDate } = filterOptions;
-        const skip = (page - 1) * limit;
+const getAdminOrdersService = async (
+  page,
+  limit,
+  sort = "date-desc",
+  filterOptions = {},
+) => {
+  try {
+    const { search, status, startDate, endDate } = filterOptions;
+    const skip = (page - 1) * limit;
 
-        let query = {};
+    let query = {};
 
-        if (status && status !== 'all') {
-            query.orderStatus = status;
-        }
-
-        // 2. Search Filter (Order ID, Customer Name, Customer Email)
-        if (search && search.trim()) {
-            const searchRegex = new RegExp(search.trim(), 'i');
-            const matchingUsers = await User.find({ email: searchRegex }).select('_id');
-            const matchingUserIds = matchingUsers.map(u => u._id);
-
-            query.$or = [
-                { orderId: searchRegex },
-                { 'shippingAddress.fullName': searchRegex },
-                { userId: { $in: matchingUserIds } }
-            ];
-        }
-
-        // 3. Date Range Filter
-        if (startDate || endDate) {
-            query.createdAt = {};
-            if (startDate) {
-                const sDate = new Date(startDate);
-                sDate.setHours(0, 0, 0, 0);
-                query.createdAt.$gte = sDate;
-            }
-            if (endDate) {
-                const eDate = new Date(endDate);
-                eDate.setHours(23, 59, 59, 999);
-                query.createdAt.$lte = eDate;
-            }
-        }
-
-        const totalOrders = await Order.countDocuments(query);
-        const totalPage = Math.max(1, Math.ceil(totalOrders / limit));
-
-        let sortQuery = { createdAt: -1 };
-        if (sort === 'date-asc') {
-            sortQuery = { createdAt: 1 };
-        } else if (sort === 'price-asc') {
-            sortQuery = { 'pricing.grandTotal': 1 };
-        } else if (sort === 'price-desc') {
-            sortQuery = { 'pricing.grandTotal': -1 };
-        }
-
-        const orders = await Order.find(query)
-            .populate('userId')
-            .skip(skip)
-            .limit(limit)
-            .sort(sortQuery);
-
-        return { orders, totalOrders, totalPage };
-    } catch (error) {
-        throw new Error('Failed to retrieve orders: ' + error.message);
+    if (status && status !== "all") {
+      query.orderStatus = status;
     }
+
+    // 2. Search Filter (Order ID, Customer Name, Customer Email)
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      const matchingUsers = await User.find({ email: searchRegex }).select(
+        "_id",
+      );
+      const matchingUserIds = matchingUsers.map((u) => u._id);
+
+      query.$or = [
+        { orderId: searchRegex },
+        { "shippingAddress.fullName": searchRegex },
+        { userId: { $in: matchingUserIds } },
+      ];
+    }
+
+    // 3. Date Range Filter
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        const sDate = new Date(startDate);
+        sDate.setHours(0, 0, 0, 0);
+        query.createdAt.$gte = sDate;
+      }
+      if (endDate) {
+        const eDate = new Date(endDate);
+        eDate.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = eDate;
+      }
+    }
+
+    const totalOrders = await Order.countDocuments(query);
+    const totalPage = Math.max(1, Math.ceil(totalOrders / limit));
+
+    let sortQuery = { createdAt: -1 };
+    if (sort === "date-asc") {
+      sortQuery = { createdAt: 1 };
+    } else if (sort === "price-asc") {
+      sortQuery = { "pricing.grandTotal": 1 };
+    } else if (sort === "price-desc") {
+      sortQuery = { "pricing.grandTotal": -1 };
+    }
+
+    const orders = await Order.find(query)
+      .populate("userId")
+      .skip(skip)
+      .limit(limit)
+      .sort(sortQuery);
+
+    return { orders, totalOrders, totalPage };
+  } catch (error) {
+    throw new Error("Failed to retrieve orders: " + error.message);
+  }
 };
 
 const updateOrderEstimateDateService = async (orderId, estimateDate) => {
-    
-    const order = await Order.findById(orderId);
-    if (!order) {
-        throw new Error('Order not found');
-    }
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
 
-    const selectedDate = new Date(estimateDate);
-    if (isNaN(selectedDate.getTime())) {
-        throw new Error('Invalid estimate date format.');
-    }
+  const selectedDate = new Date(estimateDate);
+  if (isNaN(selectedDate.getTime())) {
+    throw new Error("Invalid estimate date format.");
+  }
 
-    // Get today's date at midnight
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // Get today's date at midnight
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    if (selectedDate < today) {
-        throw new Error('Estimate date must be today or in the future.');
-    }
+  if (selectedDate < today) {
+    throw new Error("Estimate date must be today or in the future.");
+  }
 
-    // Save to DB
-    order.estimateDate = estimateDate;
-    await order.save();
+  // Save to DB
+  order.estimateDate = estimateDate;
+  await order.save();
 
-    return order;
+  return order;
 };
 
 const updateOrderStatusService = async (orderId, status) => {
-   
-    const order = await Order.findById(orderId);
-    if (!order) {
-        throw new Error('Order not found');
-    }
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
 
-    const currentStatus = order.orderStatus;
+  const currentStatus = order.orderStatus;
 
-    // If it's already Delivered or Cancelled, it's final
-    if (currentStatus === 'Delivered' || currentStatus === 'Cancelled') {
-        throw new Error(`Cannot change status. The order is already ${currentStatus}.`);
-    }
+  // If it's already Delivered or Cancelled, it's final
+  if (currentStatus === "Delivered" || currentStatus === "Cancelled") {
+    throw new Error(
+      `Cannot change status. The order is already ${currentStatus}.`,
+    );
+  }
 
-    // Check transition validity
-    if (currentStatus === 'Pending' && !['Processing', 'Cancelled'].includes(status)) {
-        throw new Error('Pending orders can only be updated to Processing or Cancelled.');
-    }
-    if (currentStatus === 'Processing' && !['Shipped', 'Cancelled'].includes(status)) {
-        throw new Error('Processing orders can only be updated to Shipped or Cancelled.');
-    }
-    if (currentStatus === 'Shipped' && !['Out for Delivery', 'Cancelled'].includes(status)) {
-        throw new Error('Shipped orders can only be updated to Out for Delivery or Cancelled.');
-    }
-    if (currentStatus === 'Out for Delivery' && !['Delivered', 'Cancelled'].includes(status)) {
-        throw new Error('Out for Delivery orders can only be updated to Delivered or Cancelled.');
-    }
+  // Check transition validity
+  if (
+    currentStatus === "Pending" &&
+    !["Processing", "Cancelled"].includes(status)
+  ) {
+    throw new Error(
+      "Pending orders can only be updated to Processing or Cancelled.",
+    );
+  }
+  if (
+    currentStatus === "Processing" &&
+    !["Shipped", "Cancelled"].includes(status)
+  ) {
+    throw new Error(
+      "Processing orders can only be updated to Shipped or Cancelled.",
+    );
+  }
+  if (
+    currentStatus === "Shipped" &&
+    !["Out for Delivery", "Cancelled"].includes(status)
+  ) {
+    throw new Error(
+      "Shipped orders can only be updated to Out for Delivery or Cancelled.",
+    );
+  }
+  if (
+    currentStatus === "Out for Delivery" &&
+    !["Delivered", "Cancelled"].includes(status)
+  ) {
+    throw new Error(
+      "Out for Delivery orders can only be updated to Delivered or Cancelled.",
+    );
+  }
 
-    // Set status change date
-    if (status === 'Processing') {
-        order.processingDate = new Date();
-    } else if (status === 'Shipped') {
-        order.shippedDate = new Date();
-    } else if (status === 'Out for Delivery') {
-        order.outForDeliveryDate = new Date();
-    } else if (status === 'Delivered') {
-        order.deliveredDate = new Date();
-    } else if (status === 'Cancelled') {
-        order.cancelledDate = new Date();
-        const isPaid = order.paymentStatus === 'Paid';
-        if (isPaid) {
-            order.paymentStatus = 'Refunded';
-            // Refund all non-cancelled items
-            let refundAmount = 0;
-            order.items.forEach(item => {
-                if (item.status !== 'Cancelled') {
-                    refundAmount += item.subtotal;
-                }
-            });
-            if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
-            order.pricing.refundedAmount += refundAmount;
-            if (refundAmount > 0) {
-                await User.findByIdAndUpdate(order.userId, {
-                    $inc: { wallet: refundAmount }
-                });
-                await Transaction.create({
-                    userId: order.userId,
-                    amount: refundAmount,
-                    type: 'credit',
-                    description: `Refund for order cancellation by Admin (Order #${order.orderId})`,
-                    orderId: order.orderId,
-                    status: 'completed'
-                });
-            }
+  // Set status change date
+  if (status === "Processing") {
+    order.processingDate = new Date();
+  } else if (status === "Shipped") {
+    order.shippedDate = new Date();
+  } else if (status === "Out for Delivery") {
+    order.outForDeliveryDate = new Date();
+  } else if (status === "Delivered") {
+    order.deliveredDate = new Date();
+  } else if (status === "Cancelled") {
+    order.cancelledDate = new Date();
+    const isPaid = order.paymentStatus === "Paid";
+    if (isPaid) {
+      order.paymentStatus = "Refunded";
+      // Refund all non-cancelled items
+      let refundAmount = 0;
+      order.items.forEach((item) => {
+        if (item.status !== "Cancelled") {
+          refundAmount += item.subtotal;
         }
-        // Mark all items as Cancelled and set paymentReturned = true if paid
-        order.items.forEach(item => {
-            if (item.status !== 'Cancelled') {
-                item.status = 'Cancelled';
-                item.cancelledDate = new Date();
-                item.cancellationReason = 'Cancelled by Administrator';
-                if (isPaid) {
-                    item.paymentReturned = true;
-                }
-            }
+      });
+      if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
+      order.pricing.refundedAmount += refundAmount;
+      if (refundAmount > 0) {
+        await User.findByIdAndUpdate(order.userId, {
+          $inc: { wallet: refundAmount },
         });
+        await Transaction.create({
+          userId: order.userId,
+          amount: refundAmount,
+          type: "credit",
+          description: `Refund for order cancellation by Admin (Order #${order.orderId})`,
+          orderId: order.orderId,
+          status: "completed",
+        });
+      }
     }
+    // Mark all items as Cancelled and set paymentReturned = true if paid
+    order.items.forEach((item) => {
+      if (item.status !== "Cancelled") {
+        item.status = "Cancelled";
+        item.cancelledDate = new Date();
+        item.cancellationReason = "Cancelled by Administrator";
+        if (isPaid) {
+          item.paymentReturned = true;
+        }
+      }
+    });
+  }
 
-    // Save to DB
-    order.orderStatus = status;
-    await order.save();
+  // Save to DB
+  order.orderStatus = status;
+  await order.save();
 
-    return order;
+  return order;
 };
 
 const updateOrderPaymentStatusService = async (orderId, paymentStatus) => {
-    const order = await Order.findById(orderId);
-    if (!order) {
-        throw new Error('Order not found');
-    }
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
 
-    const validStatuses = ['Pending', 'Paid', 'Failed', 'Refunded'];
-    if (!validStatuses.includes(paymentStatus)) {
-        throw new Error('Invalid payment status.');
-    }
+  const validStatuses = ["Pending", "Paid", "Failed", "Refunded"];
+  if (!validStatuses.includes(paymentStatus)) {
+    throw new Error("Invalid payment status.");
+  }
 
-    order.paymentStatus = paymentStatus;
-    await order.save();
-    return order;
+  order.paymentStatus = paymentStatus;
+  await order.save();
+  return order;
 };
 
 const processAdminItemActionService = async (orderId, itemId, action) => {
-    const order = await Order.findById(orderId);
-    if (!order) {
-        throw new Error('Order not found');
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  const item = order.items.find(
+    (i) =>
+      String(i._id) === String(itemId) ||
+      String(i.productId) === String(itemId),
+  );
+
+  if (!item) {
+    throw new Error("Item not found in order");
+  }
+
+  if (action === "Return" || action === "Replacement") {
+    if (item.status !== "Return Requested") {
+      throw new Error("This item does not have an active return request");
     }
-
-    const item = order.items.find(i => String(i._id) === String(itemId) || String(i.productId) === String(itemId));
-
-    if (!item) {
-        throw new Error('Item not found in order');
-    }
-
-    if (action === 'Return' || action === 'Replacement') {
-        if (item.status !== 'Return Requested') {
-            throw new Error('This item does not have an active return request');
-        }
-        if (action === 'Return') {
-            item.status = 'Return Confirmed';
-            item.paymentReturned = true;
-            // Credit refund to user's wallet
-            const refundAmount = item.subtotal;
-            if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
-            order.pricing.refundedAmount += refundAmount;
-            await User.findByIdAndUpdate(order.userId, {
-                $inc: { wallet: refundAmount }
-            });
-            await Transaction.create({
-                userId: order.userId,
-                amount: refundAmount,
-                type: 'credit',
-                description: `Refund for returned item: ${item.name}`,
-                orderId: order.orderId,
-                status: 'completed'
-            });
-        } else {
-            item.status = 'Replacement Confirmed';
-        }
-        item.returnConfirmedDate = new Date();
-        if (!item.returnRequestDate) {
-            item.returnRequestDate = new Date();
-        }
-    } else if (action === 'MarkReturned') {
-        if (item.status !== 'Return Confirmed') {
-            throw new Error('This item is not in Return Confirmed state');
-        }
-        item.status = 'Returned';
-        item.returnedDate = new Date();
-        if (!item.returnConfirmedDate) {
-            item.returnConfirmedDate = new Date();
-        }
-        if (!item.returnRequestDate) {
-            item.returnRequestDate = new Date();
-        }
-    } else if (action === 'MarkReplaced') {
-        if (item.status !== 'Replacement Confirmed') {
-            throw new Error('This item is not in Replacement Confirmed state');
-        }
-        item.status = 'Replaced';
-        item.returnedDate = new Date();
-        if (!item.returnConfirmedDate) {
-            item.returnConfirmedDate = new Date();
-        }
-        if (!item.returnRequestDate) {
-            item.returnRequestDate = new Date();
-        }
+    if (action === "Return") {
+      item.status = "Return Confirmed";
+      item.paymentReturned = true;
+      // Credit refund to user's wallet
+      const refundAmount = item.subtotal;
+      if (!order.pricing.refundedAmount) order.pricing.refundedAmount = 0;
+      order.pricing.refundedAmount += refundAmount;
+      await User.findByIdAndUpdate(order.userId, {
+        $inc: { wallet: refundAmount },
+      });
+      await Transaction.create({
+        userId: order.userId,
+        amount: refundAmount,
+        type: "credit",
+        description: `Refund for returned item: ${item.name}`,
+        orderId: order.orderId,
+        status: "completed",
+      });
     } else {
-        throw new Error('Invalid action');
+      item.status = "Replacement Confirmed";
     }
+    item.returnConfirmedDate = new Date();
+    if (!item.returnRequestDate) {
+      item.returnRequestDate = new Date();
+    }
+  } else if (action === "MarkReturned") {
+    if (item.status !== "Return Confirmed") {
+      throw new Error("This item is not in Return Confirmed state");
+    }
+    item.status = "Returned";
+    item.returnedDate = new Date();
+    if (!item.returnConfirmedDate) {
+      item.returnConfirmedDate = new Date();
+    }
+    if (!item.returnRequestDate) {
+      item.returnRequestDate = new Date();
+    }
+  } else if (action === "MarkReplaced") {
+    if (item.status !== "Replacement Confirmed") {
+      throw new Error("This item is not in Replacement Confirmed state");
+    }
+    item.status = "Replaced";
+    item.returnedDate = new Date();
+    if (!item.returnConfirmedDate) {
+      item.returnConfirmedDate = new Date();
+    }
+    if (!item.returnRequestDate) {
+      item.returnRequestDate = new Date();
+    }
+  } else {
+    throw new Error("Invalid action");
+  }
 
-    // Now update overall order status based on item statuses:
-    const hasPendingReturnRequests = order.items.some(i => i.status === 'Return Requested');
-    const hasConfirmedReturns = order.items.some(i => i.status === 'Return Confirmed');
-    const hasConfirmedReplacements = order.items.some(i => i.status === 'Replacement Confirmed');
+  // Now update overall order status based on item statuses:
+  const hasPendingReturnRequests = order.items.some(
+    (i) => i.status === "Return Requested",
+  );
+  const hasConfirmedReturns = order.items.some(
+    (i) => i.status === "Return Confirmed",
+  );
+  const hasConfirmedReplacements = order.items.some(
+    (i) => i.status === "Replacement Confirmed",
+  );
 
-    if (hasPendingReturnRequests) {
-        order.orderStatus = 'Return Requested';
-        if (!order.returnRequestDate) {
-            order.returnRequestDate = new Date();
-        }
-    } else if (hasConfirmedReturns || hasConfirmedReplacements) {
-        if (hasConfirmedReturns) {
-            order.orderStatus = 'Return Confirmed';
-            // order.paymentStatus = 'Refunded';
-        } else {
-            order.orderStatus = 'Replacement Confirmed';
-        }
-        if (!order.returnConfirmedDate) {
-            order.returnConfirmedDate = new Date();
-        }
-        if (!order.returnRequestDate) {
-            order.returnRequestDate = new Date();
-        }
+  if (hasPendingReturnRequests) {
+    order.orderStatus = "Return Requested";
+    if (!order.returnRequestDate) {
+      order.returnRequestDate = new Date();
+    }
+  } else if (hasConfirmedReturns || hasConfirmedReplacements) {
+    if (hasConfirmedReturns) {
+      order.orderStatus = "Return Confirmed";
+      // order.paymentStatus = 'Refunded';
     } else {
-        const hasReturnedItems = order.items.some(i => i.status === 'Returned');
-        const hasReplacedItems = order.items.some(i => i.status === 'Replaced');
-
-        if (hasReturnedItems || hasReplacedItems) {
-            order.orderStatus = hasReturnedItems ? 'Returned' : 'Replaced';
-            if (!order.returnedDate) {
-                order.returnedDate = new Date();
-            }
-            if (!order.returnConfirmedDate) {
-                order.returnConfirmedDate = new Date();
-            }
-            if (!order.returnRequestDate) {
-                order.returnRequestDate = new Date();
-            }
-        }
+      order.orderStatus = "Replacement Confirmed";
     }
-
-    const hasActiveItems = order.items.some(i => !['Cancelled', 'Returned', 'Return Confirmed'].includes(i.status));
-    if (!hasActiveItems) {
-        order.paymentStatus = 'Refunded';
+    if (!order.returnConfirmedDate) {
+      order.returnConfirmedDate = new Date();
     }
+    if (!order.returnRequestDate) {
+      order.returnRequestDate = new Date();
+    }
+  } else {
+    const hasReturnedItems = order.items.some((i) => i.status === "Returned");
+    const hasReplacedItems = order.items.some((i) => i.status === "Replaced");
 
-    await order.save();
-    return order;
+    if (hasReturnedItems || hasReplacedItems) {
+      order.orderStatus = hasReturnedItems ? "Returned" : "Replaced";
+      if (!order.returnedDate) {
+        order.returnedDate = new Date();
+      }
+      if (!order.returnConfirmedDate) {
+        order.returnConfirmedDate = new Date();
+      }
+      if (!order.returnRequestDate) {
+        order.returnRequestDate = new Date();
+      }
+    }
+  }
+
+  const hasActiveItems = order.items.some(
+    (i) => !["Cancelled", "Returned", "Return Confirmed"].includes(i.status),
+  );
+  if (!hasActiveItems) {
+    order.paymentStatus = "Refunded";
+  }
+
+  await order.save();
+  return order;
 };
 
 const exportOrdersService = async () => {
-    try {
-        const orders = await Order.find({})
-            .populate('userId')
-            .sort({ createdAt: -1 });
-        return orders;
-    } catch (error) {
-        throw new Error('Failed to retrieve all orders for export: ' + error.message);
-    }
+  try {
+    const orders = await Order.find({})
+      .populate("userId")
+      .sort({ createdAt: -1 });
+    return orders;
+  } catch (error) {
+    throw new Error(
+      "Failed to retrieve all orders for export: " + error.message,
+    );
+  }
 };
 
 export {
-    getAdminOrdersService,
-    updateOrderEstimateDateService,
-    updateOrderStatusService,
-    updateOrderPaymentStatusService,
-    processAdminItemActionService,
-    exportOrdersService
+  getAdminOrdersService,
+  updateOrderEstimateDateService,
+  updateOrderStatusService,
+  updateOrderPaymentStatusService,
+  processAdminItemActionService,
+  exportOrdersService,
 };
-

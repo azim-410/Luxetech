@@ -1,4 +1,7 @@
-import { getOrCreateReferralCode, getReferredUsers } from '../../services/user/referralService.js';
+import {
+  getOrCreateReferralCode,
+  getReferredUsers,
+} from "../../services/user/referralService.js";
 
 export const getReferralPage = async (req, res) => {
   try {
@@ -7,14 +10,14 @@ export const getReferralPage = async (req, res) => {
     const referredUsers = await getReferredUsers(user.myReferralCode);
     const referredCount = referredUsers.length;
 
-    return res.render('User/refer', {
+    return res.render("User/refer", {
       user,
       referredCount,
       referredUsers,
-      host: req.headers.host
+      host: req.headers.host,
     });
   } catch (error) {
-    console.error('Referral page controller error:', error);
-    return res.status(500).send('Server error');
+    console.error("Referral page controller error:", error);
+    return res.status(500).send("Server error");
   }
 };

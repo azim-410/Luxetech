@@ -90,7 +90,8 @@ const registerUser = async (data) => {
         email, 
         password: hashedPassword, 
         terms: true,
-        referredBy: referredByCode
+        referredBy: referredByCode,
+        userExpire: Date.now()
     });
     await user.save();
 

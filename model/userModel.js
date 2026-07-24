@@ -42,7 +42,6 @@ const userSchema = new mongoose.Schema(
         },
         userExpire: {
             type: Date,
-            default: Date.now, // No () — called fresh per-document, not once at schema load
             expires: 720       // 12 minutes in seconds
        },
         isBlocked: {

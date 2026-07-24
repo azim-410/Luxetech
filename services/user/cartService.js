@@ -8,6 +8,9 @@ const MAX_ITEM_LIMIT = 5;
 
 const addToCartService = async (userId, productId, variantId, quantityInput) => {
     try {
+        if (!userId) {
+            return { success: false, message: 'Please login to add items to your cart.' };
+        }
         const quantity = parseInt(quantityInput) || 1;
         if (quantity <= 0) {
             return { success: false, message: 'Quantity must be at least 1.' };

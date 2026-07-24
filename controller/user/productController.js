@@ -85,25 +85,21 @@ const getCart = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
-        if (!userId) {
-            return res.status(401).json({ success: false, message: 'Please login to add items to your cart.' });
-        }
-
         const { productId, variantId, quantity } = req.body;
         if (!productId) {
-            return res.status(400).json({ success: false, message: 'Product ID is required.' });
+            return res.redirect('/shop');
         }
 
-        const result = await addToCartService(userId, productId, variantId || null, quantity || 1);
+        const result = await addToCartService(userId, productId, variantId || null, quantity ? parseInt(quantity) : 1);
         
         if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message });
+            return res.redirect(`/product-details?id=${productId}&error=${encodeURIComponent(result.message)}`);
         }
 
-        return res.json({ success: true, message: result.message });
+        return res.redirect('/cart');
     } catch (error) {
         console.error('addToCart controller error:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).send('Internal Server Error');
     }
 };
 
@@ -191,24 +187,20 @@ const getWishlist = async (req, res) => {
 const addToWishlist = async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
-        if (!userId) {
-            return res.status(401).json({ success: false, message: 'Please login to add favorites.' });
-        }
-
         const productId = req.body.productId;
         const variantId = req.body.variantId || null;
         if (!productId) {
-            return res.status(400).json({ success: false, message: 'Product ID is required.' });
+            return res.redirect('/shop');
         }
 
         const result = await addToWishlistService(userId, productId, variantId);
         if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message });
+            return res.redirect(`/product-details?id=${productId}&error=${encodeURIComponent(result.message)}`);
         }
-        return res.json({ success: true, message: 'Added to favorites.' });
+        return res.redirect('/wishlist');
     } catch (error) {
         console.error('addToWishlist error:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).send('Internal Server Error');
     }
 };
 

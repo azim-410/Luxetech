@@ -153,6 +153,9 @@ const getProductDetailsService = async (productId) => {
 
 const addToWishlistService = async (userId, productId, variantId) => {
     try {
+        if (!userId) {
+            return { success: false, message: 'Please login to add favorites.' };
+        }
         // Validate product is still active before adding to wishlist
         const product = await productModel.findById(productId);
         if (!product || product.isDeleted) {

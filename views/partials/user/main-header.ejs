@@ -13,20 +13,25 @@
         justify-content: space-between !important;
         padding: 0 1.25rem !important;
         height: var(--nav-h) !important;
-        box-sizing: border-box !important;
         background: #fff !important;
         border-bottom: 1px solid var(--border) !important;
         position: sticky !important;
         top: 0 !important;
         z-index: 100 !important;
-        flex-wrap: nowrap !important;
-        gap: 1rem !important;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .logo {
         font-size: 1.5rem;
         font-weight: 800;
         letter-spacing: -0.05em;
+        text-decoration: none;
+        color: var(--text-main);
     }
 
     .auth-btn {
@@ -40,27 +45,38 @@
         border: 1px solid var(--text-main);
         border-radius: 0.25rem;
         transition: all 0.3s ease;
-        font-family: inherit;
         cursor: pointer;
-        line-height: 1;
     }
 
-    nav ul {
+    /* Desktop Navigation styling */
+    #main-nav {
+        display: flex;
+    }
+
+    #main-nav ul {
         display: flex;
         gap: 2.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
 
-    nav a {
+    #main-nav a {
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--text-muted);
         transition: color 0.2s;
+        text-decoration: none;
     }
 
-    nav a:hover {
+    #main-nav a:hover, #main-nav a.active {
         color: var(--text-main);
+    }
+
+    .drawer-footer {
+        display: none;
     }
 
     .header-actions {
@@ -68,7 +84,6 @@
         align-items: center;
         gap: 1.5rem;
     }
-
 
     .icons-group {
         display: flex;
@@ -79,136 +94,144 @@
 
     .icons-group .material-symbols-outlined {
         font-size: 1.35rem;
-        cursor: pointer;
     }
 
     .icon-container {
         position: relative;
         display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
         color: inherit;
         padding: 4px;
-        transition: all 0.2s ease;
-    }
-
-    .icon-container:hover {
-        opacity: 0.8;
+        text-decoration: none;
     }
 
     .count-badge {
         position: absolute;
         top: -5px;
         right: -5px;
-        background-color: #ef4444; /* Vibrant notification red */
+        background-color: #ef4444;
         color: #fff;
         font-size: 10px;
         font-weight: 700;
         min-width: 18px;
         height: 18px;
         border-radius: 9999px;
-        padding: 0 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1.5px solid #fff; /* Sleek, thin border */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        line-height: 1;
-        transition: transform 0.2s ease;
-        font-family: inherit;
+        border: 1.5px solid #fff;
     }
 
-    .icon-container:hover .count-badge {
-        transform: scale(1.1);
-    }
-
-    .hamburger-btn {
+    #hamburger-btn {
         display: none;
         background: none;
         border: none;
         cursor: pointer;
-        flex-direction: column;
-        gap: 5px;
         padding: 4px;
-        z-index: 110;
+        color: var(--text-main);
     }
 
-    .hamburger-btn span {
-        display: block;
-        width: 24px;
-        height: 2px;
-        background-color: var(--text-main);
-        border-radius: 2px;
-        transition: all 0.3s ease;
+    #hamburger-btn .material-symbols-outlined {
+        font-size: 1.5rem;
     }
 
-    .hamburger-btn.open span:nth-child(1) {
-        transform: translateY(7px) rotate(45deg);
-    }
-
-    .hamburger-btn.open span:nth-child(2) {
+    /* Backdrop overlay styling */
+    .nav-backdrop {
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+        z-index: 90;
         opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
     }
 
-    .hamburger-btn.open span:nth-child(3) {
-        transform: translateY(-7px) rotate(-45deg);
+    .nav-backdrop.active {
+        opacity: 1;
+        visibility: visible;
     }
 
-    @media (max-width: 1024px) {
-        .site-header { padding: 0 1rem !important; }
-    }
-
+    /* ── Mobile Responsive Style ────────────────────────────── */
     @media (max-width: 768px) {
-        .site-header {
-            padding: 0 0.75rem !important;
-            flex-wrap: nowrap !important;
-            gap: 0 !important;
+        #hamburger-btn {
+            display: block !important;
         }
 
-        .hamburger-btn { display: flex; }
-
-        .site-header nav {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #fff;
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
+        .header-actions > a[href="/login"] {
+            display: none !important;
         }
 
-        .site-header nav.nav-open {
-            display: flex;
+        /* Slide drawer starts below header */
+        #main-nav {
+            position: fixed !important;
+            left: 0 !important;
+            top: var(--nav-h) !important;
+            height: calc(100vh - var(--nav-h)) !important;
+            width: 16rem !important;
+            background: #eaeff1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 2rem 1.5rem !important;
+            z-index: 95 !important;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s ease !important;
+            box-sizing: border-box !important;
+            border-right: 1px solid var(--border) !important;
         }
 
-        .site-header nav ul {
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+        #main-nav.nav-open {
+            transform: translateX(0) !important;
         }
 
-        .site-header nav a {
-            font-size: 1.25rem;
+        #main-nav ul {
+            flex-direction: column !important;
+            gap: 1.5rem !important;
         }
 
-        .header-actions { gap: 0.75rem; }
-    }
+        #main-nav a {
+            font-size: 0.9rem !important;
+            font-weight: 700 !important;
+            color: #2b3437 !important;
+        }
 
-    @media (max-width: 480px) {
-        .site-header { padding: 0 0.75rem !important; }
-        .logo { font-size: 1.25rem; }
-        .icons-group { gap: 0.75rem; }
+        #main-nav a:hover, #main-nav a.active {
+            color: var(--accent) !important;
+        }
+
+        .drawer-footer {
+            display: block !important;
+            margin-top: auto !important;
+            border-top: 1px solid rgba(0,0,0,0.1) !important;
+            padding-top: 1.5rem !important;
+        }
+
+        .mobile-auth-link {
+            font-size: 0.9rem !important;
+            font-weight: 700 !important;
+            color: #2b3437 !important;
+            text-decoration: none !important;
+            display: block;
+        }
+
+        .mobile-auth-link:hover {
+            color: var(--accent) !important;
+        }
     }
 </style>
 
+<div class="nav-backdrop" id="nav-backdrop"></div>
+
 <header class="site-header">
-    <a href="/" class="logo" id="header-logo">LUXE TECH</a>
+    <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation">
+            <i class="material-symbols-outlined">menu</i>
+        </button>
+        <a href="/" class="logo">LUXE TECH</a>
+    </div>
+
     <nav id="main-nav">
         <ul>
             <li><a href="/" class="active">HOME</a></li>
@@ -216,68 +239,78 @@
             <li><a href="/shop">SHOP</a></li>
             <li><a href="/support">SUPPORT</a></li>
         </ul>
+        <div class="drawer-footer">
+            <% if(user){ %>
+                <a href="/logout" class="mobile-auth-link">LOGOUT</a>
+            <% } else { %>
+                <a href="/login" class="mobile-auth-link">LOGIN</a>
+            <% } %>
+        </div>
     </nav>
+
     <div class="header-actions">
-        <!-- <% console.log("user:::",user); %> -->
         <% if(!user){ %>
              <a href="/login"><button class="auth-btn">login</button></a>
-      <%  } %>
+        <% } %>
         <div class="icons-group">
             <a href="/favorite" class="icon-container">
-                <span class="material-symbols-outlined" id="icon-favorite">favorite</span>
+                <span class="material-symbols-outlined">favorite</span>
                 <% if (locals.wishlistCount > 0) { %>
                     <span class="count-badge"><%= locals.wishlistCount %></span>
                 <% } %>
             </a>
             <a href="/cart" class="icon-container">
-                <span class="material-symbols-outlined" id="icon-cart">shopping_cart</span>
+                <span class="material-symbols-outlined">shopping_cart</span>
                 <% if (locals.cartCount > 0) { %>
                     <span class="count-badge"><%= locals.cartCount %></span>
                 <% } %>
             </a>
             <a href="/profile" class="icon-container">
-                <span class="material-symbols-outlined" id="icon-user">person</span>
+                <span class="material-symbols-outlined">person</span>
             </a>  
         </div>
-        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
     </div>
-    
 </header>
 
 <script>
     (function() {
         const hamburger = document.getElementById('hamburger-btn');
         const nav = document.getElementById('main-nav');
+        const backdrop = document.getElementById('nav-backdrop');
+        
+        function toggleMenu(forceClose = false) {
+            const isOpen = forceClose ? false : !nav.classList.contains('nav-open');
+            
+            nav.classList.toggle('nav-open', isOpen);
+            hamburger.querySelector('.material-symbols-outlined').textContent = isOpen ? 'close' : 'menu';
+            if (backdrop) backdrop.classList.toggle('active', isOpen);
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        }
+
         if (hamburger && nav) {
-            hamburger.addEventListener('click', function() {
-                const isOpen = nav.classList.toggle('nav-open');
-                hamburger.classList.toggle('open', isOpen);
-                hamburger.setAttribute('aria-expanded', isOpen);
-                document.body.style.overflow = isOpen ? 'hidden' : '';
+            hamburger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
             });
+            
+            if (backdrop) {
+                backdrop.addEventListener('click', function() {
+                    toggleMenu(true);
+                });
+            }
+            
             // Close on nav link click
             nav.querySelectorAll('a').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    nav.classList.remove('nav-open');
-                    hamburger.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                    document.body.style.overflow = '';
+                    toggleMenu(true);
                 });
             });
         }
     })();
 
-    
     window.addEventListener("pageshow", function (event) {
         if (event.persisted) {
             window.location.reload();
         }
     });
 </script>
-
-
-

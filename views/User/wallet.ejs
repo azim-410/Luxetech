@@ -100,22 +100,22 @@
     <%- include('../partials/user/profile-sidebar', { user, dummyImgUrl }) %>
 
     <!-- Main Content Canvas -->
-    <main class="profile-main flex-1 lg:ml-64 p-6 lg:p-12 bg-surface">
+    <main class="profile-main flex-1 lg:ml-64 p-4 sm:p-6 lg:p-12 pt-24 lg:pt-24 bg-surface">
       <!-- Breadcrumbs & Header -->
-      <div class="mb-12">
+      <div class="mb-8 md:mb-12">
         <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">
           <span>Account</span>
           <span class="material-symbols-outlined text-xs">chevron_right</span>
           <span class="text-primary">Financial Assets</span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-slate-900 mb-2">My Wallet</h1>
-        <p class="text-on-surface-variant max-w-xl font-body">Manage your stored value, payment methods, and precision-engineered transaction history.</p>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter text-slate-900 mb-2">My Wallet</h1>
+        <p class="text-on-surface-variant max-w-xl font-body text-xs sm:text-sm">Manage your stored value, payment methods, and precision-engineered transaction history.</p>
       </div>
 
       <!-- Bento Grid Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         <!-- Wallet Balance Card (Featured) -->
-        <div class="lg:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-[#0a1128] to-[#1e293b] p-8 text-white border border-slate-800 shadow-2xl min-h-[240px] flex flex-col justify-between group">
+        <div class="lg:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-[#0a1128] to-[#1e293b] p-6 sm:p-8 text-white border border-slate-800 shadow-2xl min-h-[220px] sm:min-h-[240px] flex flex-col justify-between group">
           <!-- Background decorative glowing circles -->
           <div class="absolute -right-16 -top-16 w-48 h-48 bg-blue-600/20 rounded-full blur-[80px] group-hover:bg-blue-600/30 transition-all duration-700"></div>
           <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-indigo-500/10 rounded-full blur-[80px] group-hover:bg-indigo-500/20 transition-all duration-700"></div>
@@ -124,12 +124,12 @@
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-[10px] uppercase tracking-[0.25em] text-slate-400 font-semibold mb-1">Available Funds</p>
-                <div class="text-4xl md:text-5xl font-black tracking-tight text-white font-headline mt-1 select-none drop-shadow-[0_2px_10px_rgba(255,255,255,0.05)]">
+                <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white font-headline mt-1 select-none drop-shadow-[0_2px_10px_rgba(255,255,255,0.05)]">
                   ₹<%= (user.wallet || 0).toFixed(2) %>
                 </div>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner">
-                <span class="material-symbols-outlined text-2xl text-blue-400 select-none">account_balance_wallet</span>
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner">
+                <span class="material-symbols-outlined text-xl sm:text-2xl text-blue-400 select-none">account_balance_wallet</span>
               </div>
             </div>
             
@@ -138,9 +138,9 @@
                 <span class="text-[9px] uppercase tracking-[0.2em] text-slate-500 block mb-1">Wallet Owner</span>
                 <span class="text-sm font-bold text-slate-200 tracking-tight font-headline"><%= user.name %></span>
               </div>
-              <div class="flex items-center gap-2">
-                <div class="text-right hidden sm:block">
-                  <span class="text-[9px] text-slate-500 uppercase tracking-widest block">Status</span>
+              <div class="flex items-center justify-between sm:justify-end gap-2">
+                <div class="text-right sm:block">
+                  <span class="text-[9px] text-slate-500 uppercase tracking-widest block sm:hidden">Status</span>
                   <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider block">Ready for Checkout</span>
                 </div>
                 <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-500/10">
@@ -153,13 +153,13 @@
         </div>
 
         <!-- Quick Actions Section -->
-        <div class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm flex flex-col justify-center gap-6 border border-outline-variant/10">
+        <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-center gap-6 border border-outline-variant/10">
           <h3 class="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">Asset Management</h3>
           <div class="grid grid-cols-1 gap-4">
             <button onclick="exportWalletPDF()" class="flex items-center justify-between p-4 bg-surface-container-low text-primary rounded-xl font-bold transition-transform hover:scale-[1.02] active:scale-[0.98]">
               <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined">receipt_long</span>
-                <span>Export Report</span>
+                <span class="text-sm">Export Report</span>
               </div>
               <span class="material-symbols-outlined text-sm">download</span>
             </button>
@@ -168,50 +168,50 @@
 
         <!-- Recent Transactions Table Section -->
         <div class="lg:col-span-3 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
-          <div class="p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div class="p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">Transaction Ledger</h3>
-            <div class="flex gap-2">
-              <button onclick="filterTransactions('all', this)" class="tx-filter-btn px-4 py-2 bg-surface-container-low rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-surface-container-high transition-colors">All</button>
-              <button onclick="filterTransactions('credit', this)" class="tx-filter-btn px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Credit</button>
-              <button onclick="filterTransactions('debit', this)" class="tx-filter-btn px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Debit</button>
+            <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-start">
+              <button onclick="filterTransactions('all', this)" class="tx-filter-btn flex-1 sm:flex-none px-4 py-2 bg-surface-container-low rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-surface-container-high transition-colors">All</button>
+              <button onclick="filterTransactions('credit', this)" class="tx-filter-btn flex-1 sm:flex-none px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Credit</button>
+              <button onclick="filterTransactions('debit', this)" class="tx-filter-btn flex-1 sm:flex-none px-4 py-2 bg-white border border-outline-variant/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-outline hover:text-primary transition-colors">Debit</button>
             </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="bg-surface-container-low/50">
-                  <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Date</th>
-                  <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Description</th>
-                  <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">Status</th>
-                  <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Amount</th>
+                  <th class="px-4 sm:px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Date</th>
+                  <th class="px-4 sm:px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Description</th>
+                  <th class="px-4 sm:px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">Status</th>
+                  <th class="px-4 sm:px-8 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Amount</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-outline-variant/10 font-body">
                 <% if (typeof transactions !== 'undefined' && transactions && transactions.length > 0) { %>
                   <% transactions.forEach(tx => { %>
                     <tr data-type="<%= tx.type %>" class="hover:bg-slate-50/50 transition-colors">
-                      <td class="px-8 py-4 text-xs font-medium text-on-surface-variant">
+                      <td class="px-4 sm:px-8 py-4 text-xs font-medium text-on-surface-variant">
                         <%= new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
                       </td>
-                      <td class="px-8 py-4">
+                      <td class="px-4 sm:px-8 py-4">
                         <div class="text-xs font-bold text-on-surface"><%= tx.description %></div>
                         <% if (tx.orderId) { %>
                           <div class="text-[9px] text-on-surface-variant font-mono mt-0.5">Order #<%= tx.orderId %></div>
                         <% } %>
                       </td>
-                      <td class="px-8 py-4 text-center">
+                      <td class="px-4 sm:px-8 py-4 text-center">
                         <span class="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider <%= tx.status === 'completed' ? 'bg-green-50 text-green-700' : tx.status === 'failed' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700' %>">
                           <%= tx.status %>
                         </span>
                       </td>
-                      <td class="px-8 py-4 text-right text-xs font-extrabold <%= tx.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                      <td class="px-4 sm:px-8 py-4 text-right text-xs font-extrabold <%= tx.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
                         <%= tx.type === 'credit' ? '+' : '-' %>₹<%= tx.amount.toFixed(2) %>
                       </td>
                     </tr>
                   <% }) %>
                 <% } else { %>
                   <tr>
-                    <td colspan="4" class="px-8 py-16 text-center text-on-surface-variant">
+                    <td colspan="4" class="px-4 sm:px-8 py-16 text-center text-on-surface-variant">
                       <div class="flex flex-col items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-4xl text-slate-350 select-none">history_toggle_off</span>
                         <p class="font-bold text-slate-700">No transactions yet</p>

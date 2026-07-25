@@ -63,9 +63,10 @@
 }
 
 /* --- Base Body --- */
-html,
-body {
+html {
   height: 100%;
+}
+body {
   width: 100%;
 }
 
@@ -138,6 +139,7 @@ a {
   padding: 1.5rem 2rem;
   min-height: 80px;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .footer-container {

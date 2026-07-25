@@ -133,6 +133,11 @@
     }
     .sort-wrap select:hover{border-color:#999;}
 
+    .search-container {
+      position: relative;
+      width: 280px;
+    }
+
     /* PRODUCT GRID */
     .product-grid{display:grid;grid-template-columns:repeat(4,1fr);row-gap:48px;column-gap:40px;}
 
@@ -169,32 +174,76 @@
     .pg-btn.active{background:#111;color:#fff;border-color:#111}
 
     /* ── RESPONSIVE ── */
+    @media(max-width:1400px){
+      .product-grid{grid-template-columns:repeat(3,1fr);row-gap:32px;column-gap:24px}
+    }
     @media(max-width:1024px){
       body{overflow:auto;height:auto}
       .layout-wrap{height:auto;overflow:visible;flex-direction:column}
       .desktop-sidebar{display:none}
       .mobile-sidebar{
-        display:flex;gap:32px;flex-wrap:wrap;
-        width:100%;height:auto;
-        border-right:none;border-bottom:1px solid #e0e0e0;
+        display:flex;
+        gap:32px;
+        flex-wrap:wrap;
+        width:100%;
+        height:auto;
+        border-right:none;
+        border-bottom:1px solid #e0e0e0;
         padding:16px 24px;
         background:#fff;
         margin-top:16px;
+        margin-bottom:24px;
       }
-      .sidebar-section{padding:8px 0}
+      .sidebar-section{
+        padding:0 !important;
+        border-top:none !important;
+      }
+      .sidebar-section + .sidebar-section{
+        border-top:none !important;
+        border-left:1px solid #e8e8e8;
+        padding-left:32px !important;
+      }
       .content-wrap{height:auto;overflow-y:visible;padding:20px 24px 60px}
-      .product-grid{grid-template-columns:repeat(3,1fr);row-gap:24px;column-gap:16px}
+      .product-grid{grid-template-columns:repeat(3,1fr);row-gap:32px;column-gap:24px}
+      .product-img{height:240px}
       .product-grid .product-card{width:auto}
     }
     @media(max-width:768px){
-      .product-grid{grid-template-columns:repeat(2,1fr);row-gap:20px;column-gap:12px}
+      .product-grid{grid-template-columns:repeat(2,1fr);row-gap:24px;column-gap:16px}
+      .product-img{height:180px}
       .content-wrap{padding:16px 16px 48px}
       .page-heading{font-size:22px}
-      .toolbar{flex-direction:column;align-items:flex-start;gap:10px}
+      .toolbar{
+        flex-direction:column;
+        align-items:stretch;
+        gap:12px;
+        margin-bottom:24px;
+      }
+      .search-container {
+        width: 100% !important;
+      }
+      .toolbar-count {
+        margin-left: 0 !important;
+      }
+      .sort-wrap {
+        justify-content: space-between;
+        width: 100%;
+      }
     }
     @media(max-width:480px){
-      .product-grid{grid-template-columns:1fr;row-gap:16px}
-      .mobile-sidebar{flex-direction:column;gap:12px}
+      .mobile-sidebar{
+        flex-direction:column;
+        gap:16px;
+        margin-bottom:20px;
+      }
+      .sidebar-section + .sidebar-section {
+        border-left:none !important;
+        padding-left:0 !important;
+        border-top:1px solid #e8e8e8 !important;
+        padding-top:16px !important;
+      }
+      .product-grid{grid-template-columns:1fr;row-gap:20px}
+      .product-img{height:240px}
       .page-heading{font-size:18px}
     }
   </style>
@@ -332,7 +381,7 @@
     <!-- Toolbar -->
     <div class="toolbar">
       <!-- Search Input -->
-      <div style="position: relative; width: 280px;">
+      <div class="search-container">
         <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; pointer-events: none;">search</span>
         <input type="text" id="search-input" value="<%= locals.selectedSearch || '' %>" placeholder="Search offers..." 
           style="width: 100%; padding: 10px 14px 10px 40px; font-size: 13px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-family: inherit; outline: none; background: #fff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease-in-out;"

@@ -51,12 +51,12 @@
     <%- include('../partials/user/main-header', { user }) %>
 
         <!-- Main Content -->
-        <main class="flex-grow py-36 px-10 max-w-screen-2xl w-full mx-auto">
+        <main class="flex-grow py-24 md:py-36 px-4 md:px-10 max-w-screen-2xl w-full mx-auto">
             <!-- Title Header -->
-            <div class="mb-12">
-                <h1 class="text-4xl lg:text-5xl font-extrabold font-headline tracking-tight text-[#0D1B2A] mb-3">Your
+            <div class="mb-8 md:mb-12">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-headline tracking-tight text-[#0D1B2A] mb-3">Your
                     products are ready</h1>
-                <p class="text-slate-500 text-sm font-medium">Refining <span id="cart-count">
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">Refining <span id="cart-count">
                         <%= cart ? cart.totalItems : 0 %>
                     </span> items for final precision delivery.</p>
             </div>
@@ -91,15 +91,15 @@
                             <div id="cart-items-container" class="space-y-6">
                                 <% if (cart && cart.items && cart.items.length> 0) { %>
                                     <% cart.items.forEach(function(item) { %>
-                                        <div class="cart-item bg-white border border-slate-200/60 rounded-xl p-8 relative flex flex-col sm:grid sm:grid-cols-12 items-center gap-4 sm:gap-0"
+                                        <div class="cart-item bg-white border border-slate-200/60 rounded-xl p-4 sm:p-8 relative flex flex-col sm:grid sm:grid-cols-12 items-center gap-4 sm:gap-0"
                                             data-product-id="<%= item.productId %>"
                                             data-variant-id="<%= item.variantId || '' %>"
                                             data-price="<%= item.discountedPrice %>"
                                             data-max-allowed="<%= item.maxAllowed %>">
                                             <!-- Product Info -->
-                                            <div class="col-span-6 flex items-center gap-6 w-full">
+                                            <div class="col-span-6 flex items-center gap-4 sm:gap-6 w-full">
                                                 <div
-                                                    class="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                                                    class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
                                                     <% if (item.image) { %>
                                                         <img src="<%= item.image %>" alt="<%= item.name %>"
                                                             class="w-full h-full object-cover" />
@@ -109,13 +109,13 @@
                                                                 No Image</div>
                                                             <% } %>
                                                 </div>
-                                                <div>
+                                                <div class="pr-8 sm:pr-0">
                                                     <h3
-                                                        class="font-headline font-bold text-lg <%= item.isUnavailable ? 'text-slate-400 line-through' : 'text-[#0D1B2A]' %> mb-1">
+                                                        class="font-headline font-bold text-base sm:text-lg <%= item.isUnavailable ? 'text-slate-400 line-through' : 'text-[#0D1B2A]' %> mb-1">
                                                         <%= item.name %>
                                                     </h3>
                                                     <% if (item.variantName) { %>
-                                                        <p class="text-xs text-slate-500 mb-3">
+                                                        <p class="text-xs text-slate-500 mb-2">
                                                             <%= item.variantName %>
                                                         </p>
                                                         <% } %>
@@ -146,9 +146,7 @@
                                                                                 Stock</span>
                                                                             <p
                                                                                 class="text-[11px] font-semibold tracking-wide text-amber-600 mt-1">
-                                                                                Only <%= item.stock %> units remaining!
-                                                                                    Order
-                                                                                    soon.</p>
+                                                                                Only <%= item.stock %> units remaining!</p>
                                                                         </div>
                                                                         <% } else { %>
                                                                             <div
@@ -163,7 +161,7 @@
 
                                             <!-- Price -->
                                             <div
-                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block mt-2 sm:mt-0">
+                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-slate-100 sm:border-0">
                                                 <span
                                                     class="sm:hidden text-xs font-bold text-slate-400 uppercase">Price:</span>
                                                 <span class="font-bold text-[#0D1B2A]">
@@ -176,7 +174,8 @@
                                             </div>
 
                                             <!-- Quantity Selector -->
-                                            <div class="col-span-2 flex justify-center w-full sm:w-auto my-2 sm:my-0">
+                                            <div class="col-span-2 flex justify-between sm:justify-center items-center w-full sm:w-auto my-3 sm:my-0">
+                                                <span class="sm:hidden text-xs font-bold text-slate-400 uppercase">Quantity:</span>
                                                 <div
                                                     class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
                                                     <button
@@ -197,7 +196,7 @@
 
                                             <!-- Subtotal -->
                                             <div
-                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block">
+                                                class="col-span-2 sm:text-right w-full sm:w-auto flex justify-between sm:block pb-2 sm:pb-0">
                                                 <span
                                                     class="sm:hidden text-xs font-bold text-slate-400 uppercase">Subtotal:</span>
                                                 <span class="item-subtotal font-bold text-[#0D1B2A]">
@@ -211,7 +210,7 @@
 
                                             <!-- Delete Button -->
                                             <button
-                                                class="delete-btn absolute top-6 right-6 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                                                class="delete-btn absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center"
                                                 onclick="removeCartItem(this)">
                                                 <span class="material-symbols-outlined">delete</span>
                                             </button>

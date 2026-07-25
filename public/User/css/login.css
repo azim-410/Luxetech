@@ -46,7 +46,7 @@ svg {
 }
 
 .login-card {
-  background: var(--surface);
+  background: var(--surface-card);
   width: 100%;
   max-width: 420px;
   padding: 40px;

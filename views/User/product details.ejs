@@ -94,11 +94,22 @@
 
 <body class="bg-surface font-body text-on-surface antialiased">
     <%- include('../partials/user/main-header', { user: locals.user || null }) %>
-        <main class="pt-36 pb-0">
-
+        <main class="pt-24 pb-0">
+                <!-- Breadcrumbs -->
+                <nav class="max-w-screen-2xl mx-auto px-4 md:px-10 mb-10 mt-2 text-xs font-bold tracking-wider text-on-surface-variant/70 uppercase">
+                    <a href="/" class="hover:text-primary transition-colors">Home</a>
+                    <span class="mx-2 text-on-surface-variant/30">/</span>
+                    <a href="/shop" class="hover:text-primary transition-colors">Shop</a>
+                    <% if (product.category && product.category.name) { %>
+                        <span class="mx-2 text-on-surface-variant/30">/</span>
+                        <a href="/shop?category=<%= product.category._id %>" class="hover:text-primary transition-colors"><%= product.category.name %></a>
+                    <% } %>
+                    <span class="mx-2 text-on-surface-variant/30">/</span>
+                    <span class="text-on-surface"><%= product.name %></span>
+                </nav>
 
                 <!-- Product Hero Section -->
-                <section class="max-w-screen-2xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-36">
+                <section class="max-w-screen-2xl mx-auto px-4 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-16 lg:mb-36">
 
                     <!-- Asymmetric Gallery -->
                     <div id="gallery-container" class="lg:col-span-7 grid grid-cols-6 gap-4">
@@ -137,7 +148,7 @@
                             <%= product.category ? product.category.name : 'Gear' %>
                         </p>
                         <h1
-                            class="text-5xl lg:text-7xl font-black font-headline tracking-tighter text-on-surface leading-none mb-6">
+                            class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black font-headline tracking-tighter text-on-surface leading-none mb-6">
                             <%= product.name %>
                         </h1>
                         <div class="flex items-center gap-4 mb-8">
@@ -226,13 +237,13 @@
                                 </a>
                             </div>
                             <!-- Options & Add to Wishlist -->
-                            <div class="flex items-center gap-3 w-full">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                                 <% if (variants && variants.length > 0) { %>
                                     <!-- Hidden input to store the active variant ID that is sent to the backend/cart -->
                                     <input type="hidden" id="variant-select" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
 
                                     <!-- Render a single dropdown containing all variants -->
-                                    <div class="flex flex-col gap-3 w-[68%]">
+                                    <div class="flex flex-col gap-3 w-full sm:w-[68%]">
                                         <div class="relative h-12 w-full">
                                             <select class="variant-group-select w-full h-full appearance-none bg-white bg-none border border-slate-200 rounded px-4 pr-8 font-label text-xs font-bold uppercase tracking-wider text-[#0D1B2A] <%= locals.isBlocked ? 'cursor-not-allowed bg-slate-100 text-slate-400' : 'cursor-pointer' %> focus:outline-none"
                                                     data-group-name="Variant"
@@ -256,7 +267,7 @@
                                 <% } %>
 
                                 <!-- Add to Wishlist Button Form -->
-                                <form action="/wishlist/add" method="POST" id="add-to-wishlist-form" class="<%= (variants && variants.length > 0) ? 'w-[32%]' : 'w-full' %>">
+                                <form action="/wishlist/add" method="POST" id="add-to-wishlist-form" class="w-full <%= (variants && variants.length > 0) ? 'sm:w-[32%]' : '' %>">
                                     <input type="hidden" name="productId" value="<%= product._id %>" />
                                     <input type="hidden" name="variantId" id="wishlist-variant-id" value="<%= (typeof selectedVariantId !== 'undefined' && selectedVariantId) ? selectedVariantId : '' %>" />
                                     <button type="submit" id="wishlist-btn" <%= locals.isBlocked ? 'disabled' : '' %>
@@ -274,9 +285,9 @@
                     </div>
                 </section>
                 <!-- Product Details / Engineering Vision -->
-                <section class="bg-surface-container-low py-36">
-                    <div class="max-w-screen-2xl mx-auto px-10">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-24">
+                <section class="bg-surface-container-low py-16 lg:py-36">
+                    <div class="max-w-screen-2xl mx-auto px-4 md:px-10">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-24">
                             <div class="lg:col-span-2 space-y-12">
                                 <div>
                                     <h2 class="text-3xl font-headline font-bold mb-8">The Engineering Vision</h2>
@@ -322,8 +333,8 @@
                 </section>
 
                 <!-- Reviews Section -->
-                <section class="py-36 max-w-screen-2xl mx-auto px-10 border-b border-surface-container-high">
-                    <div class="flex flex-col lg:flex-row gap-16">
+                <section class="py-16 lg:py-36 max-w-screen-2xl mx-auto px-4 md:px-10 border-b border-surface-container-high">
+                    <div class="flex flex-col lg:flex-row gap-12 lg:gap-16">
                         <!-- Score Breakdown -->
                         <div class="lg:w-1/3">
                             <h2 class="text-4xl font-headline font-black tracking-tighter mb-8 uppercase">User
@@ -447,12 +458,12 @@
                     </div>
                 </section>
                 <!-- Related Products Section -->
-                <section class="bg-surface-container-low py-36 w-full">
-                    <div class="max-w-screen-2xl mx-auto px-10">
+                <section class="bg-surface-container-low py-16 lg:py-36 w-full">
+                    <div class="max-w-screen-2xl mx-auto px-4 md:px-10">
                         <h2 class="text-2xl font-headline font-bold mb-10 border-l-4 border-surface-tint pl-6">Complete
                             Your
                             Ecosystem</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                             <!-- Related Item 1 -->
                             <div class="group cursor-pointer">
                                 <div
@@ -516,7 +527,7 @@
                 </section>
         </main>
         <!-- Footer Shell -->
-        <footer class="bg-[#0D1B2A] dark:bg-black text-white py-16 w-full flex flex-col items-center gap-8 px-10">
+        <footer class="bg-[#0D1B2A] dark:bg-black text-white py-16 w-full flex flex-col items-center gap-8 px-4 md:px-10">
             <div class="max-w-screen-2xl w-full flex flex-col md:flex-row justify-between items-center gap-12">
                 <div class="flex flex-col gap-4 text-center md:text-left">
                     <span class="font-headline font-bold text-white text-2xl tracking-tighter uppercase">LUXE

@@ -92,14 +92,14 @@
 <body class="bg-surface font-body text-on-surface">
   <%- include('../partials/user/main-header', { user }) %>
 
-  <main class="min-h-screen">
+  <main class="min-h-screen pt-20 lg:pt-8">
     <!-- Return Policy Banner -->
-    <div class="bg-primary text-on-primary py-3 px-6 lg:px-12 flex justify-center items-center gap-3">
+    <div class="bg-primary text-on-primary py-3 px-4 sm:px-6 lg:px-12 flex justify-center items-center gap-3">
       <span class="material-symbols-outlined text-sm">info</span>
-      <p class="font-headline font-semibold text-sm tracking-wide">Return Policy: Items can only be returned within 7 days of delivery.</p>
+      <p class="font-headline font-semibold text-xs sm:text-sm tracking-wide text-center">Return Policy: Items can only be returned within 7 days of delivery.</p>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
       <!-- Back to Orders Navigation Link -->
       <div class="mb-8">
         <a href="/orders" class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">
@@ -257,7 +257,7 @@
 
         <!-- Sidebar: Return Summary -->
         <div class="lg:col-span-4">
-          <div class="sticky top-32 bg-surface-container-low p-8 rounded-2xl space-y-8 border border-outline-variant/10 shadow-sm">
+          <div class="sticky top-32 bg-surface-container-low p-5 sm:p-8 rounded-2xl space-y-6 sm:space-y-8 border border-outline-variant/10 shadow-sm">
             <h2 class="text-xl font-headline font-extrabold tracking-tight border-b border-outline-variant/30 pb-4">Return Summary</h2>
             <div class="space-y-4">
               <div class="flex justify-between items-center text-sm">

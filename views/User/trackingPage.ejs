@@ -141,7 +141,7 @@
           <%- include('../partials/user/profile-sidebar', { user, dummyImgUrl }) %>
 
             <!-- Main Content Area -->
-            <main class="profile-main flex-1 lg:ml-64 p-6 md:p-12">
+            <main class="profile-main flex-1 lg:ml-64 p-4 sm:p-6 md:p-12 pt-24 lg:pt-24">
               <div class="w-full">
                 <!-- Breadcrumbs -->
                 <nav
@@ -158,7 +158,7 @@
                 <!-- 1. Hero Order Info (AT THE VERY TOP) -->
                 <div class="w-full flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
                   <div>
-                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Order #<%= order.orderId %>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Order #<%= order.orderId %>
                     </h1>
                     <div class="flex items-center gap-3">
                       <% if (order.orderStatus==='Delivered' ) { %>
@@ -190,33 +190,33 @@
                                       class="px-3 py-1 bg-black text-white rounded-md text-[10px] font-bold uppercase tracking-wider">In
                                       Transit</span>
                                     <% } %>
-                                      <span class="text-sm text-on-surface-variant font-medium">
+                                      <span class="text-xs sm:text-sm text-on-surface-variant font-medium font-body">
                                         Estimated arrival: <span class="text-on-surface font-bold"></span>
                                       </span>
                     </div>
                   </div>
-                  <div class="flex gap-3 flex-wrap">
+                  <div class="flex gap-3 flex-wrap w-full md:w-auto">
                     <% if (order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Pending' && order.orderStatus === 'Pending') { %>
                       <button onclick="retryPayment('<%= order.orderId %>', <%= order.pricing.grandTotal %>)"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-black text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md">
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-black text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md">
                         <span class="material-symbols-outlined text-sm">payments</span>
                         Retry Payment
                       </button>
                     <% } %>
                     <button
-                      class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
+                      class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
                       <span class="material-symbols-outlined text-sm">support_agent</span>
                       Get Help
                     </button>
                     <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(order.orderStatus)) { %>
                       <button onclick="downloadInvoicePDF(this, '<%= order._id %>')"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-surface-container-low transition-all">
                         <span class="material-symbols-outlined text-sm">download</span>
                         Download Invoice
                       </button>
                     <% } else { %>
                       <button disabled style="opacity: 0.5; pointer-events: none; cursor: not-allowed;" title="Invoice available after delivery"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider">
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/15 rounded-md text-xs font-bold uppercase tracking-wider">
                         <span class="material-symbols-outlined text-sm">download</span>
                         Download Invoice
                       </button>
@@ -225,22 +225,22 @@
                       , 'Replacement Confirmed' ].includes(order.orderStatus)) { %>
                       <% if (order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Pending') { %>
                         <button disabled title="Cancellation is only available after payment is completed"
-                          class="flex items-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider opacity-40 cursor-not-allowed">
+                          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider opacity-40 cursor-not-allowed">
                           <span class="material-symbols-outlined text-sm">cancel</span>
                           Cancel Order
                         </button>
                       <% } else { %>
                         <button id="open-cancel-modal-btn"
-                          class="flex items-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider hover:bg-error-container/80 transition-all">
+                          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-error-container text-on-error-container rounded-md text-xs font-bold uppercase tracking-wider hover:bg-error-container/80 transition-all">
                           <span class="material-symbols-outlined text-sm">cancel</span>
                           Cancel Order
                         </button>
                       <% } %>
                       <% } %>
                         <% if (['Delivered', 'Return Requested', 'Return Confirmed', 'Returned', 'Replaced', 'Replacement Confirmed'].includes(order.orderStatus) && order.items.some(item => !['Cancelled', 'Return Requested', 'Return Confirmed', 'Replacement Confirmed', 'Returned', 'Replaced'].includes(item.status))) { %>
-                          <a href="/orders/return/<%= order._id %>" class="inline-block">
+                          <a href="/orders/return/<%= order._id %>" class="w-full sm:w-auto inline-block">
                             <button
-                              class="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                              class="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-all">
                               <span class="material-symbols-outlined text-sm">assignment_return</span>
                               Return Product
                             </button>
@@ -274,15 +274,15 @@
                   <div class="absolute top-0 right-0 p-6 opacity-5">
                     <span class="material-symbols-outlined text-[100px]">local_shipping</span>
                   </div>
-                  <div class="relative z-10">
-                    <div class="flex justify-between items-center relative">
+                  <div class="relative z-10 overflow-x-auto -mx-6 px-6 sm:overflow-x-visible sm:mx-0 sm:px-0">
+                    <div class="flex justify-between items-center relative min-w-[550px] sm:min-w-0 py-2">
                       <!-- Progress Line Background -->
                       <div
-                        class="absolute top-5 left-0 w-full h-1 bg-surface-container-highest -translate-y-1/2 rounded-full">
+                        class="absolute top-7 left-0 w-full h-1 bg-surface-container-highest -translate-y-1/2 rounded-full">
                       </div>
                       <!-- Active Progress Line -->
                       <div
-                        class="absolute top-5 left-0 w-[<%= getProgressBarWidth() %>] h-1 bg-black -translate-y-1/2 rounded-full transition-all duration-1000">
+                        class="absolute top-7 left-0 w-[<%= getProgressBarWidth() %>] h-1 bg-black -translate-y-1/2 rounded-full transition-all duration-1000">
                       </div>
 
                       <!-- Steps -->
@@ -333,17 +333,17 @@
                   </div>
                 </div>
 
-                <!-- 3. Bento Layout Grid (Details is wider: lg:col-span-9, Sidebar is narrower: lg:col-span-3) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  <!-- Left Content Area (lg:col-span-8 - increases the details boxes width) -->
-                  <div class="lg:col-span-8 space-y-8">
+                <!-- 3. Bento Layout Grid (Details is wider: xl:col-span-8, Sidebar is narrower: xl:col-span-4) -->
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                  <!-- Left Content Area (xl:col-span-8 - increases the details boxes width) -->
+                  <div class="xl:col-span-8 space-y-8">
 
                     <!-- Customer, Delivery & Payment Details Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
 
                       <!-- Customer Details Card -->
                       <div
-                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-[350px]">
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-0 sm:min-h-[320px] xl:min-h-[350px]">
                         <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
                           <span class="material-symbols-outlined text-primary text-base">person</span>
                           Customer Details
@@ -375,7 +375,7 @@
 
                       <!-- Delivery Address Card -->
                       <div
-                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm border-l-4 border-l-black flex flex-col min-h-[350px]">
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm border-l-4 border-l-black flex flex-col min-h-0 sm:min-h-[320px] xl:min-h-[350px]">
                         <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
                           <span class="material-symbols-outlined text-primary text-base">location_on</span>
                           Delivery Address
@@ -416,7 +416,7 @@
 
                       <!-- Payment Details Card -->
                       <div
-                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-[350px]">
+                        class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col min-h-0 sm:min-h-[320px] xl:min-h-[350px]">
                         <h2 class="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
                           <span class="material-symbols-outlined text-primary text-base">payments</span>
                           Payment Details
@@ -470,7 +470,7 @@
                     </div>
 
                     <!-- Tracking History -->
-                    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10 shadow-sm">
+                    <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/10 shadow-sm">
                       <h2 class="text-xl font-bold tracking-tight mb-10">Tracking History</h2>
                       <div class="space-y-10 relative">
                         <!-- Vertical line -->
@@ -691,23 +691,23 @@
                     </div>
                   </div>
 
-                  <!-- Sidebar: Package Contents (lg:col-span-4 - moves it more to the right) -->
-                  <div class="lg:col-span-4 space-y-8">
+                  <!-- Sidebar: Package Contents (xl:col-span-4 - moves it more to the right) -->
+                  <div class="xl:col-span-4 space-y-8">
                     <div
-                      class="w-full bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10 shadow-sm sticky top-24">
-                      <h2 class="text-2xl font-bold tracking-tight mb-8">Package Contents</h2>
+                      class="w-full bg-surface-container-lowest p-5 sm:p-8 rounded-xl border border-outline-variant/10 shadow-sm sticky top-28">
+                      <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-6 sm:mb-8">Package Contents</h2>
                       <div class="space-y-6">
                         <% order.items.forEach(item=> { %>
-                          <div class="flex items-center gap-6 group cursor-pointer">
+                          <div class="flex items-center gap-4 sm:gap-6 group cursor-pointer">
                             <div
-                              class="w-28 h-28 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant/5 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'opacity-40' : '' %>">
+                              class="w-20 h-20 sm:w-28 sm:h-28 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant/5 <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'opacity-40' : '' %>">
                               <img alt="<%= item.name %>"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 src="<%= item.image || 'https://via.placeholder.com/150' %>" />
                             </div>
                             <div>
                               <h3
-                                class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors flex items-center gap-2 flex-wrap">
+                                class="text-sm sm:text-lg font-bold text-on-surface group-hover:text-primary transition-colors flex items-center gap-2 flex-wrap">
                                 <span
                                   class="inline-block <%= (['Cancelled', 'Returned', 'Replaced', 'Return Confirmed', 'Replacement Confirmed'].includes(item.status)) ? 'line-through text-on-surface-variant/60 opacity-50' : '' %>">
                                   <%= item.name %>
@@ -896,7 +896,7 @@
           class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
           <!-- Modal Card -->
           <div
-            class="relative w-full max-w-lg bg-surface-container-lowest border border-outline-variant/15 rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300"
+            class="relative w-full max-w-lg bg-surface-container-lowest border border-outline-variant/15 rounded-2xl shadow-2xl p-5 sm:p-8 transform scale-95 opacity-0 transition-all duration-300"
             id="cancel-order-modal-card">
 
             <!-- Close Button -->
@@ -1009,13 +1009,13 @@
                 class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
 
               <!-- Actions -->
-              <div class="flex items-center justify-end gap-3 pt-2">
+              <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
                 <button type="button" id="dismiss-cancel-modal-btn"
-                  class="px-5 py-2.5 bg-surface-container-low text-on-surface hover:bg-surface-container-high rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                  class="w-full sm:w-auto text-center px-5 py-2.5 bg-surface-container-low text-on-surface hover:bg-surface-container-high rounded-md text-xs font-bold uppercase tracking-wider transition-all">
                   Go Back
                 </button>
                 <button type="button" id="submit-cancel-request-btn"
-                  class="px-5 py-2.5 bg-error-container text-on-error-container hover:bg-error-container/80 rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+                  class="w-full sm:w-auto text-center px-5 py-2.5 bg-error-container text-on-error-container hover:bg-error-container/80 rounded-md text-xs font-bold uppercase tracking-wider transition-all">
                   Confirm Cancel
                 </button>
               </div>

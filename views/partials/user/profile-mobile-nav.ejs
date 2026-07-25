@@ -14,33 +14,39 @@
       display: none;
     }
   }
+
+  @media (max-width: 380px) {
+    .profile-mobile-nav .nav-label {
+      display: none;
+    }
+  }
 </style>
 <nav class="profile-mobile-nav fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
   <div class="flex items-center justify-around px-1 py-2">
-    <a href="/profile" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg mobile-nav-link" data-path="/profile">
+    <a href="/profile" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg mobile-nav-link" data-path="/profile">
       <span class="material-symbols-outlined text-xl">person</span>
-      <span class="text-[9px] font-bold uppercase tracking-wide">Profile</span>
+      <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Profile</span>
     </a>
-    <a href="/wallet" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/wallet">
+    <a href="/wallet" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/wallet">
       <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
-      <span class="text-[9px] font-bold uppercase tracking-wide">Wallet</span>
+      <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Wallet</span>
     </a>
-    <a href="/orders" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/orders">
+    <a href="/orders" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/orders">
       <span class="material-symbols-outlined text-xl">history</span>
-      <span class="text-[9px] font-bold uppercase tracking-wide">Orders</span>
+      <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Orders</span>
     </a>
-    <a href="/address" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/address">
+    <a href="/address" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/address">
       <span class="material-symbols-outlined text-xl">location_on</span>
-      <span class="text-[9px] font-bold uppercase tracking-wide">Address</span>
+      <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Address</span>
     </a>
-    <a href="/refer" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/refer">
+    <a href="/refer" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg text-slate-500 mobile-nav-link" data-path="/refer">
       <span class="material-symbols-outlined text-xl">share</span>
-      <span class="text-[9px] font-bold uppercase tracking-wide">Referral</span>
+      <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Referral</span>
     </a>
     <form action="/logout" method="POST">
-      <button type="submit" class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-error">
+      <button type="submit" class="flex flex-col items-center gap-0.5 px-1.5 min-[400px]:px-3 py-1.5 rounded-lg text-error">
         <span class="material-symbols-outlined text-xl">logout</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Logout</span>
+        <span class="nav-label text-[9px] font-bold uppercase tracking-wide">Logout</span>
       </button>
     </form>
   </div>

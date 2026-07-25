@@ -297,10 +297,19 @@ body {
 
 .resend-text {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   color: var(--on-surface-variant);
   font-size: 0.875rem;
+  text-align: center;
+}
+
+@media (min-width: 380px) {
+  .resend-text {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
 }
 
 .btn-resend {

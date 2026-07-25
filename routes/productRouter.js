@@ -11,6 +11,7 @@ import {
   addToWishlist,
   removeFromWishlist,
   addAllFromWishlistToCart,
+  getSupport,
 } from "../controller/user/productController.js";
 
 import {
@@ -158,5 +159,7 @@ router.get(
   checkIfBlocked,
   exportUserOrderInvoicePDF,
 );
+
+router.get("/support", checkIfBlocked, getSupport);
 
 export default router;

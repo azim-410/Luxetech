@@ -1,2 +1,288 @@
+<<<<<<< HEAD
 "<!DOCTYPE html>\n<html class=\"light\" lang=\"en\">\n\n<head>\n  <meta charset=\"utf-8\" />\n  <meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\" />\n  <title>Help & Support Center | Luxe Tech</title>\n  <meta name=\"description\" c
 <truncated 20343 bytes>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Luxe Tech Support Portal. Find answers, register hardware, or connect with our concierge support team.">
+    <title>Customer Support | Luxe Tech</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/User/css/main-global.css">
+    <link rel="stylesheet" href="/User/css/loading-bar.css">
+    
+    <!-- Tailwind CSS with custom styling matching Luxe Tech theme -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            main: '#111827',
+                            muted: '#6b7280',
+                            accent: '#ea580c', // Matches --accent
+                            border: '#e5e7eb', // Matches --border
+                            surface: '#f8f9fb', // Matches --surface-color
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Manrope', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+
+        .hero-banner {
+            background: radial-gradient(circle at top right, #fff5f0, #ffffff);
+        }
+
+        .faq-trigger:after {
+            content: '\e5cf';
+            font-family: 'Material Symbols Outlined';
+            font-size: 20px;
+            color: #6b7280;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .faq-item.active .faq-trigger:after {
+            transform: rotate(-180deg);
+            color: #ea580c;
+        }
+
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+            opacity: 0;
+        }
+
+        .faq-item.active .faq-content {
+            max-height: 200px;
+            opacity: 1;
+        }
+        
+        .form-input-custom {
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        .form-input-custom:focus {
+            border-color: #ea580c;
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <%- include('../partials/loadingBar') %>
+    <%- include('../partials/user/main-header', { user }) %>
+
+    <!-- Main Support Console -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-12 md:py-16">
+        
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8 text-[10px] uppercase tracking-widest text-brand-muted font-bold">
+            <a href="/" class="hover:text-brand-main transition-colors">Home</a>
+            <span class="mx-3 text-slate-300">/</span>
+            <span class="text-brand-main">Support</span>
+        </nav>
+
+        <!-- Premium Light Hero Banner -->
+        <div class="hero-banner border border-brand-border rounded-[32px] p-8 md:p-16 mb-12 flex flex-col lg:flex-row items-center justify-between gap-12 shadow-sm relative overflow-hidden">
+            <div class="max-w-2xl text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-surface border border-brand-border text-[10px] font-extrabold tracking-widest text-brand-accent uppercase mb-6">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse"></span>
+                    Support Center
+                </div>
+                <h1 class="font-heading text-4xl md:text-5xl font-extrabold tracking-tight text-brand-main leading-[1.1] mb-6">
+                    HOW CAN WE<br>HELP YOU TODAY?
+                </h1>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed font-light">
+                    Luxe Tech instruments are crafted with absolute precision. Browse our hardware indices or connect with a dedicated logistics specialist.
+                </p>
+            </div>
+            
+            <!-- Quick Contact Terminal -->
+            <div class="w-full lg:w-96 flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-2xl border border-brand-border shadow-sm flex items-center gap-5 transition-transform duration-300 hover:translate-y-[-2px]">
+                    <div class="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center text-brand-accent">
+                        <span class="material-symbols-outlined">alternate_email</span>
+                    </div>
+                    <div>
+                        <div class="text-[9px] text-brand-muted font-extrabold uppercase tracking-widest mb-0.5">Concierge Support</div>
+                        <a href="mailto:support@luxetech.com" class="text-sm font-bold text-brand-main hover:text-brand-accent transition-colors">support@luxetech.com</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl border border-brand-border shadow-sm flex items-center gap-5 transition-transform duration-300 hover:translate-y-[-2px]">
+                    <div class="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center text-brand-accent">
+                        <span class="material-symbols-outlined">call</span>
+                    </div>
+                    <div>
+                        <div class="text-[9px] text-brand-muted font-extrabold uppercase tracking-widest mb-0.5">Direct Hotline</div>
+                        <div class="text-sm font-bold text-brand-main">+1 (800) LUXE-TECH</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Help Portal Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <!-- Card 1 -->
+            <div class="bg-brand-surface border border-brand-border rounded-2xl p-8 transition-all duration-300 hover:border-brand-accent/50 hover:shadow-md">
+                <div class="w-12 h-12 rounded-xl bg-white border border-brand-border text-brand-accent flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                </div>
+                <h3 class="font-heading font-extrabold text-brand-main text-lg mb-3">Shipping & Logistics</h3>
+                <p class="text-brand-muted text-xs leading-relaxed font-light mb-6">
+                    Track international premium delivery updates, request address modifications, or view estimated arrival times.
+                </p>
+                <a href="/profile" class="inline-flex items-center text-xs font-bold text-brand-main hover:text-brand-accent transition-colors gap-1.5 group">
+                    Manage Orders <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+                </a>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-brand-surface border border-brand-border rounded-2xl p-8 transition-all duration-300 hover:border-brand-accent/50 hover:shadow-md">
+                <div class="w-12 h-12 rounded-xl bg-white border border-brand-border text-brand-accent flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined">memory</span>
+                </div>
+                <h3 class="font-heading font-extrabold text-brand-main text-lg mb-3">Drivers & Firmware</h3>
+                <p class="text-brand-muted text-xs leading-relaxed font-light mb-6">
+                    Troubleshoot driver installations, mechanical keyboard keymaps, or monitor display color calibrations.
+                </p>
+                <span class="text-brand-muted text-xs font-semibold uppercase tracking-wider">Resources Coming Soon</span>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-brand-surface border border-brand-border rounded-2xl p-8 transition-all duration-300 hover:border-brand-accent/50 hover:shadow-md">
+                <div class="w-12 h-12 rounded-xl bg-white border border-brand-border text-brand-accent flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined">shield_with_heart</span>
+                </div>
+                <h3 class="font-heading font-extrabold text-brand-main text-lg mb-3">Returns & Warranty Claims</h3>
+                <p class="text-brand-muted text-xs leading-relaxed font-light mb-6">
+                    Register hardware warranties on your display/keyboard, download return labels, or file an automated claim.
+                </p>
+                <a href="/profile" class="inline-flex items-center text-xs font-bold text-brand-main hover:text-brand-accent transition-colors gap-1.5 group">
+                    Initiate Return <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- FAQs Accordion -->
+        <div class="max-w-4xl mx-auto">
+            
+            <section>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="h-6 w-[3px] bg-brand-accent"></div>
+                    <h2 class="font-heading text-2xl font-black text-brand-main tracking-tight uppercase">FREQUENTLY ASKED QUESTIONS</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item bg-white border border-brand-border rounded-xl overflow-hidden transition-all duration-300">
+                        <button class="w-full flex items-center justify-between p-5 text-left font-semibold text-brand-main text-sm faq-trigger gap-4 focus:outline-none hover:bg-brand-surface/50">
+                            How do I track my Luxe Tech shipment?
+                        </button>
+                        <div class="faq-content">
+                            <p class="p-5 pt-0 text-brand-muted text-xs leading-relaxed border-t border-brand-border/60 font-light">
+                                Once dispatched, your biometric delivery details and real-time tracking link are sent to your registered email address and updated in your profile's Order Status area.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="faq-item bg-white border border-brand-border rounded-xl overflow-hidden transition-all duration-300">
+                        <button class="w-full flex items-center justify-between p-5 text-left font-semibold text-brand-main text-sm faq-trigger gap-4 focus:outline-none hover:bg-brand-surface/50">
+                            What is your hardware warranty policy?
+                        </button>
+                        <div class="faq-content">
+                            <p class="p-5 pt-0 text-brand-muted text-xs leading-relaxed border-t border-brand-border/60 font-light">
+                                Luxe Tech instruments are covered by a standard 3-year warranty for mechanical components and a 2-year warranty for display panel electronics. Registration takes place automatically on purchase.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="faq-item bg-white border border-brand-border rounded-xl overflow-hidden transition-all duration-300">
+                        <button class="w-full flex items-center justify-between p-5 text-left font-semibold text-brand-main text-sm faq-trigger gap-4 focus:outline-none hover:bg-brand-surface/50">
+                            Can I cancel an order after payment?
+                        </button>
+                        <div class="faq-content">
+                            <p class="p-5 pt-0 text-brand-muted text-xs leading-relaxed border-t border-brand-border/60 font-light">
+                                Yes, orders can be cancelled directly from your Dashboard before they enter the shipping/dispatch phase. Refunds are processed immediately to your original payment method.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="faq-item bg-white border border-brand-border rounded-xl overflow-hidden transition-all duration-300">
+                        <button class="w-full flex items-center justify-between p-5 text-left font-semibold text-brand-main text-sm faq-trigger gap-4 focus:outline-none hover:bg-brand-surface/50">
+                            How do refunds get settled?
+                        </button>
+                        <div class="faq-content">
+                            <p class="p-5 pt-0 text-brand-muted text-xs leading-relaxed border-t border-brand-border/60 font-light">
+                                All refunds for cancelled items or returned products are returned directly to the original payment source (Razorpay, card, wallet) and complete within 3-5 bank business days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-brand-border mt-28">
+        <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="text-xs font-extrabold text-brand-main tracking-widest">
+                LUXE TECH <span class="font-light text-brand-muted">· PRECISION INSTRUMENTS</span>
+            </div>
+            <div class="flex gap-6 text-[10px] font-bold text-brand-muted uppercase tracking-widest">
+                <a href="#" class="hover:text-brand-accent transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-brand-accent transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-brand-accent transition-colors">Warranty Info</a>
+            </div>
+            <div class="text-[10px] text-brand-muted">
+                © 2026 Luxe Tech Inc. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="/User/js/loading-bar.js"></script>
+    <script>
+        // FAQ Accordion Trigger
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const trigger = item.querySelector('.faq-trigger');
+            trigger.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close other items
+                faqItems.forEach(el => el.classList.remove('active'));
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+>>>>>>> feature/user-bugfix-part2

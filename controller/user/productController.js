@@ -296,15 +296,27 @@ const addAllFromWishlistToCart = async (req, res) => {
   }
 };
 
-export {
-  getShop,
-  getProductDetails,
-  getCart,
-  addToCart,
-  updateCartQuantity,
-  removeFromCart,
-  getWishlist,
-  addToWishlist,
-  removeFromWishlist,
-  addAllFromWishlistToCart,
+const getSupport = async (req, res) => {
+    try {
+        res.render('User/support', {
+            user: req.session.user || req.user || null
+        });
+    } catch (error) {
+        console.error('getSupport error:', error);
+        res.status(500).send('Internal Server Error');
+    }
 };
+
+export {
+    getShop,
+    getProductDetails,
+    getCart,
+    addToCart,
+    updateCartQuantity,
+    removeFromCart,
+    getWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    addAllFromWishlistToCart,
+    getSupport
+}; 

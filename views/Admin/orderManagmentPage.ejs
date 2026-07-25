@@ -7,8 +7,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Luxe Tech | Orders Management</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- html2pdf.js for exporting PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
         rel="stylesheet" />
@@ -121,11 +119,27 @@
                         <p class="text-sm text-outline font-body mt-2">Monitor and fulfill customer requests globally.
                         </p>
                     </div>
-                    <button onclick="exportOrdersPDF(this)"
-                        class="bg-gradient-to-br from-primary to-secondary text-on-primary px-6 py-2.5 rounded-md text-sm font-medium flex items-center gap-2 hover:-translate-y-0.5 transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">file_download</span>
-                        Export Orders
-                    </button>
+                    <div class="relative inline-block text-left" id="export-container">
+                        <button onclick="toggleExportDropdown(event)"
+                            class="bg-gradient-to-br from-primary to-secondary text-on-primary px-6 py-2.5 rounded-md text-sm font-medium flex items-center gap-2 hover:-translate-y-0.5 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">file_download</span>
+                            Export Orders
+                            <span class="material-symbols-outlined text-[16px] ml-1">arrow_drop_down</span>
+                        </button>
+                        <div id="export-dropdown"
+                            class="hidden absolute right-0 mt-2 py-1 w-48 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-50 border border-outline-variant/10">
+                            <button onclick="triggerExport('pdf')"
+                                class="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
+                                Export as PDF
+                            </button>
+                            <button onclick="triggerExport('excel')"
+                                class="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px] text-green-600">table_view</span>
+                                Export as Excel
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <!-- Data Table Container -->
                 <div class="bg-surface-container-lowest rounded-xl shadow-[0_20px_40px_rgba(43,52,55,0.04)]">
@@ -428,20 +442,34 @@
             /**
              * Luxe Tech - Order Management Filter & Search System (Server-side)
              */
+            function toggleExportDropdown(event) {
+                event.stopPropagation();
+                const dropdown = document.getElementById('export-dropdown');
+                const dateDropdown = document.getElementById('date-range-dropdown');
+                const sortDropdown = document.getElementById('sort-dropdown');
+                dropdown.classList.toggle('hidden');
+                if (dateDropdown) dateDropdown.classList.add('hidden');
+                if (sortDropdown) sortDropdown.classList.add('hidden');
+            }
+
             function toggleDateRangeDropdown(event) {
                 event.stopPropagation();
                 const dropdown = document.getElementById('date-range-dropdown');
                 const sortDropdown = document.getElementById('sort-dropdown');
+                const exportDropdown = document.getElementById('export-dropdown');
                 dropdown.classList.toggle('hidden');
                 if (sortDropdown) sortDropdown.classList.add('hidden');
+                if (exportDropdown) exportDropdown.classList.add('hidden');
             }
 
             function toggleSortDropdown(event) {
                 event.stopPropagation();
                 const dropdown = document.getElementById('sort-dropdown');
                 const dateDropdown = document.getElementById('date-range-dropdown');
+                const exportDropdown = document.getElementById('export-dropdown');
                 dropdown.classList.toggle('hidden');
                 if (dateDropdown) dateDropdown.classList.add('hidden');
+                if (exportDropdown) exportDropdown.classList.add('hidden');
             }
 
             window.addEventListener('click', function (event) {
@@ -449,12 +477,17 @@
                 const dateDropdown = document.getElementById('date-range-dropdown');
                 const sortContainer = document.getElementById('sort-container');
                 const sortDropdown = document.getElementById('sort-dropdown');
+                const exportContainer = document.getElementById('export-container');
+                const exportDropdown = document.getElementById('export-dropdown');
 
                 if (dateContainer && !dateContainer.contains(event.target)) {
                     dateDropdown.classList.add('hidden');
                 }
                 if (sortContainer && !sortContainer.contains(event.target)) {
                     sortDropdown.classList.add('hidden');
+                }
+                if (exportContainer && !exportContainer.contains(event.target)) {
+                    exportDropdown.classList.add('hidden');
                 }
             });
 
@@ -526,6 +559,14 @@
                 applyFilters({ startDate: '', endDate: '' });
             }
 
+            function triggerExport(format) {
+                const params = new URLSearchParams(window.location.search);
+                params.set('format', format);
+                window.location.href = '/admin/order-management/export?' + params.toString();
+                const dropdown = document.getElementById('export-dropdown');
+                if (dropdown) dropdown.classList.add('hidden');
+            }
+
             document.addEventListener('DOMContentLoaded', () => {
                 const searchInput = document.getElementById('order-search-input');
                 if (searchInput) {
@@ -542,173 +583,6 @@
                     });
                 }
             });
-
-            async function exportOrdersPDF(btn) {
-                const originalHTML = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = `
-                    <span class="material-symbols-outlined text-sm animate-spin">sync</span>
-                    Exporting...
-                `;
-
-                try {
-                    const response = await fetch('/admin/order-management/export');
-                    const orders = await response.json();
-
-                    if (!orders || orders.length === 0) {
-                        alert('No order data available to export.');
-                        return;
-                    }
-
-                    // Create a virtual container for styling the PDF
-                    const container = document.createElement('div');
-                    container.style.fontFamily = "'Inter', sans-serif";
-                    container.style.color = '#1e293b';
-                    container.style.padding = '40px';
-                    container.style.backgroundColor = '#ffffff';
-
-                    // Format the download date and time
-                    const downloadDateTime = new Date().toLocaleString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                    });
-
-                    // Summary statistics
-                    const totalRevenue = orders.reduce((acc, o) => {
-                        let refunded = 0;
-                        if (o.items && o.items.length > 0) {
-                            o.items.forEach(item => {
-                                if (item.status === 'Cancelled' || item.status === 'Return Confirmed' || item.status === 'Returned') {
-                                    refunded += (item.subtotal || 0);
-                                }
-                            });
-                        }
-                        return acc + ((o.pricing?.grandTotal || 0) - refunded);
-                    }, 0);
-                    const paidCount = orders.filter(o => o.paymentStatus === 'Paid').length;
-                    const nonPaidCount = orders.filter(o => o.paymentStatus !== 'Paid').length;
-
-                    container.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
-                            <div>
-                                <h1 style="font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">LUXE TECH</h1>
-                                <p style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin: 2px 0 0 0; font-weight: 600;">Global Order Directory</p>
-                            </div>
-                            <div style="text-align: right; font-size: 9px; color: #475569;">
-                                <span style="font-weight: 700; color: #0f172a;">Exported:</span> ${downloadDateTime}
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 20px; margin-bottom: 25px; font-size: 10px; color: #475569; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
-                            <div>Total Orders: <span style="font-weight: 700; color: #0f172a;">${orders.length}</span></div>
-                            <div style="color: #cbd5e1;">|</div>
-                            <div>Paid Orders: <span style="font-weight: 700; color: #16a34a;">${paidCount}</span></div>
-                            <div style="color: #cbd5e1;">|</div>
-                            <div>Non-Paid: <span style="font-weight: 700; color: #b45309;">${nonPaidCount}</span></div>
-                            <div style="color: #cbd5e1;">|</div>
-                            <div>Gross Revenue: <span style="font-weight: 700; color: #0f172a;">₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-                        </div>
-
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;">
-                            <thead>
-                                <tr style="border-bottom: 1.5px solid #0f172a;">
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 22%; text-align: left;">Order ID</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 20%; text-align: left;">Customer Name</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 23%; text-align: left;">Email Address</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 13%;">Order Date</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 10%;">Payment</th>
-                                    <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: right; width: 12%;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${orders.map((o, idx) => {
-                        const oDate = new Date(o.createdAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                        });
-                        const custName = o.shippingAddress?.fullName || 'N/A';
-                        const custEmail = o.userId?.email || '';
-                        const paymentStatus = o.paymentStatus || 'Pending';
-                        let refunded = 0;
-                        if (o.items && o.items.length > 0) {
-                            o.items.forEach(item => {
-                                if (item.status === 'Cancelled' || item.status === 'Return Confirmed' || item.status === 'Returned') {
-                                    refunded += (item.subtotal || 0);
-                                }
-                            });
-                        }
-                        const grandTotal = (o.pricing?.grandTotal || 0) - refunded;
-
-                        let paymentBg = '#cbd5e1';
-                        let paymentColor = '#1e293b';
-                        if (paymentStatus === 'Paid') {
-                            paymentBg = '#dcfce7';
-                            paymentColor = '#15803d';
-                        } else if (paymentStatus === 'Failed' || paymentStatus === 'Refunded') {
-                            paymentBg = '#fee2e2';
-                            paymentColor = '#b91c1c';
-                        }
-
-                        const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
-
-                        return `
-                                        <tr style="background-color: ${rowBg}; border-bottom: 1px solid #f1f5f9; page-break-inside: avoid;">
-                                            <td style="padding: 12px 10px; font-size: 10px; font-weight: 700; color: #0f172a; width: 22%; word-break: break-all; text-align: left;">
-                                                #${o.orderId}
-                                            </td>
-                                            <td style="padding: 12px 10px; font-size: 10px; font-weight: 700; color: #0f172a; width: 20%; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                                ${custName}
-                                            </td>
-                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569; width: 23%; text-align: left; word-break: break-all;">
-                                                ${custEmail}
-                                            </td>
-                                            <td style="padding: 12px 10px; font-size: 10px; color: #475569; text-align: center; width: 13%;">
-                                                ${oDate}
-                                            </td>
-                                            <td style="padding: 12px 10px; text-align: center; width: 10%;">
-                                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8px; font-weight: 700; text-transform: uppercase; background-color: ${paymentBg}; color: ${paymentColor};">
-                                                    ${paymentStatus}
-                                                </span>
-                                            </td>
-                                            <td style="padding: 12px 10px; text-align: right; font-size: 10px; font-weight: 700; color: #0f172a; width: 12%;">
-                                                ₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                            </td>
-                                        </tr>
-                                    `;
-                    }).join('')}
-                            </tbody>
-                        </table>
-
-                        <div style="margin-top: 40px; border-top: 1px dashed #cbd5e1; padding-top: 15px; text-align: center; page-break-inside: avoid;">
-                            <p style="font-size: 8px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Confidential — Luxe Tech Administration Records</p>
-                            <p style="font-size: 8px; color: #94a3b8; margin: 2px 0 0 0;">Report Ref: #LTOR-${Math.floor(100000 + Math.random() * 900000)} | Generated Automatically</p>
-                        </div>
-                    `;
-
-                    const opt = {
-                        margin: [15, 15, 20, 15],
-                        filename: 'LuxeTech_Orders_Report.pdf',
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    await html2pdf().set(opt).from(container).save();
-
-                } catch (err) {
-                    console.error('Error exporting order report PDF:', err);
-                    alert('An error occurred while exporting the order management report.');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHTML;
-                }
-            }
         </script>
 </body>
 

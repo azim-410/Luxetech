@@ -1,6 +1,8 @@
 import Order from "../../model/order.js";
 import User from "../../model/userModel.js"; // Ensure User model is loaded for populate
 import Transaction from "../../model/transaction.js";
+import { generateExcelReport } from "../../utils/excelGenerator.js";
+import { generatePDFReport } from "../../utils/pdfGenerator.js";
 
 const getAdminOrdersService = async (
   page,
@@ -351,16 +353,63 @@ const processAdminItemActionService = async (orderId, itemId, action) => {
   return order;
 };
 
-const exportOrdersService = async () => {
+const exportOrdersService = async (filterOptions = {}) => {
   try {
-    const orders = await Order.find({})
+    const { search, status, startDate, endDate, format } = filterOptions;
+
+    let query = {};
+
+    if (status && status !== "all") {
+      query.orderStatus = status;
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      const matchingUsers = await User.find({ email: searchRegex }).select("_id");
+      const matchingUserIds = matchingUsers.map((u) => u._id);
+
+      query.$or = [
+        { orderId: searchRegex },
+        { "shippingAddress.fullName": searchRegex },
+        { userId: { $in: matchingUserIds } },
+      ];
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        const sDate = new Date(startDate);
+        sDate.setHours(0, 0, 0, 0);
+        query.createdAt.$gte = sDate;
+      }
+      if (endDate) {
+        const eDate = new Date(endDate);
+        eDate.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = eDate;
+      }
+    }
+
+    const orders = await Order.find(query)
       .populate("userId")
       .sort({ createdAt: -1 });
-    return orders;
+
+    if (format === 'excel') {
+      const buffer = await generateExcelReport(orders);
+      return {
+        buffer,
+        fileName: `LuxeTech_Orders_Report_${Date.now()}.xlsx`,
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      };
+    } else {
+      const buffer = await generatePDFReport(orders);
+      return {
+        buffer,
+        fileName: `LuxeTech_Orders_Report_${Date.now()}.pdf`,
+        mimeType: 'application/pdf'
+      };
+    }
   } catch (error) {
-    throw new Error(
-      "Failed to retrieve all orders for export: " + error.message,
-    );
+    throw new Error("Failed to export orders: " + error.message);
   }
 };
 

@@ -119,16 +119,24 @@ const processAdminItemAction = async (req, res) => {
     return res.status(400).json({ success: false, message: error.message });
   }
 };
-
 const exportOrders = async (req, res) => {
   try {
-    const orders = await exportOrdersService();
-    return res.json(orders);
+    const { format, startDate, endDate, search, status } = req.query;
+
+    const { buffer, fileName, mimeType } = await exportOrdersService({
+      format,
+      startDate,
+      endDate,
+      search,
+      status,
+    });
+
+    res.setHeader("Content-Type", mimeType);
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    return res.send(buffer);
   } catch (error) {
     console.error("exportOrders error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
+    return res.status(500).send("Failed to export orders.");
   }
 };
 

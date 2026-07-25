@@ -209,6 +209,9 @@
       .footer-inner{flex-direction:column;align-items:flex-start}
       .footer-links{flex-wrap:wrap;gap:12px}
     }
+    .blocked-product{filter:grayscale(1) opacity(0.6)}
+    .blocked-margin{margin-top:6px}
+    .hidden-el{display:none!important}
   </style>
 </head>
 <body>
@@ -231,7 +234,7 @@
         </li>
         <% for (let i = 0; i < categories.length; i++) { %>
           <% const cat = categories[i]; %>
-          <li class="<%= i >= 3 ? 'extra-category-desktop' : '' %>" style="<%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'display: none;' : '' %>">
+          <li class="<%= i >= 3 ? 'extra-category-desktop' : '' %> <%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'hidden-el' : '' %>">
             <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
               <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
             </label>
@@ -298,7 +301,7 @@
           </li>
           <% for (let i = 0; i < categories.length; i++) { %>
             <% const cat = categories[i]; %>
-            <li class="<%= i >= 3 ? 'extra-category-mobile' : '' %>" style="<%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'display: none;' : '' %>">
+            <li class="<%= i >= 3 ? 'extra-category-mobile' : '' %> <%= (i >= 3 && !selectedCategories.includes(cat._id.toString())) ? 'hidden-el' : '' %>">
               <label class="<%= selectedCategories.includes(cat._id.toString()) ? 'active-label' : '' %>">
                 <input type="checkbox" class="category-filter-item" value="<%= cat._id %>" <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %> onchange="toggleCategoryItem(this)"/> <%= cat.categoryName %>
               </label>
@@ -350,7 +353,7 @@
           style="width: 100%; padding: 10px 14px 10px 40px; font-size: 13px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-family: inherit; outline: none; background: #fff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease-in-out;"
           onfocus="this.style.borderColor='#94a3b8'; this.style.boxShadow='0 0 0 3px rgba(148, 163, 184, 0.15)'"
           onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'" />
-        <span class="material-symbols-outlined" id="clear-search-btn" onclick="clearSearch()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; cursor: pointer; user-select: none; display: <%= (locals.selectedSearch) ? 'block' : 'none' %>;">close</span>
+        <span class="material-symbols-outlined <%= (locals.selectedSearch) ? '' : 'hidden-el' %>" id="clear-search-btn" onclick="clearSearch()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #666; cursor: pointer; user-select: none;">close</span>
       </div>
 
       <span class="toolbar-count" style="margin-left: auto;">Showing <%= locals.products ? locals.products.length : 0 %> results</span>
@@ -377,9 +380,9 @@
                 </div>
               <% } %>
               <% if (product.firstImage) { %>
-                <img src="<%= product.firstImage %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover; display: block; <%= product.isBlocked ? 'filter: grayscale(1) opacity(0.6);' : '' %>" />
+                <img src="<%= product.firstImage %>" alt="<%= product.name %>" class="<%= product.isBlocked ? 'blocked-product' : '' %>" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
               <% } else { %>
-                <div class="img-placeholder c1 <%= product.isBlocked ? 'filter: grayscale(1) opacity(0.6);' : '' %>"></div>
+                <div class="img-placeholder c1 <%= product.isBlocked ? 'blocked-product' : '' %>"></div>
               <% } %>
               <% if (product.isBlocked) { %>
                 <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;">
@@ -401,7 +404,7 @@
                   Temporarily Unavailable
                 </div>
               <% } %>
-              <div class="stars" style="<%= product.isBlocked ? 'margin-top: 6px;' : '' %>">
+              <div class="stars <%= product.isBlocked ? 'blocked-margin' : '' %>">
                 <span class="star">★</span>
                 <span class="star">★</span>
                 <span class="star">★</span>
@@ -413,7 +416,7 @@
           </div>
         <% } %>
       <% } %>
-      <div id="no-products-message" style="display: <%= (!locals.products || products.length === 0) ? 'block' : 'none' %>; grid-column: 1 / -1; text-align: center; padding: 40px; color: #777; width: 100%;">
+      <div id="no-products-message" class="<%= (!locals.products || products.length === 0) ? '' : 'hidden-el' %>" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777; width: 100%;">
         <p>No products found matching your search.</p>
       </div>
     </div><!-- /product-grid -->
@@ -523,10 +526,14 @@
       const btn = document.getElementById('toggle-desktop-categories-btn');
       const extraItems = document.querySelectorAll('.extra-category-desktop');
       if (extraItems.length === 0) return;
-      const isHidden = extraItems[0].style.display === 'none';
+      const isHidden = extraItems[0].classList.contains('hidden-el');
       
       extraItems.forEach(el => {
-          el.style.display = isHidden ? 'block' : 'none';
+          if (isHidden) {
+              el.classList.remove('hidden-el');
+          } else {
+              el.classList.add('hidden-el');
+          }
       });
       
       btn.textContent = isHidden ? 'Show Less ▴' : 'Show More ▾';
@@ -536,10 +543,14 @@
       const btn = document.getElementById('toggle-mobile-categories-btn');
       const extraItems = document.querySelectorAll('.extra-category-mobile');
       if (extraItems.length === 0) return;
-      const isHidden = extraItems[0].style.display === 'none';
+      const isHidden = extraItems[0].classList.contains('hidden-el');
       
       extraItems.forEach(el => {
-          el.style.display = isHidden ? 'block' : 'none';
+          if (isHidden) {
+              el.classList.remove('hidden-el');
+          } else {
+              el.classList.add('hidden-el');
+          }
       });
       
       btn.textContent = isHidden ? 'Show Less ▴' : 'Show More ▾';

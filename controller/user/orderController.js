@@ -7,6 +7,7 @@ import {
   retryPaymentService,
   getInvoiceDataService,
 } from "../../services/user/orderService.js";
+import { generateInvoicePDF } from "../../utils/pdfGenerator.js";
 
 const getOrdersPage = async (req, res) => {
   try {
@@ -213,6 +214,32 @@ const getInvoiceData = async (req, res) => {
   }
 };
 
+const exportUserOrderInvoicePDF = async (req, res) => {
+  try {
+    const userId = req.session.user
+      ? req.session.user.id
+      : req.user
+        ? req.user._id
+        : null;
+    if (!userId) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    const { orderId } = req.params;
+    const order = await getInvoiceDataService(orderId, userId);
+    await order.populate("userId");
+
+    const pdfBuffer = await generateInvoicePDF(order);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=LuxeTech_Invoice_#${order.orderId}.pdf`);
+    return res.send(pdfBuffer);
+  } catch (error) {
+    console.error("exportUserOrderInvoicePDF controller error:", error);
+    return res.status(400).send(error.message || "Failed to export invoice PDF");
+  }
+};
+
 export {
   getOrdersPage,
   getTrackingPage,
@@ -221,4 +248,5 @@ export {
   processReturn,
   retryPayment,
   getInvoiceData,
+  exportUserOrderInvoicePDF,
 };

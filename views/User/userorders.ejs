@@ -6,8 +6,6 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Recent Orders | Luxe Tech</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <!-- html2pdf.js for exporting PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
     rel="stylesheet" />
@@ -309,207 +307,19 @@
               btn.disabled = true;
               btn.innerHTML = `
                   <span class="material-symbols-outlined text-sm animate-spin">sync</span>
-                  Generating...
+                  Downloading...
               `;
 
               try {
-                  const response = await fetch(`/orders/invoice-data/${orderId}`);
-                  const result = await response.json();
-                  if (!result.success) {
-                      throw new Error(result.message || 'Failed to fetch invoice details.');
-                  }
-                  const order = result.order;
-                  const userEmail = '<%= user.email %>';
-
-                  // Create virtual element for PDF rendering
-                  const container = document.createElement('div');
-                  container.style.fontFamily = "'Inter', sans-serif";
-                  container.style.color = '#1e293b';
-                  container.style.padding = '40px';
-                  container.style.backgroundColor = '#ffffff';
-
-                  const downloadDateTime = new Date().toLocaleString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      hour12: true
-                  });
-
-                  // Retrieve pricing information from order object
-                  const subtotal = order.pricing.subtotal || 0;
-                  const shipping = order.pricing.shipping || 0;
-                  const tax = order.pricing.tax || 0;
-                  const grandTotal = order.pricing.grandTotal || 0;
-                  const couponCode = order.couponCode || "";
-                  const refundedAmount = order.pricing.refundedAmount || 0;
-                  const finalGrandTotal = grandTotal - refundedAmount;
-
-                  let couponDiscount = 0;
-                  let offerDiscount = 0;
-                  if (typeof order.pricing.couponDiscount !== 'undefined') {
-                      couponDiscount = order.pricing.couponDiscount || 0;
-                      offerDiscount = order.pricing.productDiscount || 0;
-                  } else if (order.couponCode) {
-                      couponDiscount = order.pricing.discount || 0;
-                  } else {
-                      offerDiscount = order.pricing.discount || 0;
-                  }
-
-                  let itemsRowsHtml = '';
-                  order.items.forEach(function(item) {
-                      const isCancelledOrReturned = item.status === 'Cancelled' || item.status === 'Returned' || item.status === 'Return Confirmed';
-                      itemsRowsHtml += `
-                      <tr style="border-bottom: 1px solid #f0f0f0;">
-                          <td style="padding: 12px 0;">
-                              <div style="font-size: 11px; font-weight: 600; color: ${isCancelledOrReturned ? '#bbb' : '#111'}; ${isCancelledOrReturned ? 'text-decoration: line-through;' : ''} word-break: break-word;">
-                                  ${item.name}
-                              </div>
-                              ${item.variantName ? `
-                              <div style="font-size: 9px; color: #aaa; margin-top: 2px; ${isCancelledOrReturned ? 'text-decoration: line-through;' : ''}">
-                                  ${item.variantName}
-                              </div>
-                              ` : ''}
-                              ${isCancelledOrReturned ? `
-                              <span style="display: inline-block; font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #e05555; margin-top: 3px; border: 1px solid #e05555; padding: 1px 5px; border-radius: 2px;">
-                                  ${item.status}
-                              </span>
-                              ` : ''}
-                          </td>
-                          <td style="padding: 12px 0; font-size: 10px; color: ${isCancelledOrReturned ? '#ccc' : '#555'}; text-align: center; ${isCancelledOrReturned ? 'text-decoration: line-through;' : ''}">
-                              ₹${item.price.toFixed(2)}
-                          </td>
-                          <td style="padding: 12px 0; font-size: 10px; color: ${isCancelledOrReturned ? '#ccc' : '#555'}; text-align: center; ${isCancelledOrReturned ? 'text-decoration: line-through;' : ''}">
-                              ${item.quantity}
-                          </td>
-                          <td style="padding: 12px 0; font-size: 11px; font-weight: 600; color: ${isCancelledOrReturned ? '#ccc' : '#111'}; text-align: right; ${isCancelledOrReturned ? 'text-decoration: line-through;' : ''}">
-                              ₹${item.subtotal.toFixed(2)}
-                          </td>
-                      </tr>
-                      `;
-                  });
-
-                  container.innerHTML = `
-                  <div style="font-family: 'Inter', 'Helvetica Neue', sans-serif; color: #1a1a1a; max-width: 700px; margin: 0 auto;">
-
-                      <!-- Header -->
-                      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 24px; border-bottom: 1px solid #e5e5e5; margin-bottom: 32px;">
-                          <div>
-                              <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.04em; color: #111;">LUXE TECH</div>
-                              <div style="font-size: 10px; color: #999; margin-top: 3px; letter-spacing: 0.08em; text-transform: uppercase;">Invoice</div>
-                          </div>
-                          <div style="text-align: right;">
-                              <div style="font-size: 10px; color: #999; margin-bottom: 4px;">Order</div>
-                              <div style="font-size: 12px; font-weight: 600; color: #111;">#${order.orderId}</div>
-                              <div style="font-size: 10px; color: #999; margin-top: 6px;">${new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                              <div style="font-size: 10px; color: #bbb;">${downloadDateTime}</div>
-                          </div>
-                      </div>
-
-                      <!-- Billing & Payment Row -->
-                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 36px; font-size: 11px; line-height: 1.9;">
-                          <div>
-                              <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #aaa; margin-bottom: 8px;">Bill To</div>
-                              <div style="font-weight: 600; color: #111; margin-bottom: 2px;">${order.shippingAddress.fullName}</div>
-                              <div style="color: #555;">${order.shippingAddress.streetAddress}</div>
-                              <div style="color: #555;">${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}</div>
-                              <div style="color: #555;">${order.shippingAddress.country}</div>
-                              <div style="color: #777; margin-top: 6px;">${order.shippingAddress.phoneNumber}</div>
-                          </div>
-                          <div>
-                              <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #aaa; margin-bottom: 8px;">Details</div>
-                              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 4px 0;">
-                                  <span style="color: #888;">Payment</span>
-                                  <span style="font-weight: 500; color: #111; text-transform: uppercase;">${order.paymentMethod}</span>
-                              </div>
-                              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 4px 0;">
-                                  <span style="color: #888;">Status</span>
-                                  <span style="font-weight: 500; color: #111;">${order.paymentStatus}</span>
-                              </div>
-                              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                                  <span style="color: #888;">Order</span>
-                                  <span style="font-weight: 500; color: #111;">${order.orderStatus}</span>
-                              </div>
-                              ${order.estimateDate ? `
-                              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                                  <span style="color: #888;">Est. Delivery</span>
-                                  <span style="font-weight: 500; color: #111;">${order.estimateDate}</span>
-                              </div>
-                              ` : ''}
-                          </div>
-                      </div>
-
-                      <!-- Items Table -->
-                      <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px; table-layout: fixed;">
-                          <thead>
-                              <tr style="border-bottom: 1px solid #111;">
-                                  <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: left; width: 48%;">Item</th>
-                                  <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: center; width: 18%;">Unit</th>
-                                  <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: center; width: 12%;">Qty</th>
-                                  <th style="padding: 8px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; font-weight: 600; text-align: right; width: 22%;">Amount</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              ${itemsRowsHtml}
-                          </tbody>
-                      </table>
-
-                      <!-- Pricing Summary -->
-                      <div style="display: flex; justify-content: flex-end; margin-bottom: 40px;">
-                          <div style="width: 220px; font-size: 11px;">
-                              <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
-                                  <span>Subtotal</span>
-                                  <span style="color: #111;">₹${subtotal.toFixed(2)}</span>
-                              </div>
-                              ${offerDiscount > 0 ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;"><span>Offer Discount</span><span style="color: #22a86b;">−₹' + offerDiscount.toFixed(2) + '</span></div>' : ''}
-                              ${couponCode ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;"><span>Coupon (' + couponCode + ')</span><span style="color: #22a86b;">−₹' + couponDiscount.toFixed(2) + '</span></div>' : ''}
-                              <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
-                                  <span>Shipping</span>
-                                  <span style="color: #111;">${shipping === 0 ? 'FREE' : '₹' + shipping.toFixed(2)}</span>
-                              </div>
-                              <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #777;">
-                                  <span>Tax (8%)</span>
-                                  <span style="color: #111;">₹${tax.toFixed(2)}</span>
-                              </div>
-                              <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 4px; border-top: 1px solid #e5e5e5; color: #555; font-weight: 600;">
-                                  <span>Total</span>
-                                  <span>₹${grandTotal.toFixed(2)}</span>
-                              </div>
-                              ${refundedAmount > 0 ? '<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #e05555; font-weight: 600;"><span>Refunded</span><span>−₹' + refundedAmount.toFixed(2) + '</span></div>' : ''}
-                              <div style="display: flex; justify-content: space-between; padding: 10px 0; margin-top: 4px; border-top: 1px solid #111; font-size: 13px; font-weight: 700; color: #111;">
-                                  <span>Grand Total</span>
-                                  <span>₹${finalGrandTotal.toFixed(2)}</span>
-                              </div>
-                          </div>
-                      </div>
-
-                      <!-- Footer -->
-                      <div style="border-top: 1px solid #e5e5e5; padding-top: 16px; text-align: center;">
-                          <p style="font-size: 9px; color: #bbb; margin: 0;">Thank you for shopping with Luxe Tech. For support, contact support@luxetech.com.</p>
-                          <p style="font-size: 9px; color: #ccc; margin: 4px 0 0 0;">Luxe Tech Inc. &nbsp;·&nbsp; Computer generated invoice — no signature required.</p>
-                      </div>
-
-                  </div>
-                  `;
-
-                  const opt = {
-                      margin: [15, 15, 20, 15],
-                      filename: `LuxeTech_Invoice_#${order.orderId}.pdf`,
-                      image: { type: 'jpeg', quality: 0.98 },
-                      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-                      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                  };
-
-                  await html2pdf().set(opt).from(container).save();
-
+                  window.location.href = `/orders/invoice/${orderId}/pdf`;
               } catch (err) {
-                  console.error('Error generating PDF:', err);
-                  showToast(err.message || 'An error occurred while generating the invoice PDF.', 'error');
+                  console.error('Error downloading PDF:', err);
+                  showToast(err.message || 'An error occurred while downloading the invoice PDF.', 'error');
               } finally {
-                  btn.disabled = false;
-                  btn.innerHTML = originalText;
+                  setTimeout(() => {
+                      btn.disabled = false;
+                      btn.innerHTML = originalText;
+                  }, 2000);
               }
           }
 

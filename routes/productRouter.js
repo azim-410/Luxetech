@@ -30,6 +30,7 @@ import {
   processReturn,
   retryPayment,
   getInvoiceData,
+  exportUserOrderInvoicePDF,
 } from "../controller/user/orderController.js";
 import { getOffersPage } from "../controller/user/offersController.js";
 
@@ -150,6 +151,12 @@ router.get(
   isAuthenticated,
   checkIfBlocked,
   getInvoiceData,
+);
+router.get(
+  "/orders/invoice/:orderId/pdf",
+  isAuthenticated,
+  checkIfBlocked,
+  exportUserOrderInvoicePDF,
 );
 
 export default router;

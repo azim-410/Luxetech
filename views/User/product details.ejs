@@ -105,13 +105,12 @@
                         <div id="main-img-container"
                             class="col-span-6 aspect-video bg-surface-container-low rounded-xl overflow-hidden relative group cursor-zoom-in">
                             <img id="main-product-img"
-                                class="w-full h-full object-contain transition-transform duration-75 ease-out"
+                                class="w-full h-full object-contain transition-transform duration-75 ease-out <%= initialImages.length > 0 ? '' : 'hidden' %>"
                                 src="<%= initialImages.length > 0 ? initialImages[0] : '' %>"
-                                style="<%= initialImages.length > 0 ? 'display: block; transform-origin: center center;' : 'display: none;' %>"
+                                style="transform-origin: center center;"
                                 alt="<%= product.name %>" />
                             <div id="main-product-img-placeholder"
-                                class="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 font-bold"
-                                style="<%= initialImages.length > 0 ? 'display: none;' : 'display: flex;' %>">
+                                class="w-full h-full items-center justify-center bg-slate-200 text-slate-400 font-bold <%= initialImages.length > 0 ? 'hidden' : 'flex' %>">
                                 No Image Available
                             </div>
                             <div class="absolute top-6 left-6 flex gap-2">
@@ -537,15 +536,24 @@
                 © 2024 Luxe Tech Precision Engineering. All rights reserved.
             </p>
         </footer>
+        <!-- EJS data parsed cleanly to avoid IDE syntax/parsing issues -->
+        <script id="product-details-data" type="application/json">
+            {
+                "product": <%- locals.product ? JSON.stringify(product) : "null" %>,
+                "wishlistItems": <%- locals.wishlistItems ? JSON.stringify(wishlistItems) : "[]" %>,
+                "isBlocked": <%= locals.isBlocked ? "true" : "false" %>
+            }
+        </script>
         <script>
-            const product = <%- locals.product ? JSON.stringify(product) : 'null' %>;
-            const userWishlistItems = <%- locals.wishlistItems ? JSON.stringify(wishlistItems) : '[]' %>;
+            const ejsData = JSON.parse(document.getElementById('product-details-data').textContent);
+            const product = ejsData.product;
+            const userWishlistItems = ejsData.wishlistItems;
+            const isBlocked = ejsData.isBlocked;
 
             function updateWishlistButton(productId, variantId) {
                 const btn = document.getElementById('wishlist-btn');
                 if (!btn) return;
                 
-                const isBlocked = <%= locals.isBlocked ? 'true' : 'false' %>;
                 if (isBlocked) {
                     btn.disabled = true;
                     btn.className = "w-full h-12 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 transition-all duration-300 font-label font-bold uppercase tracking-wider text-xs text-center flex items-center justify-center";
@@ -887,9 +895,9 @@
                 const alertCloseBtn = document.getElementById('alert-close-btn');
                 if (alertCloseBtn) {
                     alertCloseBtn.addEventListener('click', () => {
-                        <% if (locals.isBlocked) { %>
+                        if (isBlocked) {
                             window.location.href = '/shop';
-                        <% } else { %>
+                        } else {
                             const urlParams = new URLSearchParams(window.location.search);
                             const errorMsg = urlParams.get('error');
                             if (errorMsg && errorMsg.toLowerCase().includes('login')) {
@@ -897,7 +905,7 @@
                             } else {
                                 closeAlertModal();
                             }
-                        <% } %>
+                        }
                     });
                 }
                 const alertModal = document.getElementById('alert-modal');
@@ -905,9 +913,9 @@
                     const alertBackdrop = alertModal.querySelector('.absolute');
                     if (alertBackdrop) {
                         alertBackdrop.addEventListener('click', () => {
-                            <% if (locals.isBlocked) { %>
+                            if (isBlocked) {
                                 window.location.href = '/shop';
-                            <% } else { %>
+                            } else {
                                 const urlParams = new URLSearchParams(window.location.search);
                                 const errorMsg = urlParams.get('error');
                                 if (errorMsg && errorMsg.toLowerCase().includes('login')) {
@@ -915,18 +923,18 @@
                                 } else {
                                     closeAlertModal();
                                 }
-                            <% } %>
+                            }
                         });
                     }
                 }
 
-                <% if (locals.isBlocked) { %>
+                if (isBlocked) {
                     // If product is blocked, show unavailable modal on load
                     showAlert("This product is currently unavailable. The product will be added soon.", "Product Unavailable");
                     if (alertCloseBtn) {
                         alertCloseBtn.innerText = "Browse Products";
                     }
-                <% } %>
+                }
             });
 
             // Function to show custom alert modal

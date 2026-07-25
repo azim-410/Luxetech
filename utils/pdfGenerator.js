@@ -209,14 +209,24 @@ export const generateInvoicePDF = async (order) => {
       hour12: true
     });
 
+    const downloadedStr = new Date().toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
     doc.fillColor('#94a3b8').fontSize(7.5).font('Helvetica').text(`Created: ${createdStr}`, rightAlignX, 70, { align: 'right', width: 250 });
     doc.text(`Updated: ${updatedStr}`, rightAlignX, 80, { align: 'right', width: 250 });
+    doc.text(`Downloaded: ${downloadedStr}`, rightAlignX, 90, { align: 'right', width: 250 });
 
     // Divider line
-    doc.moveTo(45, 95).lineTo(550, 95).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
+    doc.moveTo(45, 105).lineTo(550, 105).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
 
     // Bill To & Details Section
-    const billToY = 115;
+    const billToY = 125;
     doc.fillColor('#94a3b8').fontSize(8).font('Helvetica-Bold').text('BILL TO', 45, billToY);
     doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold').text(order.shippingAddress.fullName || 'N/A', 45, billToY + 15);
     
@@ -246,10 +256,10 @@ export const generateInvoicePDF = async (order) => {
     drawDetailRow('Order', order.orderStatus || 'Pending');
 
     // Divider before table (pushed down for breathing room)
-    doc.moveTo(45, 230).lineTo(550, 230).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
+    doc.moveTo(45, 240).lineTo(550, 240).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
 
     // Table headers
-    const tableHeaderY = 245;
+    const tableHeaderY = 255;
     doc.fillColor('#64748b').fontSize(8).font('Helvetica-Bold');
     doc.text('ITEM', 45, tableHeaderY, { width: 240 });
     doc.text('UNIT', 320, tableHeaderY, { width: 80, align: 'right' });

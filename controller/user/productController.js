@@ -244,6 +244,17 @@ const addAllFromWishlistToCart = async (req, res) => {
     }
 };
 
+const getSupport = async (req, res) => {
+    try {
+        res.render('User/support', {
+            user: req.session.user || req.user || null
+        });
+    } catch (error) {
+        console.error('getSupport error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 export {
     getShop,
     getProductDetails,
@@ -254,5 +265,6 @@ export {
     getWishlist,
     addToWishlist,
     removeFromWishlist,
-    addAllFromWishlistToCart
+    addAllFromWishlistToCart,
+    getSupport
 }; 

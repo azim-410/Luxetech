@@ -105,8 +105,8 @@
 
 <body class="bg-surface text-on-surface selection:bg-secondary-container flex min-h-screen">
     <%- include('../partials/admin/layout', { activePage: 'orders' }) %>
-        <main class="ml-0 md:ml-64 flex-1 flex flex-col min-h-screen pt-16">
-            <div class="px-4 sm:px-12 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full flex-1">
+        <main class="ml-0 lg:ml-64 flex-1 flex flex-col min-h-screen pt-20 lg:pt-16">
+            <div class="px-4 sm:px-6 lg:px-10 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full flex-1">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                     <div>
                         <nav
@@ -240,7 +240,7 @@
                             </div>
                         </div>
                         <!-- Status Tabs -->
-                        <div class="flex items-center gap-8 border-b border-outline-variant/10">
+                        <div class="flex items-center gap-8 border-b border-outline-variant/10 overflow-x-auto whitespace-nowrap pb-1">
                             <button onclick="applyFilters({ status: 'all' })"
                                 class="status-tab pb-4 text-sm <%= status === 'all' ? 'font-semibold text-on-surface border-b-2 border-on-surface -mb-[1px]' : 'font-medium text-outline hover:text-on-surface transition-colors' %>">All
                                 Orders</button>
@@ -382,8 +382,8 @@
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="px-6 py-6 border-t border-outline-variant/10 flex items-center justify-between">
-                        <p class="text-[10px] sm:text-xs text-outline font-medium uppercase tracking-wider">
+                    <div class="px-6 py-6 border-t border-outline-variant/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p class="text-[10px] sm:text-xs text-outline font-medium uppercase tracking-wider text-center sm:text-left">
                             Showing <span id="visible-count" class="text-on-surface font-bold">
                                 <%= count %>
                             </span> of <span id="total-count" class="text-on-surface font-bold">

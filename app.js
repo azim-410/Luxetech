@@ -93,6 +93,6 @@ app.use("/", productRoutes);
 // Admin routes get ONLY the admin session — user session never touches these
 app.use("/admin/", adminSession, adminRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log("\nserver running at http://localhost:" + process.env.PORT);
+app.listen(process.env.PORT,'0.0.0.0', () => {
+  console.log('\nserver running at http://localhost:' + process.env.PORT);
 });

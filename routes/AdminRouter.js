@@ -43,6 +43,7 @@ import {
   updateOrderPaymentStatus,
   processAdminItemAction,
   exportOrders,
+  exportOrderInvoicePDF,
 } from "../controller/admin/admincheckourController.js";
 import {
   getCouponList,
@@ -152,6 +153,11 @@ router.get(
   "/order-management/details/:id",
   isAdminAuthenticated,
   getOrderDetails,
+);
+router.get(
+  "/order-management/details/:id/pdf",
+  isAdminAuthenticated,
+  exportOrderInvoicePDF,
 );
 router.post(
   "/order-management/details/:id/update-estimate",

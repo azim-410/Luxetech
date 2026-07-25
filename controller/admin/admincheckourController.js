@@ -7,6 +7,7 @@ import {
   exportOrdersService,
 } from "../../services/admin/adminCheckoutService.js";
 import Order from "../../model/order.js";
+import { generateInvoicePDF } from "../../utils/pdfGenerator.js";
 
 const getOrderList = async (req, res) => {
   try {
@@ -140,6 +141,26 @@ const exportOrders = async (req, res) => {
   }
 };
 
+const exportOrderInvoicePDF = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId).populate("userId");
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+    const buffer = await generateInvoicePDF(order);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="LuxeTech_Invoice_#${order.orderId}.pdf"`
+    );
+    return res.send(buffer);
+  } catch (error) {
+    console.error("exportOrderInvoicePDF error:", error);
+    return res.status(500).send("Failed to export order invoice PDF.");
+  }
+};
+
 export {
   getOrderList,
   getOrderDetails,
@@ -148,4 +169,5 @@ export {
   updateOrderPaymentStatus,
   processAdminItemAction,
   exportOrders,
+  exportOrderInvoicePDF,
 };

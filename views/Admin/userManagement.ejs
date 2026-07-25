@@ -6,8 +6,6 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Customer List | Luxe Tech</title>
-    <!-- html2pdf.js for exporting PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts: Manrope & Inter -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap"
@@ -116,7 +114,7 @@
                 <p class="text-on-surface-variant font-body">Manage your luxury client base and interaction history.</p>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="exportCustomerListPDF(this)"
+                <button onclick="exportCustomerListPDF()"
                     class="bg-surface-container-lowest text-on-surface border border-outline-variant/15 px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-surface-container-low transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm" data-icon="download">download</span>
                     Export List
@@ -660,126 +658,8 @@
             openModal(false);
   <% } %>
 
-        async function exportCustomerListPDF(btn) {
-            const originalHTML = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `
-                <span class="material-symbols-outlined text-sm animate-spin">sync</span>
-                Exporting...
-            `;
-
-            try {
-                const response = await fetch('/admin/user-management/export');
-                const data = await response.json();
-
-                if (!data.success || !data.users || data.users.length === 0) {
-                    alert('No customer data available to export.');
-                    return;
-                }
-
-                const users = data.users;
-
-                // Create a virtual container for styling the PDF
-                const container = document.createElement('div');
-                container.style.fontFamily = "'Inter', sans-serif";
-                container.style.color = '#1e293b';
-                container.style.padding = '40px';
-                container.style.backgroundColor = '#ffffff';
-
-                // Format the download date and time
-                const downloadDateTime = new Date().toLocaleString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                });
-
-                container.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
-                        <div>
-                            <h1 style="font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">LUXE TECH</h1>
-                            <p style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin: 2px 0 0 0; font-weight: 600;">Customer Directory</p>
-                        </div>
-                        <div style="text-align: right; font-size: 9px; color: #475569;">
-                            <span style="font-weight: 700; color: #0f172a;">Exported:</span> ${downloadDateTime}
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 20px; margin-bottom: 25px; font-size: 10px; color: #475569; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
-                        <div>Total Clients: <span style="font-weight: 700; color: #0f172a;">${users.length}</span></div>
-                        <div style="color: #cbd5e1;">|</div>
-                        <div>Active Clients: <span style="font-weight: 700; color: #16a34a;">${users.filter(u => !u.isBlocked).length}</span></div>
-                        <div style="color: #cbd5e1;">|</div>
-                        <div>Blocked Clients: <span style="font-weight: 700; color: #b91c1c;">${users.filter(u => u.isBlocked).length}</span></div>
-                        <div style="color: #cbd5e1;">|</div>
-                        <div>Total Value: <span style="font-weight: 700; color: #0f172a;">₹${users.reduce((acc, u) => acc + (u.totalSpend || 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-                    </div>
-
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 1.5px solid #0f172a;">
-                                <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 25%;">Customer Name</th>
-                                <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; width: 30%;">Email Address</th>
-                                <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 15%;">Orders</th>
-                                <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: center; width: 15%;">Status</th>
-                                <th style="padding: 12px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #0f172a; text-align: right; width: 15%;">Total Spend</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${users.map((u, idx) => {
-                                const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
-                                return `
-                                    <tr style="background-color: ${rowBg}; border-bottom: 1px solid #f1f5f9; page-break-inside: avoid;">
-                                        <td style="padding: 12px 10px; font-size: 11px; font-weight: 700; color: #0f172a;">
-                                            ${u.name}
-                                        </td>
-                                        <td style="padding: 12px 10px; font-size: 10px; color: #475569;">
-                                            ${u.email}
-                                        </td>
-                                        <td style="padding: 12px 10px; font-size: 10px; color: #475569; text-align: center; font-weight: 600;">
-                                            ${u.ordersCount || 0}
-                                        </td>
-                                        <td style="padding: 12px 10px; text-align: center;">
-                                            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8px; font-weight: 700; text-transform: uppercase; 
-                                                ${!u.isBlocked ? 'background-color: #dcfce7; color: #15803d;' : 'background-color: #fee2e2; color: #b91c1c;'}">
-                                                ${!u.isBlocked ? 'Active' : 'Blocked'}
-                                            </span>
-                                        </td>
-                                        <td style="padding: 12px 10px; text-align: right; font-size: 11px; font-weight: 700; color: #0f172a;">
-                                            ₹${(u.totalSpend || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-
-                    <div style="margin-top: 40px; border-top: 1px dashed #cbd5e1; padding-top: 15px; text-align: center; page-break-inside: avoid;">
-                        <p style="font-size: 8px; color: #94a3b8; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Confidential — Luxe Tech Administration Records</p>
-                        <p style="font-size: 8px; color: #94a3b8; margin: 2px 0 0 0;">Report Ref: #LTCR-${Math.floor(100000 + Math.random() * 900000)} | Generated Automatically</p>
-                    </div>
-                `;
-
-                const opt = {
-                    margin:       [15, 15, 20, 15],
-                    filename:     'LuxeTech_Customer_Directory.pdf',
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                await html2pdf().set(opt).from(container).save();
-
-            } catch (err) {
-                console.error('Error exporting client list PDF:', err);
-                alert('An error occurred while exporting the customer directory.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalHTML;
-            }
+        function exportCustomerListPDF() {
+            window.location.href = '/admin/user-management/export';
         }
     </script>
 </body>

@@ -7,6 +7,7 @@ import {
   createUserService,
   getAllUsersNoPaginationService,
 } from "../../services/admin/userManagementService.js";
+import { generateUserPDFReport } from "../../utils/pdfGenerator.js";
 
 const getUserList = async (req, res) => {
   try {
@@ -98,10 +99,17 @@ const createUser = async (req, res) => {
 const exportUsers = async (req, res) => {
   try {
     const users = await getAllUsersNoPaginationService();
-    return res.json({ success: true, users });
+    const buffer = await generateUserPDFReport(users);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="LuxeTech_Customer_Directory_${Date.now()}.pdf"`
+    );
+    return res.send(buffer);
   } catch (error) {
     console.error("Export users error:", error.message);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).send("Server error generating PDF");
   }
 };
 

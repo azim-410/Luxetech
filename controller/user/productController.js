@@ -98,12 +98,31 @@ const addToCart = async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user.id : (req.user ? req.user._id : null);
         const { productId, variantId, quantity } = req.body;
+        
+        const isJson = req.xhr || 
+                       req.headers["x-requested-with"] === "XMLHttpRequest" || 
+                       (req.headers.accept && req.headers.accept.includes("application/json")) ||
+                       (req.headers["content-type"] && req.headers["content-type"].includes("application/json"));
+
         if (!productId) {
+            if (isJson) {
+                return res.status(400).json({ success: false, message: "Product ID is required." });
+            }
             return res.redirect('/shop');
         }
 
         const result = await addToCartService(userId, productId, variantId || null, quantity ? parseInt(quantity) : 1);
         
+        if (isJson) {
+            if (!userId) {
+                return res.status(401).json({ success: false, message: result.message || "Please login to add items to your cart." });
+            }
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
+            return res.json(result);
+        }
+
         if (!result.success) {
             return res.redirect(`/product-details?id=${productId}&error=${encodeURIComponent(result.message)}`);
         }

@@ -322,6 +322,10 @@
                     </svg>
                 </button>
             </div>
+            <!-- Modal Validation Error Banner -->
+            <div id="modalErrorContainer" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p id="modalErrorText" class="text-xs text-red-600 font-medium"></p>
+            </div>
             <div class="space-y-4 mb-6">
                 <div>
                     <label class="block text-[10px] font-bold text-luxe-muted uppercase mb-1.5 tracking-wider" style="font-family:'Manrope',sans-serif;">Group Name</label>
@@ -460,6 +464,8 @@
                                 <p class="text-[10px] font-bold uppercase text-[#1A1C1E] tracking-[0.06em] mb-4" style="font-family:'Manrope',sans-serif;">
                                     ${option}
                                 </p>
+                                <p id="error-variant_${groupName}_${option}_option" class="text-xs text-red-600 -mt-2 mb-2 hidden"></p>
+
                                 <div class="flex items-center gap-0 mb-2.5">
                                     <input type="number" value="${initialFormData && initialFormData[`variant_${groupName}_${option}_units`] !== undefined ? initialFormData[`variant_${groupName}_${option}_units`] : '0'}"
                                         name="variant_${groupName}_${option}_units"
@@ -574,6 +580,13 @@
             document.getElementById('modalTitle').textContent = 'Add Variant Group';
             document.getElementById('addVariantGroup').textContent = 'Add Group';
             editingGroupElement = null;
+            
+            // Clear modal errors
+            const modalErrorContainer = document.getElementById('modalErrorContainer');
+            if (modalErrorContainer) {
+                modalErrorContainer.classList.add('hidden');
+                document.getElementById('modalErrorText').textContent = '';
+            }
         }
 
         // Add variant group
@@ -581,9 +594,56 @@
             const groupName = document.getElementById('groupName').value.trim();
             const optionsRaw = document.getElementById('groupOptions').value.trim();
 
-            if (!groupName || !optionsRaw) return alert('Fill both fields');
+            const showError = (msg) => {
+                const container = document.getElementById('modalErrorContainer');
+                const text = document.getElementById('modalErrorText');
+                if (container && text) {
+                    text.textContent = msg;
+                    container.classList.remove('hidden');
+                }
+            };
+
+            // Clear any previous error
+            const errorContainer = document.getElementById('modalErrorContainer');
+            if (errorContainer) errorContainer.classList.add('hidden');
+
+            if (!groupName || !optionsRaw) {
+                return showError('Please fill in both the Group Name and Options fields.');
+            }
 
             const options = optionsRaw.split(',').map(o => o.trim()).filter(Boolean);
+
+            if (!/^[A-Za-z0-9\s\-\_]+$/.test(groupName)) {
+                return showError('Group Name must contain only alphanumeric characters, spaces, hyphens, or underscores.');
+            }
+            
+            for (const option of options) {
+                if (!/^[A-Za-z0-9\s\-\_]+$/.test(option)) {
+                    return showError(`Option value "${option}" must contain only alphanumeric characters, spaces, hyphens, or underscores.`);
+                }
+            }
+
+            const seenOptions = new Set();
+            const duplicates = [];
+            options.forEach(o => {
+                const oLower = o.toLowerCase();
+                if (seenOptions.has(oLower)) {
+                    duplicates.push(o);
+                } else {
+                    seenOptions.add(oLower);
+                }
+            });
+            if (duplicates.length > 0) {
+                return showError(`Duplicate options found in options list: ${duplicates.join(', ')}`);
+            }
+
+            const existingGroups = Array.from(document.querySelectorAll('.variant-group'))
+                .filter(el => el !== editingGroupElement)
+                .map(el => el.getAttribute('data-group-name').trim().toLowerCase());
+            
+            if (existingGroups.includes(groupName.toLowerCase())) {
+                return showError(`Variant Group "${groupName}" already exists. Please edit the existing group instead.`);
+            }
 
             createOrUpdateGroup(groupName, options, editingGroupElement);
             closeModal();
@@ -901,6 +961,7 @@
                 clientErrors.variants = 'At least one variant is required.';
             } else {
                 const seenSku = new Set();
+                const seenCombination = new Set();
                 variantGroups.forEach(groupEl => {
                     const groupName = groupEl.getAttribute('data-group-name');
                     const options = groupEl.getAttribute('data-options').split(',');
@@ -908,6 +969,13 @@
                     options.forEach(option => {
                         const prefix = `variant_${groupName}_${option}`;
                         
+                        const combKey = `${groupName.trim().toLowerCase()}:${option.trim().toLowerCase()}`;
+                        if (seenCombination.has(combKey)) {
+                            clientErrors[`${prefix}_option`] = `Duplicate option "${option}" for variant group "${groupName}".`;
+                        } else {
+                            seenCombination.add(combKey);
+                        }
+
                         const unitsEl = document.querySelector(`[name="${prefix}_units"]`);
                         const unitsVal = unitsEl ? unitsEl.value.trim() : '';
                         if (unitsVal === '') {
@@ -958,7 +1026,11 @@
                 // Display client-side errors
                 for (const [field, msg] of Object.entries(clientErrors)) {
                     const errEl = document.getElementById(`error-${field}`);
-                    const inputEl = document.querySelector(`[name="${field}"]`) || document.getElementById(`input_${field.replace(/^variant_/, '').replace(/_images$/, '')}`);
+                    let inputEl = document.querySelector(`[name="${field}"]`);
+                    if (!inputEl) {
+                        const basePrefix = field.replace(/_(images|option|units|price|sku)$/, '');
+                        inputEl = document.querySelector(`[name="${basePrefix}_sku"]`) || document.getElementById(`input_${basePrefix.replace(/^variant_/, '')}`);
+                    }
                     showFieldError(inputEl, errEl, msg);
                 }
                 bannerText.textContent = 'Please fix the errors indicated below.';
@@ -982,7 +1054,11 @@
         if (serverErrors) {
             for (const [field, msg] of Object.entries(serverErrors)) {
                 const errEl = document.getElementById(`error-${field}`);
-                const inputEl = document.querySelector(`[name="${field}"]`) || document.getElementById(`input_${field.replace(/^variant_/, '').replace(/_images$/, '')}`);
+                let inputEl = document.querySelector(`[name="${field}"]`);
+                if (!inputEl) {
+                    const basePrefix = field.replace(/_(images|option|units|price|sku)$/, '');
+                    inputEl = document.querySelector(`[name="${basePrefix}_sku"]`) || document.getElementById(`input_${basePrefix.replace(/^variant_/, '')}`);
+                }
                 showFieldError(inputEl, errEl, msg);
             }
         }

@@ -53,6 +53,10 @@ const addToCartService = async (userId, productId, variantId, quantityInput) => 
             return sameProduct && sameVariant;
         });
 
+        if (existingItem) {
+            return { success: false, message: 'Product is already in your cart.' };
+        }
+
         const currentQty = existingItem ? existingItem.quantity : 0;
         const newQty = currentQty + quantity;
 

@@ -102,6 +102,8 @@ const addProductService = async (productData, body, files) => {
 
   // ─── Variant Validation ─────────────────────────────
   const variantKeys = Object.keys(variantMap);
+  const seenCombinations = new Set();
+  const seenSkusInRequest = new Set();
 
   if (variantKeys.length === 0) {
     errors.variants = "At least one variant is required";
@@ -110,10 +112,38 @@ const addProductService = async (productData, body, files) => {
       const v = variantMap[key];
       const prefix = `variant_${key}`;
 
+      const lastUnderscore = key.lastIndexOf("_");
+      if (lastUnderscore === -1) {
+        errors[`${prefix}_option`] = "Invalid variant name structure";
+        continue;
+      }
+      const groupName = key.substring(0, lastUnderscore).trim();
+      const option = key.substring(lastUnderscore + 1).trim();
+
+      if (!groupName || groupName === "") {
+        errors[`${prefix}_option`] = "Variant group name is required";
+      } else if (!/^[A-Za-z0-9\s\-\_]+$/.test(groupName)) {
+        errors[`${prefix}_option`] = "Variant group name must contain only alphanumeric characters, spaces, hyphens, or underscores";
+      }
+
+      if (!option || option === "") {
+        errors[`${prefix}_option`] = "Variant option name is required";
+      } else if (!/^[A-Za-z0-9\s\-\_]+$/.test(option)) {
+        errors[`${prefix}_option`] = "Variant option name must contain only alphanumeric characters, spaces, hyphens, or underscores";
+      }
+
+      const combKey = `${groupName.toLowerCase()}:${option.toLowerCase()}`;
+      if (seenCombinations.has(combKey)) {
+        errors[`${prefix}_option`] = `Duplicate option "${option}" for variant group "${groupName}".`;
+      } else {
+        seenCombinations.add(combKey);
+      }
+
       if (!v.sku || v.sku.trim() === "") {
         errors[`${prefix}_sku`] = "SKU is required";
       } else {
         const skuTrimmed = v.sku.trim();
+        const skuLower = skuTrimmed.toLowerCase();
         if (skuTrimmed.length < 3) {
           errors[`${prefix}_sku`] = "SKU must be at least 3 characters";
         } else if (skuTrimmed.length > 30) {
@@ -121,7 +151,10 @@ const addProductService = async (productData, body, files) => {
         } else if (!/^[A-Za-z0-9\-\_]+$/.test(skuTrimmed)) {
           errors[`${prefix}_sku`] =
             "SKU must be alphanumeric (hyphens and underscores allowed)";
+        } else if (seenSkusInRequest.has(skuLower)) {
+          errors[`${prefix}_sku`] = "Duplicate SKU Code within request";
         } else {
+          seenSkusInRequest.add(skuLower);
           const existingSku = await variantModel.findOne({ sku: skuTrimmed });
           if (existingSku) {
             errors[`${prefix}_sku`] = "SKU already exists";
@@ -409,16 +442,42 @@ const updateProductService = async (id, body, files) => {
         .filter(Boolean)
     : [];
 
+  const seenCombinations = new Set();
+  const seenSkusInRequest = new Set();
+
   if (variantData.length === 0) {
     errors.variants = "At least one variant is required";
   } else {
     for (const v of variantData) {
       const prefix = `variant_${v.groupName}_${v.option}`;
 
+      const groupName = (v.groupName || "").trim();
+      const option = (v.option || "").trim();
+
+      if (!groupName || groupName === "") {
+        errors[`${prefix}_option`] = "Variant group name is required";
+      } else if (!/^[A-Za-z0-9\s\-\_]+$/.test(groupName)) {
+        errors[`${prefix}_option`] = "Variant group name must contain only alphanumeric characters, spaces, hyphens, or underscores";
+      }
+
+      if (!option || option === "") {
+        errors[`${prefix}_option`] = "Variant option name is required";
+      } else if (!/^[A-Za-z0-9\s\-\_]+$/.test(option)) {
+        errors[`${prefix}_option`] = "Variant option name must contain only alphanumeric characters, spaces, hyphens, or underscores";
+      }
+
+      const combKey = `${groupName.toLowerCase()}:${option.toLowerCase()}`;
+      if (seenCombinations.has(combKey)) {
+        errors[`${prefix}_option`] = `Duplicate option "${option}" for variant group "${groupName}".`;
+      } else {
+        seenCombinations.add(combKey);
+      }
+
       if (!v.sku || v.sku.trim() === "") {
         errors[`${prefix}_sku`] = "SKU is required";
       } else {
         const skuTrimmed = v.sku.trim();
+        const skuLower = skuTrimmed.toLowerCase();
         if (skuTrimmed.length < 3) {
           errors[`${prefix}_sku`] = "SKU must be at least 3 characters";
         } else if (skuTrimmed.length > 30) {
@@ -426,7 +485,10 @@ const updateProductService = async (id, body, files) => {
         } else if (!/^[A-Za-z0-9\-\_]+$/.test(skuTrimmed)) {
           errors[`${prefix}_sku`] =
             "SKU must be alphanumeric (hyphens and underscores allowed)";
+        } else if (seenSkusInRequest.has(skuLower)) {
+          errors[`${prefix}_sku`] = "Duplicate SKU Code within request";
         } else {
+          seenSkusInRequest.add(skuLower);
           const existingSku = await variantModel.findOne({
             sku: skuTrimmed,
             _id: { $ne: v._id },

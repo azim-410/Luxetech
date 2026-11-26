@@ -85,14 +85,35 @@ export const getOfferProductsService = async (queryObject) => {
       .populate("category")
       .sort(sortOption);
 
+    // Collect the IDs of the listed products
+    let productIds = [];
+    for (let i = 0; i < products.length; i++) {
+      productIds.push(products[i]._id);
+    }
+
+    // Fetch their variants together instead of querying for each product
+    let variants = [];
+    if (productIds.length > 0) {
+      variants = await variantModel
+        .find({ productId: { $in: productIds } })
+        .select("productId images")
+        .sort({ _id: 1 });
+    }
+
     let productList = [];
 
     // 3. Process all products to get first variant image and display price
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
 
-      // Find one variant to get the first image
-      const variant = await variantModel.findOne({ productId: product._id });
+      // Find this product's first variant in the fetched array
+      let variant = null;
+      for (let j = 0; j < variants.length; j++) {
+        if (variants[j].productId.toString() === product._id.toString()) {
+          variant = variants[j];
+          break;
+        }
+      }
 
       let firstImage = null;
       if (variant && variant.images && variant.images.length > 0) {
